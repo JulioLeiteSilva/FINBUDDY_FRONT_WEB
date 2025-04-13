@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFunctions } from 'firebase/functions';
+import { connectAuthEmulator } from "firebase/auth";
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -16,6 +17,11 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
+
+if (import.meta.env.DEV) {
+    connectAuthEmulator(auth, 'http://localhost:9099');
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+}
 
 export const listenAuthState = (callback: (user: any) => void) => {
     onAuthStateChanged(auth, callback);
