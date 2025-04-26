@@ -4,6 +4,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
 import { auth, functions } from '../../../services/firebase';
 import { useAuthStore } from '../../../store/authStore';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerSchema, RegisterSchemaType } from '../../../schemas/auth';
 
 import {
   Box,
@@ -22,19 +25,25 @@ import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleRegister = async () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchemaType>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const onSubmit = async (data: RegisterSchemaType) => {
     try {
       // 1. Cria o usuário no Firebase Auth
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = result.user;
       const token = await user.getIdToken();
 
@@ -42,10 +51,10 @@ const Register = () => {
       login(user, token);
 
       // 3. Chama a função `createUser` (Cloud Function)
-      const createUserFn = httpsCallable(functions, 'user-createUser');
+      const createUserFn = httpsCallable(functions, 'user-preRegisterUser');
 
       const response = await createUserFn({
-        name, // nome do usuário (vem do formulário)
+        name: data.name, // Use o nome do formulário validado
       });
 
       console.log('Usuário criado na função:', response.data);
@@ -53,6 +62,7 @@ const Register = () => {
       navigate('/'); // ou redirecionar onde quiser
     } catch (error) {
       console.error('Erro ao registrar:', error);
+      // Aqui você pode adicionar lógica para exibir mensagens de erro ao usuário
     }
   };
 
@@ -105,8 +115,9 @@ const Register = () => {
                 variant="outlined"
                 fullWidth
                 size="medium"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                {...register('name')}
+                error={!!errors.name}
+                helperText={errors.name?.message}
               />
               <TextField
                 label="Email"
@@ -114,8 +125,9 @@ const Register = () => {
                 variant="outlined"
                 fullWidth
                 size="medium"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register('email')}
+                error={!!errors.email}
+                helperText={errors.email?.message}
               />
 
               <TextField
@@ -123,8 +135,6 @@ const Register = () => {
                 type={showPassword ? 'text' : 'password'}
                 variant="outlined"
                 fullWidth
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 size="medium"
                 InputProps={{
                   endAdornment: (
@@ -138,6 +148,9 @@ const Register = () => {
                     </InputAdornment>
                   ),
                 }}
+                {...register('password')}
+                error={!!errors.password}
+                helperText={errors.password?.message}
               />
 
               <TextField
@@ -145,8 +158,6 @@ const Register = () => {
                 type={showConfirmPassword ? 'text' : 'password'}
                 variant="outlined"
                 fullWidth
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 size="medium"
                 InputProps={{
                   endAdornment: (
@@ -160,15 +171,18 @@ const Register = () => {
                     </InputAdornment>
                   ),
                 }}
+                {...register('confirmPassword')}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword?.message}
               />
 
               <Button
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={handleRegister}
+                onClick={handleSubmit(onSubmit)}
               >
-                Entrar
+                Criar Conta
               </Button>
             </Stack>
             <Typography mt={3} mb={5} fontSize="0.875rem">
