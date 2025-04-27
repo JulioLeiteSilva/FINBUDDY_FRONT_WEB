@@ -1,8 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { httpsCallable } from 'firebase/functions';
-import { auth, functions } from '../../../services/firebase';
 import { useAuthStore } from '../../../store/authStore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,8 +22,9 @@ import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
 import { useLoadingStore } from '../../../store/loadingStore';
 import { authPageContainerSx, authPageBackgroundSx, authContentContainerSx, authCardContainerSx, authCardPaperSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authFormStackSx, authTextFieldSx, authButtonSx, authFooterTypographySx, authFooterLinkSx } from '../authStyles';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { Register } from '../../../services/Auth';
 
-const Register = () => {
+const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { login } = useAuthStore();
@@ -46,29 +44,17 @@ const Register = () => {
   const onSubmit = async (data: RegisterSchemaType) => {
     startLoading();
     try {
-      // 1. Cria o usuário no Firebase Auth
-      const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const user = result.user;
-      const token = await user.getIdToken();
-
-      // 2. Atualiza a store com auth
-      login(user, token);
-
-      // 3. Chama a função `createUser` (Cloud Function)
-      const createUserFn = httpsCallable(functions, 'user-preRegisterUser');
-
-      const response = await createUserFn({
-        name: data.name, // Use o nome do formulário validado
-      });
-
-      console.log('Usuário criado na função:', response.data);
-
-      navigate('/'); // ou redirecionar onde quiser
+      Register(
+        data.email,
+        data.name,
+        data.password,
+        login,
+        startLoading,
+        stopLoading
+      );
+      navigate('/');
     } catch (error) {
       console.error('Erro ao registrar:', error);
-      // Aqui você pode adicionar lógica para exibir mensagens de erro ao usuário
-    } finally {
-      stopLoading(); // Finaliza o loading, independentemente do resultado
     }
   };
 
@@ -174,4 +160,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterPage;

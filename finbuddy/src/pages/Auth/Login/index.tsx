@@ -1,8 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../../services/firebase';
-import { useAuthStore } from '../../../store/authStore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginSchemaType } from '../../../schemas/auth';
@@ -20,13 +17,14 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
-import backgroundImage from '../../../assets/images/bg-login.png';
 import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useLoadingStore } from '../../../store/loadingStore';
 import { authButtonSx, authCardContainerSx, authCardPaperSx, authContentContainerSx, authFooterLinkSx, authFooterTypographySx, authFormStackSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authPageBackgroundSx, authPageContainerSx, authTextFieldSx } from '../authStyles';
+import { Login } from '../../../services/Auth';
+import { useAuthStore } from '../../../store/authStore';
 
-const Login = () => {
+const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuthStore();
   const navigate = useNavigate();
@@ -42,20 +40,14 @@ const Login = () => {
       password: '',
     },
   });
-  const { isLoading, startLoading, stopLoading } = useLoadingStore();
+  const {  startLoading, stopLoading, isLoading } = useLoadingStore();
 
   const onSubmit = async (data: LoginSchemaType) => {
-    startLoading();
     try {
-      const res = await signInWithEmailAndPassword(auth, data.email, data.password);
-      const token = await res.user.getIdToken();
-      login(res.user, token);
+       await Login(data.email, data.password, login, startLoading, stopLoading);
       navigate('/');
     } catch (err) {
       console.error('Erro ao logar:', err);
-      // Aqui você pode adicionar lógica para exibir mensagens de erro ao usuário
-    } finally {
-      stopLoading(); // Finaliza o loading, independentemente do resultado
     }
   };
   return (
@@ -126,4 +118,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
