@@ -1,6 +1,30 @@
 // src/styles/theme.ts
 import { createTheme } from '@mui/material/styles';
 
+const commonTheme = {
+  typography: {
+    fontFamily: '"Outfit", sans-serif', // Aplica Outfit globalmente
+    h1: {
+      fontFamily: '"Outfit", serif',
+    },
+    h2: {
+      fontFamily: '"Outfit", serif',
+    },
+    h3: {
+      fontFamily: '"Outfit", serif'
+    },
+    h4: {
+      fontFamily: '"Outfit", serif'
+    },
+    h5: {
+      fontFamily: '"Outfit", serif'
+    },
+    h6: {
+      fontFamily: '"Outfit", serif'
+    },
+  },
+}
+
 export const lightTheme = createTheme({
   palette: {
     mode: 'light',
@@ -11,6 +35,7 @@ export const lightTheme = createTheme({
       main: '#ff4081',
     },
   },
+  ...commonTheme
 });
 
 export const darkTheme = createTheme({
@@ -23,4 +48,5 @@ export const darkTheme = createTheme({
       main: '#E9EBAB',
     },
   },
+  ...commonTheme
 });

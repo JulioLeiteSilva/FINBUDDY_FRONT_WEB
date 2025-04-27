@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
@@ -17,12 +17,14 @@ import {
   Paper,
   Stack,
   Link,
-  InputAdornment,
+  CircularProgress,
   IconButton,
+  InputAdornment,
 } from '@mui/material';
-import backgroundImage from '../../../assets/images/bg-login.png';
 import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useLoadingStore } from '../../../store/loadingStore';
+import { authPageContainerSx, authPageBackgroundSx, authContentContainerSx, authCardContainerSx, authCardPaperSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authFormStackSx, authTextFieldSx, authButtonSx, authFooterTypographySx, authFooterLinkSx } from '../authStyles';
+import { VisibilityOff, Visibility } from '@mui/icons-material';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,8 +41,10 @@ const Register = () => {
       confirmPassword: '',
     },
   });
+  const { isLoading, startLoading, stopLoading } = useLoadingStore();
 
   const onSubmit = async (data: RegisterSchemaType) => {
+    startLoading();
     try {
       // 1. Cria o usuário no Firebase Auth
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
@@ -63,52 +67,24 @@ const Register = () => {
     } catch (error) {
       console.error('Erro ao registrar:', error);
       // Aqui você pode adicionar lógica para exibir mensagens de erro ao usuário
+    } finally {
+      stopLoading(); // Finaliza o loading, independentemente do resultado
     }
   };
 
   return (
-    <Box sx={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-      {/* Fundo com imagem e blur */}
-      <Box
-        sx={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          backgroundImage: `url(${backgroundImage})`, // substitua pelo caminho da sua imagem
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'blur(8px)',
-          zIndex: 0,
-        }}
-      />
-
-      {/* Camada com o conteúdo */}
-      <Box
-        sx={{
-          position: 'relative',
-          zIndex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          px: 2,
-        }}
-      >
-        <Container maxWidth="sm" sx={{ mt: 10 }}>
-          <Paper
-            elevation={6}
-            sx={{
-              p: 7,
-              borderRadius: 4,
-            }}
-          >
-            <Box mb={9} display="flex" justifyContent="center">
-              <Box width={339} height={99}>
+    <Box sx={authPageContainerSx}>
+      <Box sx={authPageBackgroundSx} />
+      <Box sx={authContentContainerSx}>
+        <Container maxWidth="sm" sx={authCardContainerSx}>
+          <Paper elevation={6} sx={authCardPaperSx}>
+            <Box mb={9} display="flex" justifyContent="center" sx={authLogoHeaderBoxSx}>
+              <Box width={339} height={99} sx={authLogoHeaderInnerBoxSx}>
                 <FinbuddyLogoHeader />
               </Box>
             </Box>
 
-            <Stack spacing={3}>
+            <Stack spacing={3} sx={authFormStackSx}>
               <TextField
                 label="Nome"
                 type="text"
@@ -118,6 +94,7 @@ const Register = () => {
                 {...register('name')}
                 error={!!errors.name}
                 helperText={errors.name?.message}
+                sx={authTextFieldSx}
               />
               <TextField
                 label="Email"
@@ -128,8 +105,8 @@ const Register = () => {
                 {...register('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message}
+                sx={authTextFieldSx}
               />
-
               <TextField
                 label="Senha"
                 type={showPassword ? 'text' : 'password'}
@@ -151,8 +128,8 @@ const Register = () => {
                 {...register('password')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
+                sx={authTextFieldSx}
               />
-
               <TextField
                 label="Confirme sua Senha"
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -174,22 +151,21 @@ const Register = () => {
                 {...register('confirmPassword')}
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
+                sx={authTextFieldSx}
               />
-
               <Button
                 variant="contained"
                 color="primary"
                 fullWidth
                 onClick={handleSubmit(onSubmit)}
+                disabled={isLoading}
+                sx={authButtonSx}
               >
-                Criar Conta
+                {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Criar Conta'}
               </Button>
             </Stack>
-            <Typography mt={3} mb={5} fontSize="0.875rem">
-              Já tem uma conta?{' '}
-              <Link href="/login" underline="hover">
-                Faça login.
-              </Link>
+            <Typography mt={3} mb={5} fontSize="0.875rem" sx={authFooterTypographySx}>
+              Já tem uma conta? <Link href="/login" underline="hover" sx={authFooterLinkSx}>Faça login.</Link>
             </Typography>
           </Paper>
         </Container>
