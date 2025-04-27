@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ textAlign: 'center', mt: 8 }}>
+    <Container maxWidth="sm" sx={{ textAlign: 'center'}}>
       <Typography variant="h4" gutterBottom>
         Welcome to FinBuddy{user?.email ? `, ${user.email}` : ''}!
       </Typography>
@@ -24,7 +24,7 @@ const Home: React.FC = () => {
         variant="contained"
         color="primary"
         onClick={handleLogout}
-        sx={{ mt: 4 }}
+        sx={{ mt: 1, mb: 5 }}
       >
         Logout
       </Button>
