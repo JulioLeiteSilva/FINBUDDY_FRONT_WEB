@@ -5,6 +5,7 @@ import NotFound from '../pages/NotFound';
 import { Box } from '@mui/material';
 import SideBar from '../components/sideBar';
 import Content from '../components/content';
+import TransactionsPage from '../pages/Transactions';
 
 const PrivateRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const PrivateRoutes = () => {
       <Content>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
