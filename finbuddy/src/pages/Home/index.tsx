@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ textAlign: 'center'}}>
+    <Container maxWidth="sm" sx={{ textAlign: 'center', mt: 10 }}>
       <Typography variant="h4" gutterBottom>
         Welcome to FinBuddy{user?.email ? `, ${user.email}` : ''}!
       </Typography>

@@ -1,11 +1,15 @@
-import { AppBar, Avatar, Box, Button, IconButton, Toolbar, useTheme} from '@mui/material';
+import { AppBar, Avatar, Box, Button, IconButton, Toolbar, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { deepPurple } from '@mui/material/colors';
 import { useSideBarStore } from '../store/sideBarStore';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-const TopBar = () => {
+interface TopBarProps {
+    onOpenNewTransactionModal: () => void;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ onOpenNewTransactionModal }) => {
     const { toggleSideBarCollapsed, isSideBarCollapsed } = useSideBarStore();
     const theme = useTheme();
     const drawerWidth = isSideBarCollapsed ? theme.spacing(5) : theme.spacing(22);
@@ -16,6 +20,7 @@ const TopBar = () => {
             sx={{
                 width: '100%',
                 position: 'fixed',
+                zIndex: theme.zIndex.drawer + 1,
             }}
         >
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -28,6 +33,7 @@ const TopBar = () => {
                         color="primary"
                         startIcon={<AddIcon />}
                         sx={{ mr: 2 }}
+                        onClick={onOpenNewTransactionModal}
                     >
                         Nova Transação
                     </Button>

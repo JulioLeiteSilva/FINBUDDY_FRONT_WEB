@@ -1,0 +1,51 @@
+[
+    {
+        "id": "1",
+        "date": "2025-04-25",
+        "description": "Compra no Supermercado",
+        "amount": -75.50,
+        "category": "Alimentação"
+    },
+    {
+        "id": "2",
+        "date": "2025-04-25",
+        "description": "Salário",
+        "amount": 2500.00,
+        "category": "Salário"
+    },
+    {
+        "id": "3",
+        "date": "2025-04-26",
+        "description": "Conta de Luz",
+        "amount": -120.75,
+        "category": "Contas"
+    },
+    {
+        "id": "4",
+        "date": "2025-04-26",
+        "description": "Transferência para Poupança",
+        "amount": -500.00,
+        "category": "Investimento"
+    },
+    {
+        "id": "5",
+        "date": "2025-04-27",
+        "description": "Almoço com amigos",
+        "amount": -45.90,
+        "category": "Lazer"
+    },
+    {
+        "id": "6",
+        "date": "2025-04-27",
+        "description": "Reembolso de compra online",
+        "amount": 30.00,
+        "category": "Outros"
+    },
+    {
+        "id": "7",
+        "date": "2025-04-27",
+        "description": "Pagamento Cartão de Crédito",
+        "amount": -350.00,
+        "category": "Contas"
+    }
+]
