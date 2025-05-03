@@ -7,15 +7,15 @@ import SideBar from '../components/sideBar';
 import Content from '../components/content';
 import TransactionsPage from '../pages/Transactions';
 import { useState, useEffect, useCallback } from 'react';
-import NewTransactionModal, { NewTransaction } from '../components/newTransactionModal';
-import { useTransactionsStore } from '../store/transactionStore';
+import NewTransactionModal from '../components/newTransactionModal';
+import { CreateTransaction } from '../services/Transactions/createTransaction';
+import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
 
 
 const PrivateRoutes = () => {
   const location = useLocation();
   const [title, setTitle] = useState<string>('');
   const [isNewTransactionModalOpen, setIsNewTransactionModalOpen] = useState<boolean>(false);
-  const addTransaction = useTransactionsStore((state) => state.addTransaction);
 
   const handleOpenNewTransactionModal = useCallback(() => {
     setIsNewTransactionModalOpen(true);
@@ -25,10 +25,10 @@ const PrivateRoutes = () => {
     setIsNewTransactionModalOpen(false);
   }, []);
 
-  const handleAddNewTransaction = useCallback((newTransaction: NewTransaction) => {
-    addTransaction(newTransaction); // Chama a ação do store para adicionar a transação
+  const handleCreateNewTransaction = useCallback((newTransaction: TransactionRequestDTOSchemaType) => {
+    CreateTransaction(newTransaction);
     handleCloseNewTransactionModal();
-  }, [addTransaction, handleCloseNewTransactionModal]);
+  }, [handleCloseNewTransactionModal]);
 
   useEffect(() => {
     switch (location.pathname) {
@@ -62,7 +62,7 @@ const PrivateRoutes = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <NewTransactionModal onClose={handleCloseNewTransactionModal} onAddNew={handleAddNewTransaction} />
+        <NewTransactionModal onClose={handleCloseNewTransactionModal} onCreateNew={handleCreateNewTransaction} />
       </Modal>
     </Box>
   );

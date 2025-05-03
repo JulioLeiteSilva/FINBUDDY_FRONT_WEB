@@ -1,20 +1,33 @@
 import { create } from 'zustand';
-import { NewTransaction } from '../components/newTransactionModal';
-import mockTransactions from '../mock/mockTransactions.json';
+import { TransactionSchemaType } from '../schemas/transactions';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../services/firebase';
+
 
 interface TransactionsState {
-    transactions: NewTransaction[];
-    addTransaction: (transaction: Omit<NewTransaction, 'id'>) => void;
-    // Adicione outras ações relacionadas a transações aqui, se necessário (filtrar, remover, etc.)
+  transactions: TransactionSchemaType[];
+  isLoading: boolean;
+  fetchTransactions: () => Promise<void>;
 }
 
 export const useTransactionsStore = create<TransactionsState>((set) => ({
-    transactions: mockTransactions,
-    addTransaction: (newTransaction) =>
-        set((state) => ({
-            transactions: [
-                ...state.transactions,
-                { id: String(Date.now()), ...newTransaction },
-            ],
-        })),
+  transactions: [],
+  isLoading: false,
+
+  fetchTransactions: async () => {
+    set({ isLoading: true });
+    try {
+      const getAllTransactionsFn = httpsCallable(functions, 'transaction-getAllTransactions');
+      const response = await getAllTransactionsFn();
+      console.log(response);
+
+      set({
+        transactions: response.data as TransactionSchemaType[],
+      });
+    } catch (error) {
+      console.error('Erro ao pegar todas as transações:', error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 }));

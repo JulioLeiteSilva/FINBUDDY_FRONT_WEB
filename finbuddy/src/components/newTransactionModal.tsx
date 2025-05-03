@@ -1,44 +1,80 @@
 // src/components/NewTransactionModal.tsx
-import React, { useState } from 'react';
-import { Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import React, { useEffect } from 'react';
+import {
+    Typography,
+    TextField,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    ToggleButton,
+    ToggleButtonGroup,
+    FormControlLabel,
+    Checkbox,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    FormHelperText,
+} from '@mui/material';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-
-export interface NewTransaction {
-    id?: string; // O ID será gerado ao adicionar
-    date: string;
-    description: string;
-    amount: number;
-    category: string;
-}
+import { TransactionRequestDTOSchema, TransactionRequestDTOSchemaType } from '../schemas/transactions';
+import { useBankAccountStore } from '../store/bankAccountStore';
+import { TransactionFrequency } from '../enums/'; // ajuste o path conforme seu projeto
+import { Grid } from '@mui/material';
 
 interface NewTransactionModalProps {
     onClose: () => void;
-    onAddNew: (newTransaction: NewTransaction) => void;
+    onCreateNew: (newTransaction: TransactionRequestDTOSchemaType) => void;
 }
 
-const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onAddNew }) => {
-    const [description, setDescription] = useState<string>('');
-    const [amount, setAmount] = useState<number>(0);
-    const [category, setCategory] = useState<string>('');
-    const [date, setDate] = useState<string>(dayjs().format('YYYY-MM-DD')); // Default para hoje
+const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onCreateNew }) => {
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors },
+        reset
+    } = useForm<TransactionRequestDTOSchemaType>({
+        resolver: zodResolver(TransactionRequestDTOSchema),
+        defaultValues: {
+            name: '',
+            category: '',
+            value: 0,
+            date: new Date(),
+            type: 'EXPENSE',
+            isRecurring: false,
+            isPaid: false,
+            currency: 'BRL',
+            bankAccountId: '',
+            frequency: null,
+            startDate: null,
+            endDate: null,
+        }
+    });
 
-    const handleSubmit = (event: React.FormEvent) => {
-        console.log('handleSubmit')
-        event.preventDefault();
-        const newTransaction: NewTransaction = {
-            date,
-            description,
-            amount: parseFloat(amount.toString()), // Garante que seja um número
-            category,
-        };
-        console.log(newTransaction)
-        onAddNew(newTransaction);
-        // Limpa o formulário após adicionar
-        setDescription('');
-        setAmount(0);
-        setCategory('');
-        setDate(dayjs().format('YYYY-MM-DD'));
+    const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
+
+    // Faz fetch quando o modal abre
+    useEffect(() => {
+        fetchBankAccounts();
+    }, [fetchBankAccounts]);
+
+    const onSubmit = (data: TransactionRequestDTOSchemaType) => {
+        console.log('Nova transação:', data);
+        onCreateNew(data);
+        onClose();
+        reset(); // reseta o formulário após enviar
     };
+
+    // Watch para isRecurring
+    const isRecurring = useWatch({
+        control,
+        name: 'isRecurring',
+    });
 
     return (
         <Dialog open onClose={onClose} fullWidth maxWidth="sm">
@@ -47,58 +83,220 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onAd
                 <Typography variant="body2" color="textSecondary" gutterBottom>
                     Preencha os detalhes da nova transação.
                 </Typography>
-                <form onSubmit={handleSubmit}>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="description"
-                        label="Descrição"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Descrição"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    {...register('name')}
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                />
+
+                <TextField
+                    margin="dense"
+                    id="value"
+                    label="Valor"
+                    type="number"
+                    fullWidth
+                    variant="outlined"
+                    {...register('value', { valueAsNumber: true })}
+                    error={!!errors.value}
+                    helperText={errors.value?.message}
+                />
+
+                <TextField
+                    margin="dense"
+                    id="category"
+                    label="Categoria"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    {...register('category')}
+                    error={!!errors.category}
+                    helperText={errors.category?.message}
+                />
+
+                <Controller
+                    control={control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormControl
+                            fullWidth
+                            margin="dense"
+                            error={!!errors.type}
+                        >
+                            <Typography sx={{ mt: 2 }}>Tipo</Typography>
+                            <ToggleButtonGroup
+                                value={field.value}
+                                exclusive
+                                onChange={(_, value) => {
+                                    if (value !== null) field.onChange(value);
+                                }}
+                                fullWidth
+                                color="primary"
+                            >
+                                <ToggleButton value="EXPENSE">Despesa</ToggleButton>
+                                <ToggleButton value="INCOME">Receita</ToggleButton>
+                            </ToggleButtonGroup>
+                            {errors.type && <FormHelperText>{errors.type.message}</FormHelperText>}
+                        </FormControl>
+                    )}
+                />
+
+                <TextField
+                    id="date"
+                    label="Data"
+                    type="date"
+                    fullWidth
+                    margin="dense"
+                    variant="outlined"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    {...register('date', {
+                        setValueAs: (value) => new Date(value),
+                    })}
+                    error={!!errors.date}
+                    helperText={errors.date?.message}
+                    defaultValue={dayjs().format('YYYY-MM-DD')}
+                />
+
+                <FormControl fullWidth margin="dense" error={!!errors.bankAccountId}>
+                    <InputLabel id="bankAccountId-label">Conta Bancária</InputLabel>
+                    <Controller
+                        control={control}
+                        name="bankAccountId"
+                        render={({ field }) => (
+                            <Select
+                                labelId="bankAccountId-label"
+                                id="bankAccountId"
+                                value={field.value}
+                                label="Conta Bancária"
+                                onChange={field.onChange}
+                            >
+                                {bankAccounts.map((account) => (
+                                    <MenuItem key={account.id} value={account.id}>
+                                        {account.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        )}
                     />
-                    <TextField
-                        margin="dense"
-                        id="amount"
-                        label="Valor"
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                        value={amount}
-                        onChange={(e) => setAmount(parseFloat(e.target.value))}
-                    />
-                    <TextField
-                        margin="dense"
-                        id="category"
-                        label="Categoria"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                    />
-                    <TextField
-                        id="date"
-                        label="Data"
-                        type="date"
-                        fullWidth
-                        margin="dense"
-                        variant="outlined"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                    />
-                </form>
+                    {errors.bankAccountId && <FormHelperText>{errors.bankAccountId.message}</FormHelperText>}
+                </FormControl>
+
+                <Controller
+                    control={control}
+                    name="isPaid"
+                    render={({ field }) => (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={field.value}
+                                    onChange={(e) => field.onChange(e.target.checked)}
+                                    color="primary"
+                                />
+                            }
+                            label="Pago?"
+                        />
+                    )}
+                />
+
+                <Controller
+                    control={control}
+                    name="isRecurring"
+                    render={({ field }) => (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={field.value}
+                                    onChange={(e) => field.onChange(e.target.checked)}
+                                    color="primary"
+                                />
+                            }
+                            label="Recorrente?"
+                        />
+                    )}
+                />
+
+                {isRecurring && (
+                    <Grid container spacing={2}>
+                        <Grid size={12}>
+                            <FormControl fullWidth margin="dense" error={!!errors.frequency}>
+                                <InputLabel id="frequency-label">Frequência</InputLabel>
+                                <Controller
+                                    control={control}
+                                    name="frequency"
+                                    render={({ field }) => (
+                                        <Select
+                                            labelId="frequency-label"
+                                            id="frequency"
+                                            value={field.value ?? ''}
+                                            label="Frequência"
+                                            onChange={field.onChange}
+                                        >
+                                            {Object.values(TransactionFrequency).map((freq) => (
+                                                <MenuItem key={freq} value={freq}>
+                                                    {freq}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    )}
+                                />
+                                {errors.frequency && <FormHelperText>{errors.frequency.message}</FormHelperText>}
+                            </FormControl>
+                        </Grid>
+
+                        <Grid size={6}>
+                            <TextField
+                                id="startDate"
+                                label="Data Início"
+                                type="date"
+                                fullWidth
+                                margin="dense"
+                                variant="outlined"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                {...register('startDate', {
+                                    setValueAs: (value) => (value ? new Date(value) : null),
+                                })}
+                                error={!!errors.startDate}
+                                helperText={errors.startDate?.message}
+                            />
+                        </Grid>
+
+                        <Grid size={6}>
+                            <TextField
+                                id="endDate"
+                                label="Data Fim"
+                                type="date"
+                                fullWidth
+                                margin="dense"
+                                variant="outlined"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                {...register('endDate', {
+                                    setValueAs: (value) => (value ? new Date(value) : null),
+                                })}
+                                error={!!errors.endDate}
+                                helperText={errors.endDate?.message}
+                            />
+                        </Grid>
+                    </Grid>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="primary">
                     Cancelar
                 </Button>
-                <Button type="submit" color="primary" onClick={handleSubmit}>
+                <Button onClick={handleSubmit(onSubmit)} color="primary">
                     Adicionar
                 </Button>
             </DialogActions>

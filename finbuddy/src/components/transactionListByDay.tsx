@@ -5,19 +5,19 @@ import TransactionCard from './transactionCard';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'; // Importe o locale para português brasileiro
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { NewTransaction } from './newTransactionModal';
+import { TransactionSchemaType } from '../schemas/transactions';
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);
 
 interface TransactionListByDayProps {
-    transactions: NewTransaction[];
+    transactions: TransactionSchemaType[];
 }
 
 // Agrupa as transações por dia
 const TransactionListByDay: React.FC<TransactionListByDayProps> = ({ transactions }) => {
     // Agrupa as transações por dia
-    const transactionsByDay: { [key: string]: NewTransaction[] } = transactions.reduce((acc: { [key: string]: NewTransaction[] }, transaction) => {
+    const transactionsByDay: { [key: string]: TransactionSchemaType[] } = transactions.reduce((acc: { [key: string]: TransactionSchemaType[] }, transaction) => {
         const date = transaction.date;
         const formattedDate = dayjs(date).format('YYYY-MM-DD'); // Formata a data para uma chave consistente
         if (!acc[formattedDate]) {

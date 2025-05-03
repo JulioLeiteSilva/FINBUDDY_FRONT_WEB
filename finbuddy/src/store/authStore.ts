@@ -1,14 +1,14 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
 import { auth } from '../services/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 type AuthState = {
-    user: any;  // Dados do usuário (pode ser o objeto completo do Firebase)
+    user: User | null;  // Dados do usuário (pode ser o objeto completo do Firebase)
     token: string | null;  // O token de autenticação
-    login: (user: any, token: string) => void;  // Função de login
+    login: (user: User, token: string) => void;  // Função de login
     logout: () => void;  // Função de logout
-    setUser: (user: any) => void;  // Função para definir o usuário
+    setUser: (user: User | null) => void;  // Função para definir o usuário
     setToken: (token: string) => void;  // Função para definir o token
 };
 

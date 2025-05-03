@@ -1,11 +1,10 @@
 import { createUserWithEmailAndPassword, User } from "firebase/auth";
 import { auth, functions } from "../firebase";
 import { httpsCallable } from "firebase/functions";
+import { RegisterSchemaType } from "../../schemas/auth";
 
 export const Register = async (
-    email: string,
-    name: string,
-    password: string,
+    data: RegisterSchemaType,
     login: (user: User, token: string) => void,
     startLoading: () => void,
     stopLoading: () => void
@@ -14,7 +13,7 @@ export const Register = async (
     startLoading();
     try {
         // 1. Cria o usuário no Firebase Auth
-        const result = await createUserWithEmailAndPassword(auth, email, password);
+        const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = result.user;
         const token = await user.getIdToken();
 
@@ -25,7 +24,7 @@ export const Register = async (
         const createUserFn = httpsCallable(functions, 'user-preRegisterUser');
 
         const response = await createUserFn({
-            name: name, // Use o nome do formulário validado
+            name: data.name, // Use o nome do formulário validado
         });
 
         console.log('Usuário criado na função:', response.data);

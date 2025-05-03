@@ -45,9 +45,7 @@ const RegisterPage = () => {
     startLoading();
     try {
       Register(
-        data.email,
-        data.name,
-        data.password,
+        data,
         login,
         startLoading,
         stopLoading

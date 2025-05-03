@@ -3,23 +3,24 @@ import TransactionListByDay from "../../components/transactionListByDay";
 import { useMemo, useState } from "react";
 import { useTransactionsStore } from "../../store/transactionStore";
 
-type TransactionType = 'all' | 'income' | 'expense';
+type TransactionType = 'all' | 'INCOME' | 'EXPENSE';
 
 const TransactionsPage = () => {
-    const transactions = useTransactionsStore((state) => state.transactions);
+    const { transactions } = useTransactionsStore();
     const [filterType, setFilterType] = useState<TransactionType>('all');
     const [searchText, setSearchText] = useState<string>('');
+
 
     const filteredTransactions = useMemo(() => {
         return transactions.filter(transaction => {
             const matchesFilter =
                 filterType === 'all' ||
-                (filterType === 'income' && transaction.amount > 0) ||
-                (filterType === 'expense' && transaction.amount < 0);
+                (filterType === 'INCOME' && transaction.type === 'INCOME') ||
+                (filterType === 'EXPENSE' && transaction.type === 'EXPENSE');
 
             const matchesSearch =
                 searchText === '' ||
-                transaction.description.toLowerCase().includes(searchText.toLowerCase());
+                transaction.name.toLowerCase().includes(searchText.toLowerCase());
 
             return matchesFilter && matchesSearch;
         });
@@ -53,10 +54,10 @@ const TransactionsPage = () => {
                         <Button onClick={() => handleFilterChange('all')} disabled={filterType === 'all'}>
                             Todas
                         </Button>
-                        <Button onClick={() => handleFilterChange('income')} disabled={filterType === 'income'}>
+                        <Button onClick={() => handleFilterChange('INCOME')} disabled={filterType === 'INCOME'}>
                             Receitas
                         </Button>
-                        <Button onClick={() => handleFilterChange('expense')} disabled={filterType === 'expense'}>
+                        <Button onClick={() => handleFilterChange('EXPENSE')} disabled={filterType === 'EXPENSE'}>
                             Despesas
                         </Button>
                     </ButtonGroup>
