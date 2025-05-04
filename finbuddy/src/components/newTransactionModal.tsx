@@ -31,6 +31,16 @@ interface NewTransactionModalProps {
     onCreateNew: (newTransaction: TransactionRequestDTOSchemaType) => void;
 }
 
+const frequencyMap: Record<string, string> = {
+    WEEKLY: "Semanal",
+    BIWEEKLY: "Bi-semanal",
+    MONTHLY: "Mensal",
+    BIMONTHLY: "Bimestral",
+    QUARTERLY: "Trimestral",
+    SEMIANNUALLY: "Semestral",
+    ANNUALLY: "Anualmente",
+};
+
 const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onCreateNew }) => {
     const {
         register,
@@ -242,7 +252,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onCr
                                         >
                                             {Object.values(TransactionFrequency).map((freq) => (
                                                 <MenuItem key={freq} value={freq}>
-                                                    {freq}
+                                                    {frequencyMap[freq]}
                                                 </MenuItem>
                                             ))}
                                         </Select>

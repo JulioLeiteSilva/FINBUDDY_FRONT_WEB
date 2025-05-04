@@ -40,6 +40,21 @@ interface TransactionDetailsModalProps {
     onUpdate: (updatedTransaction: TransactionRequestDTOSchemaType) => void;
 }
 
+const frequencyMap: Record<string, string> = {
+    WEEKLY: "Semanal",
+    BIWEEKLY: "Bi-semanal",
+    MONTHLY: "Mensal",
+    BIMONTHLY: "Bimestral",
+    QUARTERLY: "Trimestral",
+    SEMIANNUALLY: "Semestral",
+    ANNUALLY: "Anualmente",
+};
+
+const typeMap: Record<string, string> = {
+    INCOME: "Receita",
+    EXPENSE: "Despesa",
+};
+
 const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
     transaction,
     open,
@@ -119,12 +134,12 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
                         <Typography variant="body1"><strong>Categoria:</strong> {transaction.category}</Typography>
                         <Typography variant="body1"><strong>Valor:</strong> {transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Typography>
                         <Typography variant="body1"><strong>Data:</strong> {dayjs((transaction.date as unknown as dateType)._seconds * 1000).format('DD/MM/YYYY')}</Typography>
-                        <Typography variant="body1"><strong>Tipo:</strong> {transaction.type}</Typography>
+                        <Typography variant="body1"><strong>Tipo:</strong> {transaction.type ? typeMap[transaction.type] : '-'}</Typography>
                         <Typography variant="body1"><strong>Pago:</strong> {transaction.isPaid ? 'Sim' : 'Não'}</Typography>
                         <Typography variant="body1"><strong>Recorrente:</strong> {transaction.isRecurring ? 'Sim' : 'Não'}</Typography>
                         {transaction.isRecurring && (
                             <>
-                                <Typography variant="body1"><strong>Frequência:</strong> {transaction.frequency}</Typography>
+                                <Typography variant="body1"><strong>Frequência:</strong> {transaction.frequency ? frequencyMap[transaction.frequency] : '-'}</Typography>
                                 <Typography variant="body1"><strong>Início:</strong> {transaction.startDate ? dayjs((transaction.startDate as unknown as dateType)._seconds * 1000).format('DD/MM/YYYY') : '-'}</Typography>
                                 <Typography variant="body1"><strong>Fim:</strong> {transaction.endDate ? dayjs((transaction.endDate as unknown as dateType)._seconds * 1000).format('DD/MM/YYYY') : '-'}</Typography>
                             </>
@@ -285,7 +300,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
                                                 >
                                                     {Object.values(TransactionFrequency).map((freq) => (
                                                         <MenuItem key={freq} value={freq}>
-                                                            {freq}
+                                                            {frequencyMap[freq]}
                                                         </MenuItem>
                                                     ))}
                                                 </Select>
