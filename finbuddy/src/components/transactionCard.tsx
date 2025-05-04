@@ -5,6 +5,7 @@ import 'dayjs/locale/pt-br';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { TransactionRequestDTOSchemaType, TransactionSchemaType } from '../schemas/transactions';
 import TransactionDetailsModal from '../pages/Transactions/components/TransactionsDetailsModal'; // ajuste o path!
+import { DeleteTransaction, UpdateTransaction } from '../services/Transactions';
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);
@@ -28,16 +29,18 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
   const date: dateType = transaction.date as unknown as dateType;
   const formattedDate = dayjs(date._seconds * 1000).format('DD/MM/YYYY');
 
-  const handleDelete = (id: string) => {
-    console.log('Deletar:', id);
+  const handleDelete = async (id: string) => {
+    await DeleteTransaction(id);
     setOpenModal(false);
     // Aqui você pode chamar sua lógica real de deletar
   };
 
-  const handleUpdate = (updatedTransaction: TransactionRequestDTOSchemaType) => {
-    console.log('Atualizar:', updatedTransaction);
+  const handleUpdate = async (updatedTransaction: TransactionRequestDTOSchemaType) => {
+    await UpdateTransaction({
+      ...updatedTransaction,     // todos os novos campos
+      id: transaction.id,        // adiciona o id da transação que está sendo editada
+    });
     setOpenModal(false);
-    // Aqui você pode chamar sua lógica real de update
   };
 
   return (
