@@ -14,12 +14,17 @@ interface TransactionListByDayProps {
     transactions: TransactionSchemaType[];
 }
 
+type dateType = {
+    _seconds: number;
+    _nanoseconds: number;
+};
+
 // Agrupa as transações por dia
 const TransactionListByDay: React.FC<TransactionListByDayProps> = ({ transactions }) => {
     // Agrupa as transações por dia
     const transactionsByDay: { [key: string]: TransactionSchemaType[] } = transactions.reduce((acc: { [key: string]: TransactionSchemaType[] }, transaction) => {
-        const date = transaction.date;
-        const formattedDate = dayjs(date).format('YYYY-MM-DD'); // Formata a data para uma chave consistente
+        const date : dateType = transaction.date as unknown as dateType;
+        const formattedDate = dayjs(date._seconds * 1000).format('YYYY-MM-DD'); // Formata a data para uma chave consistente
         if (!acc[formattedDate]) {
             acc[formattedDate] = [];
         }

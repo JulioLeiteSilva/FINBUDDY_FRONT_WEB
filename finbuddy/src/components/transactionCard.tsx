@@ -12,12 +12,18 @@ interface TransactionCardProps {
   transaction: TransactionSchemaType;
 }
 
+type dateType = {
+  _seconds: number;
+  _nanoseconds: number;
+};
+
 const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
   const formattedAmount = transaction.value.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   });
-  const formattedDate = dayjs(transaction.date).format('DD/MM/YYYY');
+  const date : dateType = transaction.date as unknown as dateType;
+  const formattedDate = dayjs(date._seconds * 1000).format('DD/MM/YYYY');
 
   return (
     <Card sx={{ mb: 1 }}>

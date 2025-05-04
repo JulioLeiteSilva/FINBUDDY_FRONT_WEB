@@ -8,7 +8,7 @@ import Content from '../components/content';
 import TransactionsPage from '../pages/Transactions';
 import { useState, useEffect, useCallback } from 'react';
 import NewTransactionModal from '../components/newTransactionModal';
-import { CreateTransaction } from '../services/Transactions/createTransaction';
+import { CreateTransaction } from '../services/Transactions';
 import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
 
 
