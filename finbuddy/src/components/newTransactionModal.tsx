@@ -17,6 +17,7 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
+    InputAdornment,
 } from '@mui/material';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,7 +54,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onCr
         defaultValues: {
             name: '',
             category: '',
-            value: 0,
+            value: 1,
             date: new Date(),
             type: 'EXPENSE',
             isRecurring: false,
@@ -117,6 +118,11 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClose, onCr
                     {...register('value', { valueAsNumber: true })}
                     error={!!errors.value}
                     helperText={errors.value?.message}
+                    slotProps={{
+                        input: {
+                            startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                        },
+                    }}
                 />
 
                 <TextField

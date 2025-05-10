@@ -5,7 +5,7 @@ import { firestoreIdSchema } from '../common/firestoreSchemas';
 export const TransactionRequestDTOSchema = z.object({
     name: z.string().min(1),
     category: z.string().min(1),
-    value: z.number(),
+    value: z.number().gt(0, { message: "O valor deve ser maior que zero" }),
     date: z.date(),
     type: z.enum(['INCOME', 'EXPENSE']),
     isRecurring: z.boolean(),
