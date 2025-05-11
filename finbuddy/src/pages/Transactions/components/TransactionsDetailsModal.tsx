@@ -92,7 +92,6 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
 
     useEffect(() => {
         fetchBankAccounts();
-        // Reseta os dados sempre que abrir ou mudar a transação
         if (transaction) {
             reset({
                 name: transaction.name,

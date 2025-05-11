@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback } from 'react';
 import NewTransactionModal from '../components/newTransactionModal';
 import { CreateTransaction } from '../services/Transactions';
 import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
+import BankAccountsPage from '../pages/BankAccount';
 
 
 const PrivateRoutes = () => {
@@ -38,7 +39,9 @@ const PrivateRoutes = () => {
       case '/transactions':
         setTitle('Transações');
         break;
-      // Adicione mais casos conforme suas rotas
+      case '/bank-accounts':
+        setTitle('Contas');
+        break;
       default:
         setTitle('Página não encontrada'); // Ou um título padrão
         break;
@@ -52,6 +55,7 @@ const PrivateRoutes = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/bank-accounts" element={<BankAccountsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
