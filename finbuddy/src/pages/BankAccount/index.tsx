@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Search, Add } from "@mui/icons-material";
 import {
     Box,
@@ -14,11 +15,16 @@ import { useEffect, useMemo, useState } from "react";
 import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useTransactionsStore } from "../../store/transactionStore";
 import BankAccountList from "./components/bankAccountList";
+import NewBankAccountModal from "./components/newBankAccountModal"; // ajuste o caminho conforme sua pasta
+import { CreateBankAccountDTOSchemaType } from "../../schemas/BankAccount";
+import { CreateBankAccount } from "../../services/BankAccount";
+
 
 const BankAccountsPage = () => {
     const { bankAccounts, isLoading, fetchBankAccounts } = useBankAccountStore();
     const { transactions, fetchTransactions } = useTransactionsStore();
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +32,12 @@ const BankAccountsPage = () => {
     };
 
     const handleAddAccount = () => {
-        console.log("Adicionar nova conta");
+        setIsModalOpen(true);
+    };
+
+    const handleCreateNewAccount = (newAccount: CreateBankAccountDTOSchemaType) => {
+        CreateBankAccount(newAccount);
+        setIsModalOpen(false);
     };
 
     useEffect(() => {
@@ -133,6 +144,12 @@ const BankAccountsPage = () => {
                     )}
                 </CardContent>
             </Card>
+            {isModalOpen && (
+                <NewBankAccountModal
+                    onClose={() => setIsModalOpen(false)}
+                    onCreateNew={handleCreateNewAccount}
+                />
+            )}
         </Box>
     );
 };
