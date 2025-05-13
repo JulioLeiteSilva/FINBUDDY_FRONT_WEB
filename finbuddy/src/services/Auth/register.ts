@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createUserWithEmailAndPassword, User } from "firebase/auth";
 import { auth, functions } from "../firebase";
 import { httpsCallable } from "firebase/functions";
 import { RegisterSchemaType } from "../../schemas/auth";
+import { useSnackbarStore } from "../../store/useSnackbarStore";
+import { getFirebaseAuthErrorMessage } from '../../utils/firebaseErrorMenssages';
 
 export const Register = async (
     data: RegisterSchemaType,
@@ -9,6 +12,7 @@ export const Register = async (
     startLoading: () => void,
     stopLoading: () => void
 ) => {
+    const { showSnackbar } = useSnackbarStore.getState();
 
     startLoading();
     try {
@@ -22,16 +26,16 @@ export const Register = async (
 
         // 3. Chama a função `createUser` (Cloud Function)
         const createUserFn = httpsCallable(functions, 'user-preRegisterUser');
-
-        const response = await createUserFn({
-            name: data.name, // Use o nome do formulário validado
-        });
+        const response = await createUserFn({ name: data.name });
 
         console.log('Usuário criado na função:', response.data);
+        showSnackbar('Cadastro realizado com sucesso!', 'success');
     } catch (error) {
+        const errorCode = (error as any)?.code || 'unknown';
+        const message = getFirebaseAuthErrorMessage(errorCode);
+        showSnackbar(message, 'error');
         console.error('Erro ao registrar:', error);
-        // Aqui você pode adicionar lógica para exibir mensagens de erro ao usuário
     } finally {
-        stopLoading(); // Finaliza o loading, independentemente do resultado
+        stopLoading();
     }
-}
+};

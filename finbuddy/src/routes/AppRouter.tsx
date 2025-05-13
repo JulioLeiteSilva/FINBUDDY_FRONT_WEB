@@ -2,13 +2,17 @@
 import { useAuthStore } from '../store/authStore';
 import AuthRoutes from './AuthRoutes';
 import PrivateRoutes from './PrivateRoutes';
+import GlobalSnackbar from '../components/GlobalSnackbar'; // Certifique-se de ajustar o caminho conforme necessário
 
 const AppRouter = () => {
   const { user } = useAuthStore();
 
-  // Se houver usuário autenticado, carrega as rotas privadas
-  // Senão, carrega as rotas públicas (auth)
-  return user ? <PrivateRoutes /> : <AuthRoutes />;
+  return (
+    <>
+      <GlobalSnackbar />
+      {user ? <PrivateRoutes /> : <AuthRoutes />}
+    </>
+  );
 };
 
 export default AppRouter;
