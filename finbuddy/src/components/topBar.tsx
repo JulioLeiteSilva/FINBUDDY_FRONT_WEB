@@ -4,15 +4,32 @@ import { deepPurple } from '@mui/material/colors';
 import { useSideBarStore } from '../store/sideBarStore';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useAuthStore } from '../store/authStore';
 
 interface TopBarProps {
     onOpenNewTransactionModal: () => void;
 }
 
 const TopBar: React.FC<TopBarProps> = ({ onOpenNewTransactionModal }) => {
+    const { user } = useAuthStore();
     const { toggleSideBarCollapsed, isSideBarCollapsed } = useSideBarStore();
     const theme = useTheme();
     const drawerWidth = isSideBarCollapsed ? theme.spacing(5) : theme.spacing(22);
+
+    const getInitials = (email: string | null): string => {
+        if (!email) {
+            return '??';
+        }
+        const emailParts = email.split('@')[0];
+        if (emailParts.length >= 2) {
+            return emailParts.substring(0, 2).toUpperCase();
+        } else if (emailParts.length === 1) {
+            return emailParts.toUpperCase();
+        }
+        return email.substring(0, Math.min(email.length, 2)).toUpperCase();
+    };
+
+    const userInitials = user ? getInitials(user.email) : '??';
 
     return (
         <AppBar
@@ -38,7 +55,7 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenNewTransactionModal }) => {
                         Nova Transação
                     </Button>
                     <IconButton color="inherit">
-                        <Avatar sx={{ bgcolor: deepPurple[500] }}>OP</Avatar>
+                        <Avatar sx={{ bgcolor: deepPurple[500] }}>{userInitials}</Avatar>
                     </IconButton>
                 </Box>
             </Toolbar>

@@ -1,17 +1,19 @@
 import { create } from 'zustand';
-import { TransactionSchemaType } from '../schemas/transactions';
+import { TransactionSchemaType, TransactionsResponseDTOSchemaType } from '../schemas/transactions';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../services/firebase';
 
 
 interface TransactionsState {
   transactions: TransactionSchemaType[];
+  message: string;
   isLoading: boolean;
   fetchTransactions: () => Promise<void>;
 }
 
 export const useTransactionsStore = create<TransactionsState>((set) => ({
   transactions: [],
+  message: '',
   isLoading: false,
 
   fetchTransactions: async () => {
@@ -19,10 +21,11 @@ export const useTransactionsStore = create<TransactionsState>((set) => ({
     try {
       const getAllTransactionsFn = httpsCallable(functions, 'transaction-getAllTransactions');
       const response = await getAllTransactionsFn();
-      console.log(response);
+      const getAllTransactionsResponse = response.data as unknown as TransactionsResponseDTOSchemaType;
 
       set({
-        transactions: response.data as TransactionSchemaType[],
+        transactions: getAllTransactionsResponse.transactions as TransactionSchemaType[],
+        message: getAllTransactionsResponse.message,
       });
     } catch (error) {
       console.error('Erro ao pegar todas as transações:', error);
