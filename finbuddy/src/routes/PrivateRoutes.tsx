@@ -11,6 +11,7 @@ import NewTransactionModal from '../components/newTransactionModal';
 import { CreateTransaction } from '../services/Transactions';
 import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
 import BankAccountsPage from '../pages/BankAccount';
+import CategoriesPage from '../pages/Categories';
 
 
 const PrivateRoutes = () => {
@@ -42,6 +43,9 @@ const PrivateRoutes = () => {
       case '/bank-accounts':
         setTitle('Contas');
         break;
+      case '/categories':
+        setTitle('Categorias');
+        break;
       default:
         setTitle('Página não encontrada'); // Ou um título padrão
         break;
@@ -56,6 +60,7 @@ const PrivateRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/bank-accounts" element={<BankAccountsPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>

@@ -8,6 +8,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { useSideBarStore } from "../store/sideBarStore";
 import FinbuddyLogoHeaderCollapsed from "./finbuddyLogoHeaderCollapsed";
 import { NavLink } from "react-router-dom";
+import { Category } from "@mui/icons-material";
 
 
 const SideBar = () => {
@@ -91,6 +92,58 @@ const SideBar = () => {
                 </ListItem>
                 <ListItem disablePadding sx={{ display: 'block' }}>
                     <NavLink
+                        to="/bank-accounts"
+                        className={({ isActive }) => isActive ? 'active' : ''}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                        <ListItemButton
+                            sx={{
+                                minHeight: 48,
+                                justifyContent: isSideBarCollapsed ? 'center' : 'initial',
+                                px: 2.5,
+                            }}
+                        >
+                            <ListItemIcon
+                                sx={{
+                                    minWidth: 0,
+                                    mr: isSideBarCollapsed ? 'auto' : 3,
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <AccountBalanceIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Contas Bancárias" sx={{ opacity: isSideBarCollapsed ? 0 : 1 }} />
+                        </ListItemButton>
+                    </NavLink>
+                </ListItem>
+                <ListItem disablePadding sx={{ display: 'block' }}>
+                    <NavLink
+                        to="/categories"
+                        className={({ isActive }) => isActive ? 'active' : ''}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                        <ListItemButton
+                            sx={{
+                                minHeight: 48,
+                                justifyContent: isSideBarCollapsed ? 'center' : 'initial',
+                                px: 2.5,
+                            }}
+                        >
+                            <ListItemIcon
+                                sx={{
+                                    minWidth: 0,
+                                    mr: isSideBarCollapsed ? 'auto' : 3,
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Category />
+                            </ListItemIcon>
+                            <ListItemText primary="Categorias" sx={{ opacity: isSideBarCollapsed ? 0 : 1 }} />
+                        </ListItemButton>
+                    </NavLink>
+                </ListItem>
+                <ListItem disablePadding sx={{ display: 'block' }}>
+                    <NavLink
                         to="/transactions"
                         className={({ isActive }) => isActive ? 'active' : ''}
                         style={{ textDecoration: 'none', color: 'inherit' }}
@@ -164,32 +217,6 @@ const SideBar = () => {
                                 <TrendingUpIcon />
                             </ListItemIcon>
                             <ListItemText primary="Dashboards" sx={{ opacity: isSideBarCollapsed ? 0 : 1 }} />
-                        </ListItemButton>
-                    </NavLink>
-                </ListItem>
-                <ListItem disablePadding sx={{ display: 'block' }}>
-                    <NavLink
-                        to="/bank-accounts"
-                        className={({ isActive }) => isActive ? 'active' : ''}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                    >
-                        <ListItemButton
-                            sx={{
-                                minHeight: 48,
-                                justifyContent: isSideBarCollapsed ? 'center' : 'initial',
-                                px: 2.5,
-                            }}
-                        >
-                            <ListItemIcon
-                                sx={{
-                                    minWidth: 0,
-                                    mr: isSideBarCollapsed ? 'auto' : 3,
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <AccountBalanceIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Contas Bancárias" sx={{ opacity: isSideBarCollapsed ? 0 : 1 }} />
                         </ListItemButton>
                     </NavLink>
                 </ListItem>
