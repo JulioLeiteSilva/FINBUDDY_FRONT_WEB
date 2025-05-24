@@ -7,7 +7,7 @@ import { SideBar } from '../components/';
 import { Content }  from '../components';
 import TransactionsPage from '../pages/Transactions';
 import { useState, useEffect, useCallback } from 'react';
-import NewTransactionModal from '../components/newTransactionModal';
+import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
 import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
 import BankAccountsPage from '../pages/BankAccount';
