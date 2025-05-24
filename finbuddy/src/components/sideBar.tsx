@@ -7,7 +7,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { useSideBarStore } from "../store/sideBarStore";
 import { NavLink } from "react-router-dom";
 import { Category } from "@mui/icons-material";
-import { FinbuddyLogoHeader, FinbuddyLogoHeaderCollapsed } from "./Images";
+import { FinbuddyLogoHeader, FinbuddyLogoHeaderCollapsed } from "./";
 
 
 const SideBar = () => {

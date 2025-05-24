@@ -22,7 +22,7 @@ import { useLoadingStore } from '../../../store/loadingStore';
 import { authPageContainerSx, authPageBackgroundSx, authContentContainerSx, authCardContainerSx, authCardPaperSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authFormStackSx, authTextFieldSx, authButtonSx, authFooterTypographySx, authFooterLinkSx } from '../authStyles';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 import { Register } from '../../../services/Auth';
-import { FinbuddyLogoHeader } from '../../../components/Images';
+import { FinbuddyLogoHeader } from '../../../components/';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);

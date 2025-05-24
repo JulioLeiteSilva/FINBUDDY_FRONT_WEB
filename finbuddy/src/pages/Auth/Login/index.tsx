@@ -22,7 +22,7 @@ import { useLoadingStore } from '../../../store/loadingStore';
 import { authButtonSx, authCardContainerSx, authCardPaperSx, authContentContainerSx, authFooterLinkSx, authFooterTypographySx, authFormStackSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authPageBackgroundSx, authPageContainerSx, authTextFieldSx } from '../authStyles';
 import { Login } from '../../../services/Auth';
 import { useAuthStore } from '../../../store/authStore';
-import { FinbuddyLogoHeader } from '../../../components/Images';
+import { FinbuddyLogoHeader } from '../../../components';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
