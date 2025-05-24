@@ -40,11 +40,11 @@ const LoginPage = () => {
       password: '',
     },
   });
-  const {  startLoading, stopLoading, isLoading } = useLoadingStore();
+  const { startLoading, stopLoading, isLoading } = useLoadingStore();
 
   const onSubmit = async (data: LoginSchemaType) => {
     try {
-       await Login(data.email, data.password, login, startLoading, stopLoading);
+      await Login(data.email, data.password, login, startLoading, stopLoading);
       navigate('/');
     } catch (err) {
       console.error('Erro ao logar:', err);
@@ -80,17 +80,19 @@ const LoginPage = () => {
                 variant="outlined"
                 fullWidth
                 size="medium"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }
                 }}
                 {...register('password')}
                 error={!!errors.password}
