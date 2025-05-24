@@ -1,7 +1,7 @@
 import { Alert, Snackbar } from '@mui/material';
-import { useSnackbarStore } from '../store/useSnackbarStore';
+import { useSnackbarStore } from '../../store/useSnackbarStore';
 
-const GlobalSnackbar = () => {
+export const GlobalSnackbar = () => {
     const { open, message, type, closeSnackbar } = useSnackbarStore();
 
     return (
@@ -17,5 +17,3 @@ const GlobalSnackbar = () => {
         </Snackbar>
     );
 };
-
-export default GlobalSnackbar;
