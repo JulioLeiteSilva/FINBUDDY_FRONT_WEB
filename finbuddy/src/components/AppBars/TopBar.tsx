@@ -1,10 +1,10 @@
 import { AppBar, Avatar, Box, Button, IconButton, Toolbar, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { deepPurple } from '@mui/material/colors';
-import { useSideBarStore } from '../store/sideBarStore';
+import { useSideBarStore } from '../../store/sideBarStore';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../../store/authStore';
 
 interface TopBarProps {
     onOpenNewTransactionModal: () => void;

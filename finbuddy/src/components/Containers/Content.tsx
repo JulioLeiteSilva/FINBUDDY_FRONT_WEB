@@ -1,7 +1,7 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { ReactNode } from "react";
-import TopBar from "./topBar";
-import { useSideBarStore } from "../store/sideBarStore";
+import { TopBar } from "../";
+import { useSideBarStore } from "../../store/sideBarStore";
 import React from "react";
 
 interface PanelContentProps {
@@ -18,7 +18,7 @@ const Content = (props: PanelContentProps) => {
 
     const contentWidth = React.useMemo(() => {
         return `calc(100% - ${drawerWidth})`;
-    }, [isSideBarCollapsed]);
+    }, [drawerWidth]);
     console.log('Content width:', contentWidth);
     return (
         <Box component="main" >
