@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Card, CardContent, InputAdornment, Skeleton, TextField, Typography } from "@mui/material";
-import TransactionListByDay from "../../components/transactionListByDay";
+import TransactionListByDay from "./components/TransactionListByDay";
 import { useMemo, useState, useEffect } from "react";
 import { useTransactionsStore } from "../../store/transactionStore";
 import { Search } from "@mui/icons-material";

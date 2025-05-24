@@ -1,11 +1,11 @@
 import React from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, Typography, List } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import TransactionCard from './transactionCard';
+import TransactionCard from './TransactionCard';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'; // Importe o locale para português brasileiro
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { TransactionSchemaType } from '../schemas/Transactions';
+import { TransactionSchemaType } from '../../../schemas/Transactions';
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);

@@ -3,9 +3,9 @@ import { Card, CardContent, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { TransactionRequestDTOSchemaType, TransactionSchemaType } from '../schemas/Transactions';
-import TransactionDetailsModal from '../pages/Transactions/components/TransactionsDetailsModal'; // ajuste o path!
-import { DeleteTransaction, UpdateTransaction } from '../services/Transactions';
+import { TransactionRequestDTOSchemaType, TransactionSchemaType } from '../../../schemas/Transactions';
+import TransactionDetailsModal from './TransactionsDetailsModal';
+import { DeleteTransaction, UpdateTransaction } from '../../../services/Transactions';
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);
