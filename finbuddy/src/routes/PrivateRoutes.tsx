@@ -9,7 +9,7 @@ import TransactionsPage from '../pages/Transactions';
 import { useState, useEffect, useCallback } from 'react';
 import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
-import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
+import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
 import BankAccountsPage from '../pages/BankAccount';
 import CategoriesPage from '../pages/Categories';
 

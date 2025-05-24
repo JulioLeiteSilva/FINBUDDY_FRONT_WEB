@@ -5,7 +5,7 @@ import TransactionCard from './transactionCard';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'; // Importe o locale para português brasileiro
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { TransactionSchemaType } from '../schemas/transactions';
+import { TransactionSchemaType } from '../schemas/Transactions';
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);

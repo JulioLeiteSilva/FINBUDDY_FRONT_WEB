@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, RegisterSchemaType } from '../../../schemas/auth';
+import { registerSchema, RegisterSchemaType } from '../../../schemas/Auth';
 
 import {
   Box,

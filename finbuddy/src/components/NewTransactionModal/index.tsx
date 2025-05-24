@@ -22,7 +22,7 @@ import {
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import { TransactionRequestDTOSchema, TransactionRequestDTOSchemaType } from '../../schemas/transactions';
+import { TransactionRequestDTOSchema, TransactionRequestDTOSchemaType } from '../../schemas/Transactions';
 import { useBankAccountStore } from '../../store/bankAccountStore';
 import { TransactionFrequency } from '../../enums/'; // ajuste o path conforme seu projeto
 import { Grid } from '@mui/material';

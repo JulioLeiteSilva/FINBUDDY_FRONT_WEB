@@ -9,7 +9,7 @@ import { CreateBankAccountDTOSchemaType } from "../../../schemas/BankAccount";
 import { AccountType, getAccountTypeLabel } from "../../../enums/accountType";
 import { useBanks } from "../../../hooks/useBanks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateBankAccountDTOSchema } from "../../../schemas/BankAccount/createBankAccountDTOSchema";
+import { CreateBankAccountDTOSchema } from "../../../schemas/BankAccount/CreateBankAccountDTOSchema";
 
 interface NewBankAccountModalProps {
     onClose: () => void;

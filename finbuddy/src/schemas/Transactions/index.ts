@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { TransactionSchema } from './transactionsSchema';
-import { TransactionRequestDTOSchema } from './transactionRequestDTOSchema';
-import { TransactionsResponseDTOSchema } from './transactionsResponseDTOSchema';
+import { TransactionSchema } from './TransactionsSchema';
+import { TransactionRequestDTOSchema } from './TransactionRequestDTOSchema';
+import { TransactionsResponseDTOSchema } from './TransactionsResponseDTOSchema';
 
 export { TransactionSchema, TransactionRequestDTOSchema, TransactionsResponseDTOSchema };
 

@@ -11,7 +11,7 @@ import {
 } from "@mui/icons-material"; // Ícones ainda necessários para ações diretas
 
 // Importe o seu schema, store e service
-import { CategorySchemaType } from "../../schemas/categories"; // Ajuste o caminho
+import { CategorySchemaType } from "../../schemas/Categories"; // Ajuste o caminho
 import { useCategoriesStore } from "../../store/categoriesStore"; // Ajuste o caminho
 import { CreateCategory } from "../../services/Categories"; // Ajuste o caminho
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../services/firebase';
-import { CategorySchemaType } from '../schemas/categories';
+import { CategoriesResponseDTOSchemaType, CategorySchemaType } from '../schemas/Categories';
 
 interface CategoriesState {
     categories: CategorySchemaType[];
@@ -22,14 +22,14 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         try {
             const getAllCategoriesFn = httpsCallable(functions, 'category-getAllCategories');
             const responseAllCategories = await getAllCategoriesFn();
-            const getAllCategoriesResponse = responseAllCategories.data as unknown as CategorySchemaType[];
+            const getAllCategoriesResponse = responseAllCategories.data as unknown as CategoriesResponseDTOSchemaType;
 
             const getAllDefaultCategoriesFn = httpsCallable(functions, 'globalCategory-getAllDefaultCategories');
             const responseDefaultCategories = await getAllDefaultCategoriesFn();
             const getDefaultCategoriesResponse = responseDefaultCategories.data as unknown as CategorySchemaType[];
 
             set({
-                categories: getAllCategoriesResponse,
+                categories: getAllCategoriesResponse.categories,
                 defaultCategories: getDefaultCategoriesResponse,
                 message: "Sucesso ao pegar todas as categorias",
             });

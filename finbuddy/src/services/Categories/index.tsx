@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { CategoryRequestDTOSchemaType } from "../../schemas/categories";
+import { CategoryRequestDTOSchemaType } from "../../schemas/Categories";
 import { functions } from "../firebase";
 import { useCategoriesStore } from "../../store/categoriesStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";

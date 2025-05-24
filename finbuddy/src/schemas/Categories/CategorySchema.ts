@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { firestoreIdSchema } from '../common/firestoreSchemas';
+import { firestoreIdSchema } from '../Common/FirestoreSchemas';
 
 export const CategorySchema = z.object({
     id: firestoreIdSchema,

@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { TransactionFrequency } from '../../enums/';
-import { firestoreIdSchema } from '../common/firestoreSchemas';
+import { TransactionFrequency } from '../../enums';
+import { firestoreIdSchema } from '../Common/FirestoreSchemas';
 
-export const TransactionRequestDTOSchema = z.object({
+export const TransactionSchema = z.object({
+    id: firestoreIdSchema,
     name: z.string().min(1),
     category: z.string().min(1),
-    value: z.number().gt(0, { message: "O valor deve ser maior que zero" }),
+    value: z.number(),
     date: z.date(),
     type: z.enum(['INCOME', 'EXPENSE']),
     isRecurring: z.boolean(),

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { TransactionSchema } from '../transactions';
-import { firestoreIdSchema } from '../common/firestoreSchemas';
+import { TransactionSchema } from '../Transactions';
+import { firestoreIdSchema } from '../Common/FirestoreSchemas';
 import { AccountType } from '../../enums/accountType'; // ajuste o path conforme seu projeto
 
 export const BankAccountSchema = z.object({
