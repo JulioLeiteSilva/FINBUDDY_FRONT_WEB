@@ -1,14 +1,13 @@
 import { Drawer, Toolbar, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from "@mui/material"
-import FinbuddyLogoHeader from "./finbuddyLogoHeader"
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { useSideBarStore } from "../store/sideBarStore";
-import FinbuddyLogoHeaderCollapsed from "./finbuddyLogoHeaderCollapsed";
 import { NavLink } from "react-router-dom";
 import { Category } from "@mui/icons-material";
+import { FinbuddyLogoHeader, FinbuddyLogoHeaderCollapsed } from "./Images";
 
 
 const SideBar = () => {

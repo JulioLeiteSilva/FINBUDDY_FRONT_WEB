@@ -17,12 +17,12 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
-import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useLoadingStore } from '../../../store/loadingStore';
 import { authButtonSx, authCardContainerSx, authCardPaperSx, authContentContainerSx, authFooterLinkSx, authFooterTypographySx, authFormStackSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authPageBackgroundSx, authPageContainerSx, authTextFieldSx } from '../authStyles';
 import { Login } from '../../../services/Auth';
 import { useAuthStore } from '../../../store/authStore';
+import { FinbuddyLogoHeader } from '../../../components/Images';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
