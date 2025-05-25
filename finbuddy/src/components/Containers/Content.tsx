@@ -21,14 +21,14 @@ const Content = (props: PanelContentProps) => {
     }, [drawerWidth]);
     console.log('Content width:', contentWidth);
     return (
-        <Box component="main" >
+        <Box component="main" sx={{ width: '100%' }}>
             <TopBar onOpenNewTransactionModal={onOpenNewTransactionModal} />
             <Box
                 sx={{
                     mt: 10,
-                    ml: 5
+                    width: '100%',
                 }}>
-                <Typography variant="h4" component="div" sx={{ mb: 2 }}>
+                <Typography variant="h4" component="div" sx={{ mb: 2, ml: 5 }}>
                     {title}
                 </Typography>
                 {children}

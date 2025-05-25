@@ -65,9 +65,9 @@ export const CategoriesPage = () => {
 
     return (
         <Box sx={{ p: { xs: 2, md: 3 } }}>
-            <Card sx={{ maxWidth: 900, m: 'auto' }}>
+            <Card sx={{ m: 'auto' }}>
                 <CardContent>
-                    <Typography variant="h5" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 3 }}>
+                    <Typography variant="h5" component="h1" gutterBottom sx={{ mb: 3 }}>
                         Gerenciar Categorias
                     </Typography>
 

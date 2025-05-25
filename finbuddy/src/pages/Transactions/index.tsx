@@ -1,14 +1,16 @@
-import { Box, Button, ButtonGroup, Card, CardContent, InputAdornment, Skeleton, TextField, Typography } from "@mui/material";
-import TransactionListByDay from "./components/TransactionListByDay";
-import { useMemo, useState, useEffect } from "react";
-import { useTransactionsStore } from "../../store/transactionStore";
+// src/pages/Transactions/index.tsx (ou o caminho do seu arquivo)
+
+import React, { useMemo, useState, useEffect } from "react";
+import { Box, Button, ButtonGroup, Card, CardContent, InputAdornment, TextField, Typography } from "@mui/material";
+import TransactionListByDay from "./components/TransactionListByDay"; // Ajuste o caminho se necessário
+import { useTransactionsStore } from "../../store/transactionStore"; // Ajuste o caminho
 import { Search } from "@mui/icons-material";
 
-type TransactionType = 'all' | 'INCOME' | 'EXPENSE';
+type TransactionTypeFilter = 'all' | 'INCOME' | 'EXPENSE';
 
 const TransactionsPage = () => {
     const { transactions, isLoading, fetchTransactions } = useTransactionsStore();
-    const [filterType, setFilterType] = useState<TransactionType>('all');
+    const [filterType, setFilterType] = useState<TransactionTypeFilter>('all');
     const [searchText, setSearchText] = useState<string>('');
 
     useEffect(() => {
@@ -24,13 +26,14 @@ const TransactionsPage = () => {
 
             const matchesSearch =
                 searchText === '' ||
-                transaction.name.toLowerCase().includes(searchText.toLowerCase());
+                transaction.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                transaction.category.toLowerCase().includes(searchText.toLowerCase()); // Adicionado busca por categoria
 
             return matchesFilter && matchesSearch;
         });
     }, [transactions, filterType, searchText]);
 
-    const handleFilterChange = (newFilter: TransactionType) => {
+    const handleFilterChange = (newFilter: TransactionTypeFilter) => {
         setFilterType(newFilter);
     };
 
@@ -38,50 +41,56 @@ const TransactionsPage = () => {
         setSearchText(event.target.value);
     };
 
+    // Função que será chamada pelo TransactionListByDay para recarregar os dados
+    const handleDataChange = () => {
+        fetchTransactions();
+    };
+
     return (
-        <Box>
-            <Card sx={{ minWidth: 900, m: 5 }}>
+        <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}> {/* Padding responsivo */}
+            <Card sx={{ m: 'auto', overflow: 'visible' }}> {/* `overflow: 'visible'` pode ajudar com tooltips de botões */}
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant="h5" component="h1" gutterBottom sx={{ mb: 3 }}>
                         Histórico de Transações
                     </Typography>
-                    <TextField
-                        label="Pesquisar Transação"
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        margin="dense"
-                        value={searchText}
-                        onChange={handleSearchChange}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Search />
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                    <ButtonGroup variant="outlined" aria-label="transaction filter" sx={{ my: 2 }}>
-                        <Button onClick={() => handleFilterChange('all')} disabled={filterType === 'all'}>
-                            Todas
-                        </Button>
-                        <Button onClick={() => handleFilterChange('INCOME')} disabled={filterType === 'INCOME'}>
-                            Receitas
-                        </Button>
-                        <Button onClick={() => handleFilterChange('EXPENSE')} disabled={filterType === 'EXPENSE'}>
-                            Despesas
-                        </Button>
-                    </ButtonGroup>
 
-                    {isLoading ? (
-                        <>
-                            {[...Array(5)].map((_, idx) => (
-                                <Skeleton key={idx} variant="rectangular" height={60} sx={{ my: 1, borderRadius: 1 }} />
-                            ))}
-                        </>
-                    ) : (
-                        <TransactionListByDay transactions={filteredTransactions} />
-                    )}
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2, alignItems: 'center' }}>
+                        <TextField
+                            label="Pesquisar por nome ou categoria"
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            value={searchText}
+                            onChange={handleSearchChange}
+                            slotProps={{
+                                input: {
+                                    startAdornment: ( // Movido para startAdornment para melhor UX
+                                        <InputAdornment position="start">
+                                            <Search />
+                                        </InputAdornment>
+                                    ),
+                                }
+                            }}
+                            sx={{ flexGrow: 1 }}
+                        />
+                        <ButtonGroup variant="outlined" aria-label="Filtro de tipo de transação" size="small">
+                            <Button onClick={() => handleFilterChange('all')} variant={filterType === 'all' ? "contained" : "outlined"}>
+                                Todas
+                            </Button>
+                            <Button onClick={() => handleFilterChange('INCOME')} variant={filterType === 'INCOME' ? "contained" : "outlined"}>
+                                Receitas
+                            </Button>
+                            <Button onClick={() => handleFilterChange('EXPENSE')} variant={filterType === 'EXPENSE' ? "contained" : "outlined"}>
+                                Despesas
+                            </Button>
+                        </ButtonGroup>
+                    </Box>
+
+                    <TransactionListByDay
+                        transactions={filteredTransactions}
+                        isLoading={isLoading}
+                        onDataChange={handleDataChange}
+                    />
                 </CardContent>
             </Card>
         </Box>
