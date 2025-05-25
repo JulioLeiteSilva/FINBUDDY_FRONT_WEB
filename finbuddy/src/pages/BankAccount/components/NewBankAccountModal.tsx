@@ -72,8 +72,8 @@ const NewBankAccountModal: React.FC<NewBankAccountModalProps> = ({ onClose, onCr
                     {...register('balance', { valueAsNumber: true })}
                     error={!!errors.balance}
                     helperText={errors.balance?.message}
-                    InputProps={{
-                        startAdornment: <InputAdornment position="start">R$</InputAdornment>
+                    slotProps={{
+                        input: { startAdornment: <InputAdornment position="start">R$</InputAdornment> }
                     }}
                 />
                 <FormControl fullWidth margin="dense" error={!!errors.type}>

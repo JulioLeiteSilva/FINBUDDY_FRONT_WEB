@@ -124,12 +124,14 @@ const BankAccountsPage = () => {
                         margin="dense"
                         value={searchText}
                         onChange={handleSearchChange}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Search />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Search />
+                                    </InputAdornment>
+                                ),
+                            }
                         }}
                     />
 
