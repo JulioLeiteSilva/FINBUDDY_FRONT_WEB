@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, RegisterSchemaType } from '../../../schemas/auth';
+import { registerSchema, RegisterSchemaType } from '../../../schemas/Auth';
 
 import {
   Box,
@@ -18,11 +18,11 @@ import {
   IconButton,
   InputAdornment,
 } from '@mui/material';
-import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
 import { useLoadingStore } from '../../../store/loadingStore';
 import { authPageContainerSx, authPageBackgroundSx, authContentContainerSx, authCardContainerSx, authCardPaperSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authFormStackSx, authTextFieldSx, authButtonSx, authFooterTypographySx, authFooterLinkSx } from '../authStyles';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 import { Register } from '../../../services/Auth';
+import { FinbuddyLogoHeader } from '../../../components/';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -97,17 +97,19 @@ const RegisterPage = () => {
                 variant="outlined"
                 fullWidth
                 size="medium"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }
                 }}
                 {...register('password')}
                 error={!!errors.password}
@@ -120,17 +122,19 @@ const RegisterPage = () => {
                 variant="outlined"
                 fullWidth
                 size="medium"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowConfirmPassword((prev) => !prev)}
-                        edge="end"
-                      >
-                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword((prev) => !prev)}
+                          edge="end"
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }
                 }}
                 {...register('confirmPassword')}
                 error={!!errors.confirmPassword}

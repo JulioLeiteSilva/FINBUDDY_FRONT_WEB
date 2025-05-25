@@ -2,7 +2,7 @@
 import { useAuthStore } from '../store/authStore';
 import AuthRoutes from './AuthRoutes';
 import PrivateRoutes from './PrivateRoutes';
-import GlobalSnackbar from '../components/GlobalSnackbar'; // Certifique-se de ajustar o caminho conforme necessário
+import { GlobalSnackbar } from '../components/'; // Certifique-se de ajustar o caminho conforme necessário
 
 const AppRouter = () => {
   const { user } = useAuthStore();

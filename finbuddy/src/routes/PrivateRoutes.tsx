@@ -3,13 +3,13 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import { Box, Modal } from '@mui/material';
-import SideBar from '../components/sideBar';
-import Content from '../components/content';
+import { SideBar } from '../components/';
+import { Content }  from '../components';
 import TransactionsPage from '../pages/Transactions';
 import { useState, useEffect, useCallback } from 'react';
-import NewTransactionModal from '../components/newTransactionModal';
+import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
-import { TransactionRequestDTOSchemaType } from '../schemas/transactions';
+import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
 import BankAccountsPage from '../pages/BankAccount';
 import CategoriesPage from '../pages/Categories';
 

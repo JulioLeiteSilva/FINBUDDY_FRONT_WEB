@@ -2,7 +2,7 @@
 import { createUserWithEmailAndPassword, User } from "firebase/auth";
 import { auth, functions } from "../firebase";
 import { httpsCallable } from "firebase/functions";
-import { RegisterSchemaType } from "../../schemas/auth";
+import { RegisterSchemaType } from "../../schemas/Auth";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from '../../utils/firebaseErrorMenssages';
 

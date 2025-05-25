@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, LoginSchemaType } from '../../../schemas/auth';
+import { loginSchema, LoginSchemaType } from '../../../schemas/Auth';
 
 import {
   Box,
@@ -17,12 +17,12 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
-import FinbuddyLogoHeader from '../../../components/finbuddyLogoHeader';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useLoadingStore } from '../../../store/loadingStore';
 import { authButtonSx, authCardContainerSx, authCardPaperSx, authContentContainerSx, authFooterLinkSx, authFooterTypographySx, authFormStackSx, authLogoHeaderBoxSx, authLogoHeaderInnerBoxSx, authPageBackgroundSx, authPageContainerSx, authTextFieldSx } from '../authStyles';
 import { Login } from '../../../services/Auth';
 import { useAuthStore } from '../../../store/authStore';
+import { FinbuddyLogoHeader } from '../../../components';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,11 +40,11 @@ const LoginPage = () => {
       password: '',
     },
   });
-  const {  startLoading, stopLoading, isLoading } = useLoadingStore();
+  const { startLoading, stopLoading, isLoading } = useLoadingStore();
 
   const onSubmit = async (data: LoginSchemaType) => {
     try {
-       await Login(data.email, data.password, login, startLoading, stopLoading);
+      await Login(data.email, data.password, login, startLoading, stopLoading);
       navigate('/');
     } catch (err) {
       console.error('Erro ao logar:', err);
@@ -80,17 +80,19 @@ const LoginPage = () => {
                 variant="outlined"
                 fullWidth
                 size="medium"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }
                 }}
                 {...register('password')}
                 error={!!errors.password}

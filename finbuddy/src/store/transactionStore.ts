@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { TransactionSchemaType, TransactionsResponseDTOSchemaType } from '../schemas/transactions';
+import { TransactionSchemaType, TransactionsResponseDTOSchemaType } from '../schemas/Transactions';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../services/firebase';
 

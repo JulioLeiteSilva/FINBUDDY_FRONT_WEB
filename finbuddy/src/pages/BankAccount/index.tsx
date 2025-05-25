@@ -14,8 +14,8 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useTransactionsStore } from "../../store/transactionStore";
-import BankAccountList from "./components/bankAccountList";
-import NewBankAccountModal from "./components/newBankAccountModal"; // ajuste o caminho conforme sua pasta
+import BankAccountList from "./components/BankAccountList";
+import NewBankAccountModal from "./components/NewBankAccountModal"; // ajuste o caminho conforme sua pasta
 import { CreateBankAccountDTOSchemaType } from "../../schemas/BankAccount";
 import { CreateBankAccount } from "../../services/BankAccount";
 
@@ -124,12 +124,14 @@ const BankAccountsPage = () => {
                         margin="dense"
                         value={searchText}
                         onChange={handleSearchChange}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Search />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Search />
+                                    </InputAdornment>
+                                ),
+                            }
                         }}
                     />
 
