@@ -3,7 +3,7 @@ import { BankAccountSchemaType, UpdateBankAccountDTOSchemaType } from "../../../
 import { useTransactionsStore } from "../../../store/transactionStore";
 import { useMemo, useState } from "react";
 import { useBanks } from "../../../hooks/useBanks";
-import BankAccountDetailsModal from "./bankAccountDetailsModal"; // ajuste o path se necessário
+import { BankAccountDetailsModal } from "./BankAccountDetailsModal"; // ajuste o path se necessário
 import { DeleteBankAccount, UpdateBankAccount } from "../../../services/BankAccount";
 
 const BankAccountCard: React.FC<{ bankAccount: BankAccountSchemaType }> = ({ bankAccount }) => {

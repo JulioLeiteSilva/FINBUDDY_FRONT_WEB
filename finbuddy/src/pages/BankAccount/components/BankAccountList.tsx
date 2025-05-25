@@ -1,6 +1,6 @@
 import { List } from "@mui/material";
 import { BankAccountSchemaType } from "../../../schemas/BankAccount";
-import BankAccountCard from "./bankAccountCard";
+import BankAccountCard from "./BankAccountCard";
 
 interface BankAccountListProps {
     bankAccounts: BankAccountSchemaType[];
