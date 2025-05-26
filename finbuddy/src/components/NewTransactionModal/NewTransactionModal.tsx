@@ -10,7 +10,9 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TransactionRequestDTOSchema, TransactionRequestDTOSchemaType } from '../../schemas/Transactions';
 import { useBankAccountStore } from '../../store/bankAccountStore';
+import { useCategoriesStore } from '../../store/categoriesStore';
 import { TransactionForm } from './TransactionForm';
+import { CategorySchemaType } from '../../schemas/Categories';
 
 interface NewTransactionModalProps {
     onClose: () => void;
@@ -42,7 +44,13 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClos
         },
     });
 
+    const { categories, defaultCategories, fetchCategories } = useCategoriesStore();
+
     const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
+
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
 
     useEffect(() => {
         fetchBankAccounts();
@@ -70,6 +78,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClos
                     errors={errors}
                     isRecurring={!!isRecurring}
                     bankAccounts={bankAccounts}
+                    categories={([...categories, ...defaultCategories]) as CategorySchemaType[]}
                 />
             </DialogContent>
             <DialogActions>
