@@ -20,7 +20,7 @@ const SideBar = () => {
         { path: "/categories", text: "Categorias", icon: <Category /> },
         { path: "/transactions", text: "Transações", icon: <ReceiptLongIcon /> },
         { path: "/cards", text: "Cartões", icon: <CreditCardIcon /> },
-        { path: "/dashboards", text: "Dashboards", icon: <TrendingUpIcon /> },
+        { path: "/dashboard", text: "Dashboards", icon: <TrendingUpIcon /> },
     ];
 
     return (
