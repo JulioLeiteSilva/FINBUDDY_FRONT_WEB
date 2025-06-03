@@ -1,33 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, Typography, Box, Chip, Avatar } from '@mui/material';
 import { TransactionRequestDTOSchemaType, TransactionSchemaType } from '../../../schemas/Transactions';
-import { TransactionDetailsModal } from './TransactionDetailsModal'; // Ajuste o caminho
-import { DeleteTransaction, UpdateTransaction } from '../../../services/Transactions'; // Ajuste o caminho
-import GetMuiIcon from '../../../utils/getMuiIcon'; // Ajuste o caminho
-import { formatDate } from './TransactionDetailsModal/utils/transactionUtils'; // Reutilizando nosso utilitário
+import { TransactionDetailsModal } from './TransactionDetailsModal';
+import { DeleteTransaction, UpdateTransaction } from '../../../services/Transactions';
+import GetMuiIcon from '../../../utils/getMuiIcon';
+import { formatDate } from './TransactionDetailsModal/utils/transactionUtils';
+import { useCategoriesStore } from '../../../store/categoriesStore';
 
 interface TransactionCardProps {
   transaction: TransactionSchemaType;
-  onTransactionUpdate: () => void; // Callback para o pai atualizar a lista
+  onTransactionUpdate: () => void;
 }
 
 const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onTransactionUpdate }) => {
   const [openModal, setOpenModal] = useState(false);
+  const { categories, defaultCategories } = useCategoriesStore();
 
-  // Lógica de formatação
+  const categoryDisplayName = useMemo(() => {
+    const iconName = transaction.category;
+    if (!iconName) {
+      return 'Categoria';
+    }
+    console.log('Transaction Category:', iconName);
+    const allCategories = [...categories, ...defaultCategories];
+    console.log('All Categories:', allCategories);
+    const foundCategory = allCategories.find(cat => cat.icon === iconName);
+    return foundCategory ? foundCategory.name : iconName;
+  }, [transaction.category, categories, defaultCategories]);
+
   const formattedAmount = transaction.value.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   });
 
-  // Reutilizando o utilitário de data para um código mais limpo
   const formattedDate = formatDate(transaction.date);
 
-  // Lógica de manipulação de dados
   const handleDelete = async (id: string) => {
     await DeleteTransaction(id);
     setOpenModal(false);
-    onTransactionUpdate(); // Notifica o componente pai que uma atualização ocorreu
+    onTransactionUpdate();
   };
 
   const handleUpdate = async (updatedTransaction: TransactionRequestDTOSchemaType) => {
@@ -36,10 +47,9 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onTransa
       id: transaction.id,
     });
     setOpenModal(false);
-    onTransactionUpdate(); // Notifica o componente pai
+    onTransactionUpdate();
   };
 
-  // Estilo condicional para o valor
   const amountColor = transaction.type === 'EXPENSE' ? 'error.main' : 'success.main';
 
   return (
@@ -57,18 +67,16 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onTransa
         onClick={() => setOpenModal(true)}
       >
         <CardContent sx={{ display: 'flex', alignItems: 'center', p: '12px !important' }}>
-          {/* Ícone da Categoria */}
           <Avatar sx={{ bgcolor: amountColor, mr: 1.5 }}>
             <GetMuiIcon iconName={transaction.category || 'Category'} sx={{ color: 'white' }} />
           </Avatar>
 
-          {/* Informações Centrais */}
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle1" component="div" sx={{ lineHeight: 1.2 }}>
               {transaction.name}
             </Typography>
             <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-              {formattedDate} - {transaction.category}
+              {formattedDate} - {categoryDisplayName}
             </Typography>
             <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5 }}>
               {!transaction.isPaid && <Chip label="Não Pago" color="warning" size="small" variant="outlined" />}
@@ -76,7 +84,6 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onTransa
             </Box>
           </Box>
 
-          {/* Valor da Transação */}
           <Box sx={{ textAlign: 'right', ml: 1 }}>
             <Typography variant="body1" fontWeight="bold" color={amountColor}>
               {transaction.type === 'EXPENSE' ? `- ${formattedAmount}` : `+ ${formattedAmount}`}
@@ -85,7 +92,6 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onTransa
         </CardContent>
       </Card>
 
-      {/* O Modal continua o mesmo */}
       <TransactionDetailsModal
         transaction={transaction}
         open={openModal}
