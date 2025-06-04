@@ -31,7 +31,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ onClos
         defaultValues: {
             name: '',
             category: '',
-            value: 0,
+            value: undefined,
             date: new Date(),
             type: 'EXPENSE',
             isRecurring: false,
