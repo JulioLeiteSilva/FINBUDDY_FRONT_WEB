@@ -47,8 +47,8 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
                 currency: transaction.currency,
                 bankAccountId: transaction.bankAccountId,
                 frequency: transaction.frequency ?? null,
-                startDate: formatDateForInput(transaction.startDate) as any,
-                endDate: formatDateForInput(transaction.endDate) as any,
+                startDate: transaction.startDate ? formatDateForInput(transaction.startDate) as any : null,
+                endDate: transaction.endDate ? formatDateForInput(transaction.endDate) as any : null,
             });
         } else {
             setIsEditing(false);
