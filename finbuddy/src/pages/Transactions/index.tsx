@@ -11,6 +11,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { firestoreTimestampToDate } from "./components/TransactionDetailsModal/utils/transactionUtils";
+import { useCategoriesStore } from "../../store/categoriesStore";
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);
@@ -22,10 +23,15 @@ const TransactionsPage = () => {
     const [filterType, setFilterType] = useState<TransactionTypeFilter>('all');
     const [searchText, setSearchText] = useState<string>('');
     const [selectedMonth, setSelectedMonth] = useState(dayjs());
+    const { fetchCategories } = useCategoriesStore();
 
     useEffect(() => {
         fetchTransactions();
     }, [fetchTransactions]);
+
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
 
     const handlePreviousMonth = () => {
         setSelectedMonth(prev => prev.subtract(1, 'month'));
