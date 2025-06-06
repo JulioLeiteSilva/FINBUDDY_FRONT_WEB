@@ -15,7 +15,7 @@ interface CategoryFormProps {
 
 const initialCategoryState: NewCategoryData = {
     name: '',
-    icon: 'Label',
+    icon: 'LabelIcon',
     type: 'EXPENSE'
 };
 
@@ -35,8 +35,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ onAddCategory }) => 
     };
 
     const handleIconSelect = (iconName: string) => {
-        setNewCategory(prev => ({ ...prev, icon: iconName.replace('Icon', '') }));
-        setIsIconModalOpen(false); // Fecha o modal após a seleção
+        setNewCategory(prev => ({ ...prev, icon: iconName }));
+        setIsIconModalOpen(false);
         if (error) setError(null);
     };
 

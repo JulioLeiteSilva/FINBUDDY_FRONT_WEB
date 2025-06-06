@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     TextField,
     ToggleButton,
@@ -14,11 +14,13 @@ import {
     Typography,
     Grid
 } from '@mui/material';
-import { Control, Controller, FieldErrors, UseFormRegister } from 'react-hook-form';
+import { Control, Controller, FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
 import { TransactionRequestDTOSchemaType } from '../../schemas/Transactions';
 import { BankAccountSchemaType } from '../../schemas/BankAccount';
 import { RecurringTransactionFields } from './RecurringTransactionFields';
 import dayjs from 'dayjs';
+import { CategorySchemaType } from '../../schemas/Categories';
+import GetMuiIcon from '../../utils/getMuiIcon';
 
 interface TransactionFormProps {
     control: Control<TransactionRequestDTOSchemaType>;
@@ -26,9 +28,24 @@ interface TransactionFormProps {
     errors: FieldErrors<TransactionRequestDTOSchemaType>;
     isRecurring: boolean;
     bankAccounts: BankAccountSchemaType[];
+    categories: CategorySchemaType[];
 }
+export const TransactionForm: React.FC<TransactionFormProps> = ({ control, register, errors, isRecurring, bankAccounts, categories }) => {
+    const transactionType = useWatch({
+        control,
+        name: 'type', // Observando o campo 'type' (INCOME/EXPENSE)
+    });
 
-export const TransactionForm: React.FC<TransactionFormProps> = ({ control, register, errors, isRecurring, bankAccounts }) => {
+    const filteredCategories = useMemo(() => {
+        if (!transactionType) {
+            return []; // Se nenhum tipo de transação estiver selecionado, não mostra categorias.
+            // Alternativamente, para mostrar todas: return categories;
+        }
+        // Isso assume que seu CategorySchemaType possui uma propriedade 'type' (ex: 'INCOME' ou 'EXPENSE')
+        // que corresponde ao tipo da transação.
+        return categories.filter(category => category.type === transactionType);
+    }, [categories, transactionType]);
+
     return (
         <>
             <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -66,17 +83,30 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ control, regis
                     />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
-                        margin="dense"
-                        id="category"
-                        label="Categoria"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        {...register('category')}
-                        error={!!errors.category}
-                        helperText={errors.category?.message}
-                    />
+                    <FormControl fullWidth margin="dense" error={!!errors.category}>
+                        <InputLabel id="category-label">Categoria</InputLabel>
+                        <Controller
+                            control={control}
+                            name="category"
+                            render={({ field }) => (
+                                <Select
+                                    labelId="category-label"
+                                    id="category"
+                                    value={field.value || ''} // Garante que o valor seja uma string vazia para o Select
+                                    label="Categoria"
+                                    onChange={field.onChange}
+                                >
+                                    {filteredCategories.map((category) => (
+                                        <MenuItem key={category.id} value={category.icon}>
+                                            <GetMuiIcon iconName={category.icon} sx={{ mr: 1 }} />
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            )}
+                        />
+                        {errors.category && <FormHelperText>{errors.category.message}</FormHelperText>}
+                    </FormControl>
                 </Grid>
             </Grid>
 
