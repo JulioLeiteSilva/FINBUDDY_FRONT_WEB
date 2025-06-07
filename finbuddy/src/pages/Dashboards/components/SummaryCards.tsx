@@ -1,43 +1,41 @@
-
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useTheme } from '@mui/material/styles';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import { useBankAccountStore } from '../../../store/bankAccountStore';
+import { firestoreTimestampToDate } from '../../../pages/Transactions/components/TransactionDetailsModal/utils/transactionUtils';
+
+dayjs.extend(isBetween);
 
 interface TransactionData {
   value: number;
   type: 'income' | 'expense';
+  date: any; // Firestore timestamp
+  isPaid?: boolean;
 }
-
-
-const defaultSummaryData: TransactionData[] = [
-  { type: 'income', value: 20400 }, 
-  { type: 'expense', value: 1416.60 }, 
-  
-  
-  { type: 'income', value: 0 }, { type: 'income', value: 0 }, { type: 'income', value: 0 },
-  { type: 'income', value: 0 }, { type: 'income', value: 0 }, { type: 'income', value: 0 }, { type: 'income', value: 0 },
-  
-  { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 },
-  { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 },
-  { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 },
-  { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 }, { type: 'expense', value: 0 },
-  { type: 'expense', value: 0 }, { type: 'expense', value: 0 },
-];
-
 
 interface SummaryCardsProps {
   data?: TransactionData[];
+  selectedMonth: dayjs.Dayjs;
 }
 
 const formatCurrency = (value: number): string => {
-  
   return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
-  const dataToUse = data || defaultSummaryData;
+const SummaryCards: React.FC<SummaryCardsProps> = ({ data = [], selectedMonth }) => {
+  console.log(data);
+  const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
+  const currentMonth = dayjs();
+  const isCurrentMonth = selectedMonth.isSame(currentMonth, 'month');
+  const isFutureMonth = selectedMonth.isAfter(currentMonth, 'month');
+  const isPastMonth = selectedMonth.isBefore(currentMonth, 'month');
+  useEffect(() => {
+    fetchBankAccounts();
+  }, [fetchBankAccounts]);
 
   const {
     totalIncome,
@@ -45,13 +43,30 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
     totalBalance,
     incomeCount,
     expenseCount,
+    balanceTitle,
   } = useMemo(() => {
     let income = 0;
     let expenses = 0;
     let iCount = 0;
     let eCount = 0;
 
-    dataToUse.forEach(item => {
+    const monthStart = selectedMonth.startOf('month');
+    const monthEnd = selectedMonth.endOf('month');
+
+    // Calculate total bank account balance
+    const currentTotalBalance = bankAccounts.reduce((sum, account) => sum + account.balance, 0);
+    console.log(bankAccounts);
+
+    data.forEach(item => {
+      const transactionDate = item.date instanceof Date ? item.date : new Date(item.date);
+      if (!transactionDate || isNaN(transactionDate.getTime())) return;
+      const txDate = dayjs(transactionDate);
+
+      if (!txDate.isBetween(monthStart, monthEnd, 'day', '[]')) {
+        console.log("Não está entre o mês");
+        return;
+      }
+
       if (item.type === 'income') {
         income += item.value;
         iCount++;
@@ -60,15 +75,33 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
         eCount++;
       }
     });
+
+    let finalBalance;
+    let title;
+
+    if (isCurrentMonth) {
+      console.log("É o mês atual");
+      console.log(currentTotalBalance);
+      finalBalance = currentTotalBalance;
+      title = "Saldo Total";
+    } else if (isFutureMonth) {
+      finalBalance = currentTotalBalance + (income - expenses);
+      title = "Saldo no final do mês";
+    } else {
+      finalBalance = income - expenses;
+      title = "Possível saldo no final do mês";
+    }
+    console.log(income, expenses);  
     
     return {
       totalIncome: income,
       totalExpenses: expenses,
-      totalBalance: income - expenses,
+      totalBalance: finalBalance,
       incomeCount: iCount,
       expenseCount: eCount,
+      balanceTitle: title,
     };
-  }, [dataToUse]);
+  }, [data, selectedMonth, bankAccounts, isCurrentMonth, isFutureMonth, isPastMonth]);
 
   const getSaldoSubtitle = (balance: number): string => {
     if (balance > 0) return "Seu saldo está positivo. Continue assim!";
@@ -135,7 +168,6 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
   const lightRedBgIcon = 'rgba(220, 53, 69, 0.1)';   
   const primaryColor = theme.palette.primary.main;
 
-  
   return (
     <div
       style={{
@@ -147,10 +179,9 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
         fontFamily: "'Inter', sans-serif", 
       }}
     >
-    
       <div style={cardBaseStyle}>
         <div style={cardContentStyle}>
-          <h3 style={titleStyle}>Saldo Total</h3>
+          <h3 style={titleStyle}>{balanceTitle}</h3>
           <p style={{ ...valueStyleBase, color: totalBalance >= 0 ? primaryColor : redColorValue }}>
             {formatCurrency(totalBalance)}
           </p>
@@ -161,7 +192,6 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
         </div>
       </div>
 
-      
       <div style={cardBaseStyle}>
         <div style={cardContentStyle}>
           <h3 style={titleStyle}>Total de Receitas</h3>
@@ -175,7 +205,6 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
         </div>
       </div>
 
-      
       <div style={cardBaseStyle}>
         <div style={cardContentStyle}>
           <h3 style={titleStyle}>Total de Despesas</h3>

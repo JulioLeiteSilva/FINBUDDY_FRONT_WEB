@@ -64,6 +64,7 @@ export const useDashboardData = () => {
         category: t_from_store.category,
         value: t_from_store.value,
         type: t_from_store.type.toLowerCase() as ('income' | 'expense'),
+        isPaid: t_from_store.isPaid,
         date: jsDateObject,
       };
     });

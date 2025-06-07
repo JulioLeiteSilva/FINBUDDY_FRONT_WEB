@@ -1,34 +1,35 @@
-// src/pages/Transactions/index.tsx (ou onde seu componente Dashboard está)
-import React from 'react'; // Removido useState, useEffect, useMemo se não usados diretamente aqui
-import { Box, Container, Typography, Button } from '@mui/material'; // Adicionado Box
-import { useAuthStore } from '../../store/authStore';
-import { auth } from '../../services/firebase'; // Verifique se este é o client auth do Firebase
+import React, { useState } from 'react';
+import { Box, Container, Typography, IconButton } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
-// Importar o novo hook e os tipos que ele retorna/usa
-import { useDashboardData, ProcessedTransaction, MonthlyData } from '../../hooks/useDashboardData'; // Ajuste o caminho
+import { useDashboardData} from '../../hooks/useDashboardData';
 
-// Importar os componentes de gráfico (verifique os caminhos)
 import SummaryCards from './components/SummaryCards';
 import ExpenseByCategory from './components/ExpenseByCategory';
 import RevenueFlowTrendChart from './components/RevenueFlowTrendChart';
-import MonthlyComparisonBarChart from './components/MonthylComparisonChart'; // Atenção ao nome do arquivo/componente
+import MonthlyComparisonBarChart from './components/MonthylComparisonChart';
+
+dayjs.locale('pt-br');
+dayjs.extend(localizedFormat);
 
 const Dashboard: React.FC = () => {
-  const { user, logout } = useAuthStore();
+  const [selectedMonth, setSelectedMonth] = useState(dayjs());
   const {
     isLoading,
-    transactionsForCharts, // Esta é ProcessedTransaction[]
-    dataForMonthlyBarChart,  // Esta é MonthlyData[]
-    // Adicionar 'error' aqui se o hook o retornar
+    transactionsForCharts,
+    dataForMonthlyBarChart,
   } = useDashboardData();
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      logout();
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
+  const handlePreviousMonth = () => {
+    setSelectedMonth(prev => prev.subtract(1, 'month'));
+  };
+
+  const handleNextMonth = () => {
+    setSelectedMonth(prev => prev.add(1, 'month'));
   };
 
   if (isLoading) {
@@ -39,24 +40,22 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // TODO: Adicionar tratamento de erro aqui se o hook 'useDashboardData' retornar um estado de erro
-
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, backgroundColor: '#f4f6f8', minHeight: '100vh' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" component="h1" sx={{ color: '#333', flexGrow: 1 }}>
-          Dashboard {user?.email ? `- ${user.email.split('@')[0]}` : ''}
+    <Box sx={{ p: { xs: 2, sm: 3 }, minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2.5 }}>
+        <IconButton onClick={handlePreviousMonth} aria-label="Mês anterior">
+          <ChevronLeftIcon />
+        </IconButton>
+        <Typography variant="h6" component="div" sx={{ minWidth: { xs: '160px', sm: '200px' }, textAlign: 'center', textTransform: 'capitalize' }}>
+          {selectedMonth.format('MMMM [de] YYYY')}
         </Typography>
-        <Button variant="outlined" onClick={handleLogout} size="small">
-          Sair
-        </Button>
+        <IconButton onClick={handleNextMonth} aria-label="Próximo mês">
+          <ChevronRightIcon />
+        </IconButton>
       </Box>
-      
-      {/* Futuramente, o DateRangeSelector poderia chamar uma função como setDateRange retornada pelo hook */}
-      <hr style={{ margin: '20px 0' }} />
 
       <Box sx={{ mb: { xs: 2, sm: 3 } }}>
-        <SummaryCards data={transactionsForCharts} />
+        <SummaryCards data={transactionsForCharts} selectedMonth={selectedMonth} />
       </Box>
 
       <Box
@@ -68,15 +67,15 @@ const Dashboard: React.FC = () => {
         }}
       >
         <Box sx={{ flex: 1, minWidth: 0, backgroundColor: '#fff', borderRadius: '8px', p: 2, boxShadow: 1 }}>
-          <ExpenseByCategory transactions={transactionsForCharts} />
+          <ExpenseByCategory transactions={transactionsForCharts} selectedMonth={selectedMonth} />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0, backgroundColor: '#fff', borderRadius: '8px', p: 2, boxShadow: 1 }}>
-          <MonthlyComparisonBarChart data={dataForMonthlyBarChart} />
+          <MonthlyComparisonBarChart data={dataForMonthlyBarChart} selectedMonth={selectedMonth} />
         </Box>
       </Box>
 
-      <Box sx={{ backgroundColor: '#fff', borderRadius: '8px', p: 2, boxShadow: 1 }}>
-        <RevenueFlowTrendChart transactions={transactionsForCharts} />
+      <Box sx={{ backgroundColor: '#fff', borderRadius: '8px', p: 2, boxShadow: 1, mb: 5 }}>
+        <RevenueFlowTrendChart transactions={transactionsForCharts} selectedMonth={selectedMonth} />
       </Box>
     </Box>
   );
