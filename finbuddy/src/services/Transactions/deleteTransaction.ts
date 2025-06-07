@@ -9,7 +9,7 @@ export const DeleteTransaction = async (id: string) => {
     const { showSnackbar } = useSnackbarStore.getState();
 
     try {
-        const deleteTransactionFn = httpsCallable(functions, 'transaction-deleteTransaction');
+        const deleteTransactionFn = httpsCallable(functions, 'transaction-deleteIncomeOrExpenseTransaction');
         const response = await deleteTransactionFn({ id });
         console.log('Transação deletada:', response.data);
 

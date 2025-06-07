@@ -20,6 +20,7 @@ interface TransactionListByDayProps {
 export const TransactionListByDay: React.FC<TransactionListByDayProps> = ({ transactions, isLoading, onDataChange }) => {
 
     const transactionsByDay = useMemo(() => {
+        console.log(transactions);
         return transactions.reduce((acc: { [key: string]: TransactionSchemaType[] }, transaction) => {
             // Usando o utilitário para um código mais limpo e seguro
             const dateObj = firestoreTimestampToDate(transaction.date);

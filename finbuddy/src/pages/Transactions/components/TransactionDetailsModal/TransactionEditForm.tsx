@@ -1,17 +1,23 @@
 import {
     TextField, ToggleButton, ToggleButtonGroup, FormControlLabel, Checkbox,
-    Select, MenuItem, InputLabel, FormControl,
-    Typography,
+    Select, MenuItem, InputLabel, FormControl, FormHelperText,
+    Typography, Box,
 } from '@mui/material';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import { useBankAccountStore } from '../../../../store/bankAccountStore';
+import { useCategoriesStore } from '../../../../store/categoriesStore';
 import { RecurringTransactionFields } from './RecurringTransactionFields';
+import GetMuiIcon from '../../../../utils/getMuiIcon';
 
 export const TransactionEditForm = () => {
     const { control, register, formState: { errors } } = useFormContext();
     const { bankAccounts } = useBankAccountStore();
+    const { categories, defaultCategories } = useCategoriesStore();
 
     const isRecurring = useWatch({ control, name: 'isRecurring' });
+    const transactionType = useWatch({ control, name: 'type' });
+
+    const filteredCategories = [...categories, ...defaultCategories].filter(category => category.type === transactionType);
 
     return (
         <>
@@ -27,12 +33,32 @@ export const TransactionEditForm = () => {
                 error={!!errors.value}
                 helperText={errors.value?.message as string}
             />
-            <TextField
-                margin="dense" id="category" label="Categoria" type="text" fullWidth
-                {...register('category')}
-                error={!!errors.category}
-                helperText={errors.category?.message as string}
-            />
+            <FormControl fullWidth margin="dense" error={!!errors.category}>
+                <InputLabel id="category-label">Categoria</InputLabel>
+                <Controller
+                    control={control}
+                    name="category"
+                    render={({ field }) => (
+                        <Select
+                            labelId="category-label"
+                            id="category"
+                            value={field.value || ''}
+                            label="Categoria"
+                            onChange={field.onChange}
+                        >
+                            {filteredCategories.map((category) => (
+                                <MenuItem key={category.id} value={category.icon}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <GetMuiIcon iconName={category.icon} />
+                                        <Typography>{category.name}</Typography>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    )}
+                />
+                {errors.category && <FormHelperText>{errors.category.message as string}</FormHelperText>}
+            </FormControl>
             <Controller
                 name="type" control={control}
                 render={({ field }) => (

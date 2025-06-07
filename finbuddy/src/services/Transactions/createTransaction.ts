@@ -12,7 +12,7 @@ export const CreateTransaction = async (
   const { showSnackbar } = useSnackbarStore.getState();
 
   try {
-    const createTransactionFn = httpsCallable(functions, 'transaction-createTransaction');
+    const createTransactionFn = httpsCallable(functions, 'transaction-createIncomeOrExpense');
     const response = await createTransactionFn(data);
     console.log('Transação criada:', response.data);
 

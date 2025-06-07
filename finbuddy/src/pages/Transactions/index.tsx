@@ -42,6 +42,7 @@ const TransactionsPage = () => {
     };
 
     const filteredTransactions = useMemo(() => {
+        console.log(transactions);
         return transactions.filter(transaction => {
             const transactionDate = firestoreTimestampToDate(transaction.date);
             if (!transactionDate) return false;

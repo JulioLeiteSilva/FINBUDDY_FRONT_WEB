@@ -19,7 +19,7 @@ export const useTransactionsStore = create<TransactionsState>((set) => ({
   fetchTransactions: async () => {
     set({ isLoading: true });
     try {
-      const getAllTransactionsFn = httpsCallable(functions, 'transaction-getAllTransactions');
+      const getAllTransactionsFn = httpsCallable(functions, 'transaction-getAllIncomeOrExpense');
       const response = await getAllTransactionsFn();
       const getAllTransactionsResponse = response.data as unknown as TransactionsResponseDTOSchemaType;
 
