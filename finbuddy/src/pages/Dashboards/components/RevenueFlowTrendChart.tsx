@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import dayjs from 'dayjs';
 import { firestoreTimestampToDate } from '../../../pages/Transactions/components/TransactionDetailsModal/utils/transactionUtils';
+import { useBankAccountStore } from '../../../store/bankAccountStore';
 
 interface ProcessedTransaction {
   id: string;
@@ -54,6 +55,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const RevenueFlowTrendChart: React.FC<RevenueFlowTrendChartProps> = ({ transactions, selectedMonth }) => {
+  const { bankAccounts } = useBankAccountStore();
   const currentMonth = dayjs();
   const isCurrentMonth = selectedMonth.isSame(currentMonth, 'month');
   const isFutureMonth = selectedMonth.isAfter(currentMonth, 'month');
@@ -63,50 +65,52 @@ const RevenueFlowTrendChart: React.FC<RevenueFlowTrendChartProps> = ({ transacti
     const monthStart = selectedMonth.startOf('month');
     const monthEnd = selectedMonth.endOf('month');
     const daysInMonth = monthEnd.date();
+
+    // Inicializa o array com os dias do mês
     const dailyData = Array.from({ length: daysInMonth }, (_, i) => ({
       day: i + 1,
       income: 0,
       expense: 0,
-      balance: 0,
     }));
-    console.log(transactions);
-    transactions.forEach(transaction => {
+
+    // Filtra as transações do mês selecionado
+    const monthTransactions = transactions.filter(transaction => {
       const transactionDate = transaction.date instanceof Date ? transaction.date : new Date(transaction.date);
-      if (!transactionDate || isNaN(transactionDate.getTime())) return;
+      if (!transactionDate || isNaN(transactionDate.getTime())) return false;
       const txDate = dayjs(transactionDate);
+      return txDate.isBetween(monthStart, monthEnd, 'day', '[]');
+    });
 
-      if (!txDate.isBetween(monthStart, monthEnd, 'day', '[]')) {
-        return;
-      }
+    // Ordena as transações por data
+    monthTransactions.sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateA.getTime() - dateB.getTime();
+    });
 
-      if (isCurrentMonth && !transaction.isPaid) return;
-      if (isFutureMonth) return;
-
+    // Processa as transações e atualiza os valores diários
+    monthTransactions.forEach(transaction => {
+      const transactionDate = transaction.date instanceof Date ? transaction.date : new Date(transaction.date);
+      const txDate = dayjs(transactionDate);
       const dayIndex = txDate.date() - 1;
-      if (transaction.type === 'income') {
-        dailyData[dayIndex].income += transaction.value;
-        dailyData[dayIndex].balance += transaction.value;
-      } else {
-        dailyData[dayIndex].expense += transaction.value;
-        dailyData[dayIndex].balance -= transaction.value;
+
+      // Só considera transações pagas
+      if (transaction.isPaid) {
+        if (transaction.type === 'income') {
+          dailyData[dayIndex].income += transaction.value;
+        } else {
+          dailyData[dayIndex].expense += transaction.value;
+        }
       }
     });
 
-    // Calculate cumulative balance
-    let runningBalance = 0;
-    return dailyData.map(day => {
-      runningBalance += day.balance;
-      return {
-        ...day,
-        balance: runningBalance,
-      };
-    });
-  }, [transactions, selectedMonth, isCurrentMonth, isFutureMonth]);
+    return dailyData;
+  }, [transactions, selectedMonth]);
 
   return (
     <div style={{ width: '100%', height: 400 }}>
       <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
-        Fluxo de Receitas e Despesas
+        Linha Temporal das Transações
         {isCurrentMonth && ' (Mês Atual)'}
         {isFutureMonth && ' (Mês Futuro)'}
         {isPastMonth && ' (Mês Anterior)'}
@@ -123,12 +127,11 @@ const RevenueFlowTrendChart: React.FC<RevenueFlowTrendChartProps> = ({ transacti
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="day" />
-          <YAxis tickFormatter={(value) => formatCurrency(value)} />
+          <YAxis domain={[0, (dataMax: number) => Math.round(dataMax * 1.2)]} tickFormatter={(value) => formatCurrency(value)} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Line type="monotone" dataKey="income" name="Receitas" stroke="#28a745" />
           <Line type="monotone" dataKey="expense" name="Despesas" stroke="#dc3545" />
-          <Line type="monotone" dataKey="balance" name="Saldo" stroke="#007bff" />
         </LineChart>
       </ResponsiveContainer>
     </div>
