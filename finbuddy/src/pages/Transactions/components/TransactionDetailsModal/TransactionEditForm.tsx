@@ -97,7 +97,7 @@ export const TransactionEditForm = () => {
             />
             <Controller name="isRecurring" control={control}
                 render={({ field }) => (
-                    <FormControlLabel control={<Checkbox {...field} checked={field.value} />} label="Recorrente?" />
+                    <FormControlLabel control={<Checkbox {...field} checked={field.value} disabled={isRecurring} />} label="Recorrente?" />
                 )}
             />
             {isRecurring && <RecurringTransactionFields />}

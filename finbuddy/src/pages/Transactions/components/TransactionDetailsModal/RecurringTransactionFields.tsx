@@ -15,7 +15,7 @@ export const RecurringTransactionFields = () => {
                         name="frequency"
                         control={control}
                         render={({ field }) => (
-                            <Select labelId="frequency-label" label="Frequência" {...field}>
+                            <Select labelId="frequency-label" label="Frequência" {...field} disabled>
                                 {Object.values(TransactionFrequency).map((freq) => (
                                     <MenuItem key={freq} value={freq}>{frequencyMap[freq]}</MenuItem>
                                 ))}
@@ -30,6 +30,7 @@ export const RecurringTransactionFields = () => {
                     id="startDate"
                     label="Data Início"
                     type="date"
+                    disabled
                     fullWidth
                     margin="dense"
                     variant="outlined"
@@ -44,6 +45,7 @@ export const RecurringTransactionFields = () => {
                     id="endDate"
                     label="Data Fim"
                     type="date"
+                    disabled
                     fullWidth
                     margin="dense"
                     variant="outlined"
