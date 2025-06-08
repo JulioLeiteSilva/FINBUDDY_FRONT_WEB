@@ -3,16 +3,30 @@ import { TransactionFrequency } from '../../enums';
 import { firestoreIdSchema } from '../Common/FirestoreSchemas';
 
 export const TransactionRequestDTOSchema = z.object({
-    name: z.string().min(1),
-    category: z.string().min(1),
-    value: z.number().gt(0, { message: "O valor deve ser maior que zero" }),
-    date: z.date(),
-    type: z.enum(['INCOME', 'EXPENSE', 'INVOICE']),
-    isRecurring: z.boolean(),
-    frequency: z.nativeEnum(TransactionFrequency).nullable(),
-    startDate: z.date().nullable(),
-    endDate: z.date().nullable(),
-    isPaid: z.boolean(),
-    currency: z.string(),
-    bankAccountId: firestoreIdSchema,
+    name: z.string().min(1, { message: "O nome da transação é obrigatório" }),
+    category: z.string().min(1, { message: "A categoria é obrigatória" }),
+    value: z.number({ message: "O valor deve ser maior que zero" }).gt(0, { message: "O valor deve ser maior que zero" }),
+    date: z.date({ required_error: "A data é obrigatória" }),
+    type: z.enum(['INCOME', 'EXPENSE', 'INVOICE'], { 
+        required_error: "O tipo da transação é obrigatório",
+        invalid_type_error: "Tipo de transação inválido"
+    }),
+    isRecurring: z.boolean({ required_error: "É necessário informar se a transação é recorrente" }),
+    frequency: z.nativeEnum(TransactionFrequency, { 
+        required_error: "A frequência é obrigatória para transações recorrentes",
+        invalid_type_error: "Frequência inválida"
+    }).nullable(),
+    startDate: z.date({ 
+        required_error: "A data de início é obrigatória para transações recorrentes",
+        invalid_type_error: "Data de início inválida"
+    }).nullable(),
+    endDate: z.date({ 
+        required_error: "A data de término é obrigatória para transações recorrentes",
+        invalid_type_error: "Data de término inválida"
+    }).nullable(),
+    isPaid: z.boolean({ required_error: "É necessário informar se a transação está paga" }),
+    currency: z.string().min(1, { message: "A moeda é obrigatória" }),
+    bankAccountId: firestoreIdSchema.refine((val) => val !== '', { 
+        message: "A conta bancária é obrigatória" 
+    }),
 });
