@@ -13,6 +13,7 @@ import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
 import BankAccountsPage from '../pages/BankAccount';
 import CategoriesPage from '../pages/Categories';
 import Dashboard from '../pages/Dashboards';
+import CreditCardPage from '../pages/Cards';
 
 
 const PrivateRoutes = () => {
@@ -50,9 +51,13 @@ const PrivateRoutes = () => {
       case '/dashboard':
         setTitle('Dashboard');
         break;
+      case '/cards':
+        setTitle('Cartões de Crédito');
+        break;
       default:
         setTitle('Página não encontrada'); // Ou um título padrão
         break;
+      
     }
   }, [location.pathname]);
 
@@ -66,6 +71,7 @@ const PrivateRoutes = () => {
           <Route path="/bank-accounts" element={<BankAccountsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/cards" element={<CreditCardPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
