@@ -2,7 +2,7 @@ import { z } from "zod";
 import { firestoreIdSchema } from "../Common/FirestoreSchemas";
 import { InvoiceStatus } from "../../enums/InvoiceStatus";
 
-export const CreditCardSchema = z.object({
+export const CreditCardInvoiceSchema = z.object({
     id: firestoreIdSchema,
     status: z.nativeEnum(InvoiceStatus),
     total: z.number(),
