@@ -11,6 +11,8 @@ export const TransactionRequestDTOSchema = z.object({
         required_error: "O tipo da transação é obrigatório",
         invalid_type_error: "Tipo de transação inválido"
     }),
+    invoiceId: z.string().optional(),
+    creditCardId: z.string().optional(),
     isRecurring: z.boolean({ required_error: "É necessário informar se a transação é recorrente" }),
     frequency: z.nativeEnum(TransactionFrequency, { 
         required_error: "A frequência é obrigatória para transações recorrentes",
@@ -29,4 +31,5 @@ export const TransactionRequestDTOSchema = z.object({
     bankAccountId: firestoreIdSchema.refine((val) => val !== '', { 
         message: "A conta bancária é obrigatória" 
     }),
+    primaryTransactionId: z.string().nullable().optional(),
 });
