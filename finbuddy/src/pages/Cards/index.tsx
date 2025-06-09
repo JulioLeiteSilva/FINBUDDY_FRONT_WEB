@@ -21,8 +21,8 @@ import { useCreditCardInvoiceStore } from '../../store/creditCardInvoiceStore';
 import { useBankAccountStore } from '../../store/bankAccountStore';
 import { useBanks } from '../../hooks/useBanks';
 import { mapToCardDetails } from './utils/cardDetailsMapper';
+import { filterTransactionsByCardId, mapToProcessedTransactions } from './utils/transactionMapper';
 import { useInvoiceTransactionsStore } from '../../store/invoiceTransactionStore';
-import { mapToProcessedTransactions, filterTransactionsByCardId } from './utils/transactionMapper';
 
 const CardPage: React.FC = () => {
   const [detailsCard, setDetailsCard] = useState<CardDetails | null>(null);
@@ -36,14 +36,13 @@ const CardPage: React.FC = () => {
   const { creditCards, isLoading, fetchCreditCards } = useCreditCardStore();
   const { creditCardInvoices, isLoading: isLoadingCreditCardInvoices, fetchCreditCardInvoices } = useCreditCardInvoiceStore();
   const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
-  const { invoicesTransactions, isLoading: isLoadingInvoiceTransactions, fetchInvoiceTransactions } = useInvoiceTransactionsStore();
   const { banks } = useBanks();
+  const { invoicesTransactions, fetchInvoiceTransactions } = useInvoiceTransactionsStore();
 
   useEffect(() => {
     fetchCreditCards();
     fetchBankAccounts();
   }, [fetchCreditCards, fetchBankAccounts]);
-  console.log(bankAccounts);
 
   useEffect(() => {
     if (creditCards.length > 0) {
@@ -51,30 +50,26 @@ const CardPage: React.FC = () => {
       const fetchAllInvoices = async () => {
         const invoicePromises = creditCards.map(card => fetchCreditCardInvoices(card.id));
         await Promise.all(invoicePromises);
+        fetchInvoiceTransactions();
       };
       fetchAllInvoices();
-      fetchInvoiceTransactions();
     }
   }, [creditCards, fetchCreditCardInvoices, fetchInvoiceTransactions]);
-  console.log(creditCardInvoices)
 
   // Map credit cards to CardDetails format
   const mappedCards = creditCards.map(card => {
     const cardInvoices = creditCardInvoices[card.id] || [];
-    return mapToCardDetails(card, cardInvoices, bankAccounts, banks);
+    return mapToCardDetails(card, cardInvoices, bankAccounts, banks, invoicesTransactions);
   });
-  console.log(mappedCards)
 
-  // Map invoice transactions to ProcessedTransaction format
-  const processedTransactions = mapToProcessedTransactions(invoicesTransactions);
-  console.log(processedTransactions)
+  // Get all transactions from mapped cards and convert them to ProcessedTransaction format
+  const allTransactions = mappedCards.flatMap(card => card.transactions || []);
+  const processedTransactions = mapToProcessedTransactions(allTransactions, creditCardInvoices);
 
   // Filter transactions by selected card ID if one is selected
   const filteredTransactions = selectedCardId 
     ? filterTransactionsByCardId(processedTransactions, selectedCardId)
     : processedTransactions;
-
-  console.log(filteredTransactions)
 
   // --- Handlers para o Modal de Formulário de Cartão ---
   const handleOpenAddCardModal = () => {

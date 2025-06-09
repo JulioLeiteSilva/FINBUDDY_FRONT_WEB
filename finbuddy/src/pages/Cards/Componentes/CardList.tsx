@@ -1,6 +1,6 @@
 // src/components/CardList.tsx
-import React, { useState, useMemo } from 'react';
-import { Box, Grid, Typography, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, IconButton } from '@mui/material';
 
 // Ícones para as setas de navegação
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -8,19 +8,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 // Importar o componente de cartão individual e os tipos
 import CreditCardDisplay from './CreditCardDisplay';
-// Seria ideal importar estes tipos de um arquivo compartilhado, ex: import { CardDetails } from '../types';
-// Mas, por enquanto, os definimos aqui para clareza se necessário.
-interface CardDetails {
-  id: string;
-  cardName: string;
-  bankName: string;
-  brand: 'VISA' | 'MASTERCARD' | 'ELO' | 'AMEX' | 'OTHER';
-  closingDay: number;
-  dueDate: Date;
-  invoiceTotal: number;
-  limitTotal: number;
-  amountSpent: number;
-}
+import { CardDetails } from '../utils/types';
 
 // Props que o componente CardList espera receber
 interface CardListProps {
@@ -30,70 +18,44 @@ interface CardListProps {
 }
 
 const CardList: React.FC<CardListProps> = ({ cards, onViewDetailsClick, onEditClick }) => {
-  // Estado para controlar o índice do primeiro cartão visível no carrossel
-  const [startIndex, setStartIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const totalCards = cards.length;
-
-  // Handler para navegar para o próximo cartão no carrossel
-  const handleNext = () => {
-    if (totalCards === 0) return;
-    setStartIndex(prevIndex => (prevIndex + 1) % totalCards);
-  };
-
-  // Handler para navegar para o cartão anterior no carrossel
   const handlePrev = () => {
-    if (totalCards === 0) return;
-    setStartIndex(prevIndex => (prevIndex - 1 + totalCards) % totalCards);
+    setCurrentIndex(prev => (prev > 0 ? prev - 1 : cards.length - 1));
   };
 
-  // Memoiza a lista de cartões visíveis para otimizar a performance
-  const visibleCards = useMemo(() => {
-    // Se houver 3 ou menos cartões, mostra todos.
-    if (totalCards <= 3) {
-      return cards;
-    }
-    
-    const cardsToDisplay: CardDetails[] = [];
-    for (let i = 0; i < 3; i++) {
-      const cardIndex = (startIndex + i) % totalCards;
-      cardsToDisplay.push(cards[cardIndex]);
-    }
-    return cardsToDisplay;
-  }, [startIndex, cards, totalCards]);
+  const handleNext = () => {
+    setCurrentIndex(prev => (prev < cards.length - 1 ? prev + 1 : 0));
+  };
 
-  // Condição para mostrar ou não os botões de navegação
-  const showNavigation = totalCards > 3;
+  if (cards.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Typography color="text.secondary">Nenhum cartão cadastrado.</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        {/* Botão de Voltar (só aparece se a navegação for necessária) */}
-        <IconButton onClick={handlePrev} aria-label="cartão anterior" disabled={!showNavigation}>
-          <ArrowBackIosNewIcon />
-        </IconButton>
-
-        {/* Container dos Cards */}
-        <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-          <Grid container spacing={3} justifyContent="center">
-            {visibleCards.map(card => (
-              // Usando a sintaxe 'size' do Grid que funciona no seu projeto
-              <Grid key={card.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                <CreditCardDisplay
-                  card={card}
-                  // Passa as funções para cada card individual, envolvendo-as para passar o objeto 'card'
-                  onViewDetailsClick={() => onViewDetailsClick(card)}
-                  onEditClick={() => onEditClick(card)}
-                />
-              </Grid>
-            ))}
-          </Grid>
+    <Box sx={{ position: 'relative' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ width: '10%', display: 'flex', justifyContent: 'center' }}>
+          <IconButton onClick={handlePrev} disabled={cards.length <= 1}>
+            <ArrowBackIosNewIcon />
+          </IconButton>
         </Box>
-
-        {/* Botão de Avançar (só aparece se a navegação for necessária) */}
-        <IconButton onClick={handleNext} aria-label="próximo cartão" disabled={!showNavigation}>
-          <ArrowForwardIosIcon />
-        </IconButton>
+        <Box sx={{ width: '80%' }}>
+          <CreditCardDisplay
+            card={cards[currentIndex]}
+            onViewDetailsClick={() => onViewDetailsClick(cards[currentIndex])}
+            onEditClick={() => onEditClick(cards[currentIndex])}
+          />
+        </Box>
+        <Box sx={{ width: '10%', display: 'flex', justifyContent: 'center' }}>
+          <IconButton onClick={handleNext} disabled={cards.length <= 1}>
+            <ArrowForwardIosIcon />
+          </IconButton>
+        </Box>
       </Box>
     </Box>
   );

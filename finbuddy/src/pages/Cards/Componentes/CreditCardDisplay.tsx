@@ -14,40 +14,16 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import dayjs from 'dayjs';
 import { useBanks } from '../../../hooks/useBanks';
+import { CardDetails } from '../utils/types';
 
 // --- INTERFACES E DADOS MOCKADOS ---
 
-interface CardDetails {
-  id: string;
-  cardName: string;
-  bankName: string;
-  brand: 'VISA' | 'MASTERCARD' | 'ELO' | 'AMEX' | 'OTHER';
-  closingDay: number;
-  dueDate: Date;
-  invoiceTotal: number;
-  limitTotal: number;
-  amountSpent: number;
-}
-
 interface CreditCardDisplayProps {
   card?: CardDetails;
-  onViewDetailsClick?: (cardId: string) => void;
-  onEditClick?: (cardId: string) => void;
+  onViewDetailsClick?: (card: CardDetails) => void;
+  onEditClick?: (card: CardDetails) => void;
 }
 
-const defaultMockCardData: CardDetails = {
-  id: 'mock-001',
-  cardName: "Cartão Ultravioleta",
-  bankName: "Nubank",
-  brand: 'MASTERCARD',
-  closingDay: 28,
-  dueDate: dayjs('2025-06-05').toDate(),
-  invoiceTotal: 1250.77,
-  limitTotal: 15000.00,
-  amountSpent: 4300.50,
-};
-
-// --- CONFIGURAÇÕES DE ESTILO E FORMATAÇÃO ---
 
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -66,51 +42,34 @@ const formatCardBrand = (brand: string): string => {
 // --- COMPONENTE PRINCIPAL ---
 
 const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
-  card: cardProp,
+  card,
   onViewDetailsClick,
-  onEditClick,
+  onEditClick
 }) => {
   const theme = useTheme();
   const { banks } = useBanks();
-  const card = cardProp || defaultMockCardData;
 
-  const { id, cardName, bankName, brand, closingDay, dueDate, invoiceTotal, limitTotal, amountSpent } = card;
+  if (!card) return null;
 
-  // Encontra o banco correspondente
-  const bank = banks.find(b => b.name.toLowerCase() === bankName.toLowerCase());
-  
-  // Define as cores do cartão
-  const cardBackgroundColor = bank?.colors.primary || '#ffffff';
-  const textColor = bank?.colors.textColor || theme.palette.text.primary;
-  const secondaryTextColor = bank ? 'rgba(255,255,255,0.7)' : theme.palette.text.secondary;
+  const { cardName, bankName, brand, closingDay, dueDate, limitTotal, amountSpent, invoices } = card;
 
-  console.log(amountSpent)
-  // Lógica de valores
-  const usedPercentage = limitTotal > 0 ? (amountSpent / limitTotal) * 100 : 0;
-  const availableLimit = limitTotal - amountSpent;
+  const bank = banks.find(b => b.name === bankName);
 
-  // Lógica CORRIGIDA para formatar a data de fechamento
-  const formattedClosingDate = useMemo(() => {
-    const dueDateObj = dayjs(dueDate);
-    // Se o dia do vencimento (ex: 5) for menor que o dia de fechamento (ex: 28),
-    // o fechamento ocorreu no mês anterior.
-    let closingDateMonthContext = dueDateObj;
-    if (dueDateObj.date() < closingDay) {
-      closingDateMonthContext = dueDateObj.subtract(1, 'month');
-    }
-    // Formata o dia e o mês correto
-    return `${String(closingDay).padStart(2, '0')}/${closingDateMonthContext.format('MM')}`;
-  }, [closingDay, dueDate]);
+  const cardBackgroundColor = bank?.colors.primary || theme.palette.primary.main;
+  const textColor = theme.palette.getContrastText(cardBackgroundColor);
+  const secondaryTextColor = theme.palette.getContrastText(cardBackgroundColor) + '99';
 
-  const handleViewDetails = () => {
-    if (onViewDetailsClick) onViewDetailsClick(id);
-    console.log("Ver fatura do cartão:", id);
+  const formatCardBrand = (brand: string) => {
+    return brand.charAt(0) + brand.slice(1).toLowerCase();
   };
 
-  const handleEdit = () => {
-    if (onEditClick) onEditClick(id);
-    console.log("Editar cartão:", id);
-  }
+  const formattedClosingDate = `Dia ${closingDay}`;
+
+  const currentInvoice = useMemo(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    return invoices.find(inv => inv.month === currentMonth && inv.year === currentYear);
+  }, [invoices]);
 
   return (
     <Card sx={{
@@ -150,50 +109,53 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
                     Fatura Atual
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: bank ? textColor : theme.palette.error.main }}>
-                    {formatCurrency(invoiceTotal)}
+                    {formatCurrency(currentInvoice?.total || 0)}
                 </Typography>
             </Box>
         </Box>
 
-        <Box sx={{ mb: 0.5 }}>
-          <StyledLinearProgress
+        <Box sx={{ mt: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+            <Typography variant="caption" sx={{ color: secondaryTextColor }}>
+              Limite disponível
+            </Typography>
+            <Typography variant="caption" sx={{ color: secondaryTextColor }}>
+              {formatCurrency(limitTotal - amountSpent)}
+            </Typography>
+          </Box>
+          <LinearProgress
             variant="determinate"
-            value={usedPercentage}
+            value={(amountSpent / limitTotal) * 100}
             sx={{
-              backgroundColor: bank ? 'rgba(255,255,255,0.3)' : theme.palette.success.light,
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: 'rgba(255,255,255,0.2)',
               '& .MuiLinearProgress-bar': {
-                backgroundColor: bank ? 'rgba(255,255,255,0.7)' : theme.palette.error.main,
+                backgroundColor: textColor,
               },
             }}
           />
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="caption" sx={{ fontSize: '0.7rem', color: secondaryTextColor }}>
-              Utilizado: {formatCurrency(amountSpent)}
-            </Typography>
-            <Typography variant="caption" sx={{ fontSize: '0.7rem', color: secondaryTextColor }}>
-              Disponível: {formatCurrency(availableLimit)}
-            </Typography>
-        </Box>
-        
-        <Box sx={{ flexGrow: 1 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <Link
             component="button"
             variant="body2"
-            onClick={handleViewDetails}
-            sx={{ fontWeight: 500, color: 'inherit', textDecoration: 'none' }}
+            onClick={() => onViewDetailsClick?.(card)}
+            sx={{
+              color: textColor,
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
+            }}
           >
-            Ver fatura &gt;
+            Ver fatura
           </Link>
           <IconButton
             size="small"
-            onClick={handleEdit}
-            aria-label="editar cartão"
-            sx={{ color: secondaryTextColor }}
+            onClick={() => onEditClick?.(card)}
+            sx={{ color: textColor }}
           >
-            <EditIcon fontSize="inherit" />
+            <EditIcon fontSize="small" />
           </IconButton>
         </Box>
       </CardContent>

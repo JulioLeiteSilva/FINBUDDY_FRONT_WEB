@@ -1,22 +1,30 @@
 import { ProcessedTransaction } from './types';
 import { TransactionSchemaType } from '../../../schemas/Transactions';
 import { firestoreTimestampToDate } from '../../Transactions/components/TransactionDetailsModal/utils/transactionUtils';
+import { CreditCardInvoiceSchemaType } from '../../../schemas/CreditCard';
 
 export const mapToProcessedTransactions = (
-  invoiceTransactions: TransactionSchemaType[]
+  transactions: TransactionSchemaType[],
+  invoices: Record<string, CreditCardInvoiceSchemaType[]>
 ): ProcessedTransaction[] => {
-  return invoiceTransactions.map(transaction => ({
-    id: transaction.id,
-    name: transaction.name,
-    category: transaction.category,
-    value: transaction.value,
-    type: 'expense', // All invoice transactions are expenses
-    date: firestoreTimestampToDate(transaction.date) || new Date(),
-    isPaid: transaction.isPaid,
-    bankAccountId: transaction.bankAccountId,
-    invoiceId: transaction.invoiceId,
-    cardId: transaction.creditCardId
-  }));
+  return transactions.map(transaction => {
+    const invoice = transaction.creditCardId ? invoices[transaction.creditCardId]?.[0] : null;
+    const transactionDate = firestoreTimestampToDate(transaction.date) || new Date();
+    
+    return {
+      id: transaction.id,
+      name: transaction.name,
+      category: transaction.category,
+      value: transaction.value,
+      type: transaction.type === 'INCOME' ? 'income' : 'expense',
+      date: transactionDate,
+      isPaid: transaction.isPaid,
+      cardId: transaction.creditCardId || '',
+      invoiceId: transaction.invoiceId || '',
+      invoiceMonth: invoice?.month || transactionDate.getMonth() + 1,
+      invoiceYear: invoice?.year || transactionDate.getFullYear()
+    };
+  });
 };
 
 export const filterTransactionsByCardId = (

@@ -32,37 +32,52 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   transactions: transactionsProp
 }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
-  // NOVO: Estado para controlar o modal de confirmação de pagamento
   const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
+  console.log(card)
 
   useEffect(() => {
     if (card) {
-      setSelectedMonth(card.dueDate);
-    } else {
-      setSelectedMonth(new Date());
+      // Find the current invoice or the most recent one
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      
+      const currentInvoice = card.invoices.find(inv => 
+        inv.month === currentMonth && inv.year === currentYear
+      ) || card.invoices[card.invoices.length - 1];
+      console.log(currentInvoice)
+
+      if (currentInvoice) {
+        setSelectedMonth(new Date(currentInvoice.year, currentInvoice.month - 1));
+      }
     }
   }, [card]);
-  console.log(transactionsProp)
 
-  const transactions = transactionsProp
-  console.log(transactions)
+  const transactions = transactionsProp || [];
 
   const handleNextMonth = () => setSelectedMonth(prev => dayjs(prev).add(1, 'month').toDate());
   const handlePrevMonth = () => setSelectedMonth(prev => dayjs(prev).subtract(1, 'month').toDate());
   const handleAddNewTransaction = () => console.log("Abrir modal para adicionar nova transação para o cartão:", card?.cardName);
   const handlePayInvoice = () => console.log("Ação para pagar a fatura do cartão:", card?.cardName);
 
-
   const filteredTransactions = useMemo(() => {
+    console.log(transactions)
     if (!card) return [];
-    const useInternalMocks = !transactionsProp || transactionsProp.length === 0;
-    return (transactions || [])
-      .filter(tx =>
-        (useInternalMocks ? true : tx.cardId === card.id) && 
-        dayjs(tx.date).isSame(selectedMonth, 'month')
+    return transactions
+      .filter(tx => 
+        tx.cardId === card.id && 
+        tx.invoiceMonth === selectedMonth.getMonth() + 1 &&
+        tx.invoiceYear === selectedMonth.getFullYear()
       )
       .sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [transactions, transactionsProp, card, selectedMonth]);
+  }, [transactions, card, selectedMonth]);
+
+  const currentInvoice = useMemo(() => {
+    if (!card) return null;
+    return card.invoices.find(inv => 
+      inv.month === selectedMonth.getMonth() + 1 && 
+      inv.year === selectedMonth.getFullYear()
+    );
+  }, [card, selectedMonth]);
 
   const { isAfterClosingDate, invoiceTotalForMonth } = useMemo(() => {
     if (!card) return { isAfterClosingDate: false, invoiceTotalForMonth: 0 };
@@ -70,7 +85,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
     const closingDateForMonth = dayjs(selectedMonth).date(card.closingDay);
     const today = dayjs();
 
-    const total = filteredTransactions.reduce((sum ,tx) => tx.value + sum, 0);
+    const total = filteredTransactions.reduce((sum, tx) => tx.value + sum, 0);
 
     return {
       isAfterClosingDate: today.isAfter(closingDateForMonth, 'day'),
@@ -87,13 +102,12 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   };
 
   const handleConfirmPayment = () => {
-    console.log("CONFIRMADO: Fatura paga no valor de ${formatCurrency(InvoiceTotalForMonth)} para o cartão:", card?.cardName);
+    console.log("CONFIRMADO: Fatura paga no valor de", formatCurrency(invoiceTotalForMonth), "para o cartão:", card?.cardName);
     handleCloseConfirmDialog();
     onClose(); 
   };
 
   if (!card) return null;
-
 
   return (
     <>
@@ -120,7 +134,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
               <Typography>{formatCurrency(card.limitTotal)}</Typography>
             </Grid>
             {/* Linha 2: Data de Fechamento e Vencimento */}
-            <Grid size={{ xs: 6, sm: 4, md:4 }}> {/* md:4 para alinhar com a coluna acima */}
+            <Grid size={{ xs: 6, sm: 4, md:4 }}>
               <Typography variant="caption" color="text.secondary">Fechamento</Typography>
               <Typography>Dia {card.closingDay}</Typography>
             </Grid>
@@ -146,6 +160,17 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
         </Box>
         <Divider sx={{ mb: 2 }} />
         
+        {currentInvoice && (
+          <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Status da Fatura: {currentInvoice.status}
+            </Typography>
+            <Typography>
+              Total: {formatCurrency(currentInvoice.total)}
+            </Typography>
+          </Box>
+        )}
+        
         {filteredTransactions.length > 0 ? (
           <List disablePadding>
             {filteredTransactions.map((transaction, index) => (
@@ -165,16 +190,14 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
       <DialogActions sx={{ p: '16px 24px' }}>
           <Box sx={{flexGrow: 1}} /> {/* Spacer para empurrar botões */}
           <Button onClick={onClose} color="inherit">Fechar</Button>
-          {isAfterClosingDate && invoiceTotalForMonth > 0 && (
-            <Button onClick={handleOpenConfirmDialog} variant='contained'>Pagar Fatura
-            </Button>
+          {currentInvoice && (currentInvoice.status === 'CLOSED' || currentInvoice.status === 'OVERDUE') && (
+            <Button onClick={handleOpenConfirmDialog} variant='contained'>Pagar Fatura</Button>
           )}
-          
       </DialogActions>
     </Dialog>
 
     <Dialog
-    open= {isConfirmingPayment}
+    open={isConfirmingPayment}
     onClose={handleCloseConfirmDialog}
     >
       <DialogTitle>Confirmar Pagamento</DialogTitle>
@@ -187,7 +210,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
         <Button onClick={handleCloseConfirmDialog}>Cancelar</Button>
         <Button onClick={handleConfirmPayment} variant="contained" color="primary" autoFocus>
           Confirmar Pagamento
-          </Button>
+        </Button>
       </DialogActions>
     </Dialog>
     </>

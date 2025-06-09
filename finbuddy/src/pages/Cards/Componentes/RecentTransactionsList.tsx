@@ -35,6 +35,8 @@ interface ProcessedTransaction {
   type: 'income' | 'expense';
   date: Date;
   isPaid: boolean;
+  invoiceMonth: number;
+  invoiceYear: number;
 }
 
 interface RecentTransactionsListProps {
@@ -61,6 +63,7 @@ const TransactionItem: React.FC<{ transaction: ProcessedTransaction }> = ({ tran
 const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
   transactions: transactionsProp = [],
 }) => {
+  console.log(transactionsProp)
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
@@ -72,9 +75,16 @@ const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
     if (isExpanded) {
       return [...transactionsProp].sort((a, b) => b.date.getTime() - a.date.getTime());
     }
-    const filteredByMonth = transactionsProp.filter(tx => dayjs(tx.date).isSame(selectedMonth, 'month'));
+    console.log(selectedMonth.getMonth()+1)
+    console.log(selectedMonth.getFullYear())
+    console.log(transactionsProp)
+    const filteredByMonth = transactionsProp.filter(tx => 
+      tx.invoiceMonth === selectedMonth.getMonth() + 1 && 
+      tx.invoiceYear === selectedMonth.getFullYear()
+    );
     return filteredByMonth.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8);
   }, [transactionsProp, isExpanded, selectedMonth]);
+  console.log(displayedTransactions)
 
   const { firstColumn, secondColumn } = useMemo(() => {
     const splitIndex = Math.ceil(displayedTransactions.length / 2);
