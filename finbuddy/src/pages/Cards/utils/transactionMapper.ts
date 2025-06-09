@@ -8,8 +8,13 @@ export const mapToProcessedTransactions = (
   invoices: Record<string, CreditCardInvoiceSchemaType[]>
 ): ProcessedTransaction[] => {
   return transactions.map(transaction => {
-    const invoice = transaction.creditCardId ? invoices[transaction.creditCardId]?.[0] : null;
     const transactionDate = firestoreTimestampToDate(transaction.date) || new Date();
+    const cardInvoices = transaction.creditCardId ? invoices[transaction.creditCardId] || [] : [];
+    
+    // Find the matching invoice for this transaction
+    const matchingInvoice = cardInvoices.find(invoice => 
+      invoice.id === transaction.invoiceId
+    );
     
     return {
       id: transaction.id,
@@ -21,8 +26,8 @@ export const mapToProcessedTransactions = (
       isPaid: transaction.isPaid,
       cardId: transaction.creditCardId || '',
       invoiceId: transaction.invoiceId || '',
-      invoiceMonth: invoice?.month || transactionDate.getMonth() + 1,
-      invoiceYear: invoice?.year || transactionDate.getFullYear()
+      invoiceMonth: matchingInvoice?.month || transactionDate.getMonth() + 1,
+      invoiceYear: matchingInvoice?.year || transactionDate.getFullYear()
     };
   });
 };

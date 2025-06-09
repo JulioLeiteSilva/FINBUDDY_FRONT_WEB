@@ -59,18 +59,6 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   const handleAddNewTransaction = () => console.log("Abrir modal para adicionar nova transação para o cartão:", card?.cardName);
   const handlePayInvoice = () => console.log("Ação para pagar a fatura do cartão:", card?.cardName);
 
-  const filteredTransactions = useMemo(() => {
-    console.log(transactions)
-    if (!card) return [];
-    return transactions
-      .filter(tx => 
-        tx.cardId === card.id && 
-        tx.invoiceMonth === selectedMonth.getMonth() + 1 &&
-        tx.invoiceYear === selectedMonth.getFullYear()
-      )
-      .sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [transactions, card, selectedMonth]);
-
   const currentInvoice = useMemo(() => {
     if (!card) return null;
     return card.invoices.find(inv => 
@@ -79,8 +67,18 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
     );
   }, [card, selectedMonth]);
 
+  const filteredTransactions = useMemo(() => {
+    if (!card || !currentInvoice) return [];
+    return transactions
+      .filter(tx => 
+        tx.cardId === card.id && 
+        tx.invoiceId === currentInvoice.id
+      )
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+  }, [transactions, card, currentInvoice]);
+
   const { isAfterClosingDate, invoiceTotalForMonth } = useMemo(() => {
-    if (!card) return { isAfterClosingDate: false, invoiceTotalForMonth: 0 };
+    if (!card || !currentInvoice) return { isAfterClosingDate: false, invoiceTotalForMonth: 0 };
 
     const closingDateForMonth = dayjs(selectedMonth).date(card.closingDay);
     const today = dayjs();
@@ -91,7 +89,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
       isAfterClosingDate: today.isAfter(closingDateForMonth, 'day'),
       invoiceTotalForMonth: total
     };
-  }, [card, selectedMonth, filteredTransactions]);
+  }, [card, currentInvoice, selectedMonth, filteredTransactions]);
 
   const handleOpenConfirmDialog = () => {
     setIsConfirmingPayment(true);
@@ -140,7 +138,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
             </Grid>
             <Grid size={{ xs: 6, sm: 4, md:4 }}>
               <Typography variant="caption" color="text.secondary">Vencimento</Typography>
-              <Typography>Dia {dayjs(card.dueDate).format('DD')}</Typography>
+              <Typography>Dia {card.dueDate}</Typography>
             </Grid>
           </Grid>
         </Box>

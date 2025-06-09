@@ -41,20 +41,20 @@ const CardList: React.FC<CardListProps> = ({ cards, onViewDetailsClick, onEditCl
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box sx={{ width: '10%', display: 'flex', justifyContent: 'center' }}>
           <IconButton onClick={handlePrev} disabled={cards.length <= 1}>
-            <ArrowBackIosNewIcon />
-          </IconButton>
+          <ArrowBackIosNewIcon />
+        </IconButton>
         </Box>
         <Box sx={{ width: '80%' }}>
-          <CreditCardDisplay
+                <CreditCardDisplay
             card={cards[currentIndex]}
             onViewDetailsClick={() => onViewDetailsClick(cards[currentIndex])}
             onEditClick={() => onEditClick(cards[currentIndex])}
-          />
+                />
         </Box>
         <Box sx={{ width: '10%', display: 'flex', justifyContent: 'center' }}>
           <IconButton onClick={handleNext} disabled={cards.length <= 1}>
-            <ArrowForwardIosIcon />
-          </IconButton>
+          <ArrowForwardIosIcon />
+        </IconButton>
         </Box>
       </Box>
     </Box>

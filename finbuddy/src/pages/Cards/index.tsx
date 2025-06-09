@@ -62,8 +62,10 @@ const CardPage: React.FC = () => {
     return mapToCardDetails(card, cardInvoices, bankAccounts, banks, invoicesTransactions);
   });
 
-  // Get all transactions from mapped cards and convert them to ProcessedTransaction format
-  const allTransactions = mappedCards.flatMap(card => card.transactions || []);
+  // Get all transactions from mapped cards' invoices and convert them to ProcessedTransaction format
+  const allTransactions = mappedCards.flatMap(card => 
+    card.invoices.flatMap(invoice => invoice.transactions)
+  );
   const processedTransactions = mapToProcessedTransactions(allTransactions, creditCardInvoices);
 
   // Filter transactions by selected card ID if one is selected
@@ -106,14 +108,14 @@ const CardPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, py: 3, minHeight: '100vh', backgroundColor: '#f4f6f8' }}>
+    <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, py: 3, minHeight: '100vh'}}>
       
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap' }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+        <Typography variant="h4" component="h1">
           Meus Cartões
         </Typography>
         <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenAddCardModal} sx={{ borderRadius: '20px', padding: '10px 20px', textTransform: 'none', fontSize:'1rem' }}>
-          Novo Cartão +
+          Novo Cartão
         </Button>
       </Box>
 

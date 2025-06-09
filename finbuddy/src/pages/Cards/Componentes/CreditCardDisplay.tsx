@@ -63,7 +63,10 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
     return brand.charAt(0) + brand.slice(1).toLowerCase();
   };
 
-  const formattedClosingDate = `Dia ${closingDay}`;
+  const formattedClosingDate = `Dia ${closingDay}/${new Date().getMonth() + 1}`;
+  const formattedDueDate = `Dia ${dueDate}/${new Date().getMonth() + 1}`;
+  console.log(closingDay)
+  console.log(dueDate)
 
   const currentInvoice = useMemo(() => {
     const currentMonth = new Date().getMonth() + 1;
@@ -101,7 +104,7 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
                     Vencimento
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {dayjs(dueDate).format('DD/MM')}
+                    {formattedDueDate}
                 </Typography>
             </Box>
              <Box>
@@ -120,12 +123,12 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
               Limite disponível
             </Typography>
             <Typography variant="caption" sx={{ color: secondaryTextColor }}>
-              {formatCurrency(limitTotal - amountSpent)}
+              {formatCurrency(limitTotal - (currentInvoice?.total || 0))}
             </Typography>
           </Box>
           <LinearProgress
             variant="determinate"
-            value={(amountSpent / limitTotal) * 100}
+            value={((currentInvoice?.total || 0) / limitTotal) * 100}
             sx={{
               height: 6,
               borderRadius: 3,

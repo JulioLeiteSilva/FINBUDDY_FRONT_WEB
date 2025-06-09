@@ -61,13 +61,9 @@ export const mapToCardDetails = (
     bankName: bank?.name || '',
     brand: flagMap[card.flag],
     closingDay: card.closingDay,
-    dueDate: new Date(), // This will be set by the backend
+    dueDate: card.dueDate, // This will be set by the backend
     limitTotal: card.limit,
     amountSpent,
-    invoices: mappedInvoices,
-    transactions: cardTransactions.map(t => ({
-      ...t,
-      date: firestoreTimestampToDate(t.date) || new Date()
-    }))
+    invoices: mappedInvoices
   };
 }; 

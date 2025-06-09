@@ -24,11 +24,10 @@ export interface CardDetails {
   bankName: string;
   brand: 'VISA' | 'MASTERCARD' | 'ELO' | 'AMEX' | 'OTHER';
   closingDay: number;
-  dueDate: Date;
+  dueDate: number;
   limitTotal: number;
   amountSpent: number;
   invoices: InvoiceDetails[];
-  transactions: TransactionSchemaType[];
 }
 
 export interface InvoiceDetails {
@@ -37,4 +36,5 @@ export interface InvoiceDetails {
   year: number;
   status: InvoiceStatus;
   total: number;
+  transactions: TransactionSchemaType[];
 }
