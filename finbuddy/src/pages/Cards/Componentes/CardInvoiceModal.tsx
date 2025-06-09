@@ -17,6 +17,8 @@ import { CardDetails, ProcessedTransaction } from '../utils/types';
 import { TransactionItem } from '../utils/TransactionItem';
 import { formatCurrency } from '../utils/formatters';
 import { set } from 'react-hook-form';
+import { PayCreditCardInvoice } from '../../../services/CreditCardInvoice/payCreditCardInvoice';
+import { useBankAccountStore } from '../../../store/bankAccountStore';
 
 interface CardDetailsModalProps {
   open: boolean;
@@ -33,6 +35,8 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
 }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const { bankAccounts } = useBankAccountStore();
   console.log(card)
 
   useEffect(() => {
@@ -99,10 +103,30 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
     setIsConfirmingPayment(false);
   };
 
-  const handleConfirmPayment = () => {
-    console.log("CONFIRMADO: Fatura paga no valor de", formatCurrency(invoiceTotalForMonth), "para o cartão:", card?.cardName);
-    handleCloseConfirmDialog();
-    onClose(); 
+  const handleConfirmPayment = async () => {
+    if (!card || !currentInvoice) return;
+
+    try {
+      setIsPaying(true);
+      // Get the first bank account as default (you might want to add a selection UI for this)
+      const defaultBankAccount = bankAccounts[0];
+      if (!defaultBankAccount) {
+        throw new Error('Nenhuma conta bancária disponível para pagamento');
+      }
+
+      await PayCreditCardInvoice({
+        cardId: card.id,
+        invoiceId: currentInvoice.id,
+        bankAccountId: defaultBankAccount.id
+      });
+
+      handleCloseConfirmDialog();
+      onClose();
+    } catch (error) {
+      console.error('Erro ao pagar fatura:', error);
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   if (!card) return null;
@@ -205,9 +229,15 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseConfirmDialog}>Cancelar</Button>
-        <Button onClick={handleConfirmPayment} variant="contained" color="primary" autoFocus>
-          Confirmar Pagamento
+        <Button onClick={handleCloseConfirmDialog} disabled={isPaying}>Cancelar</Button>
+        <Button 
+          onClick={handleConfirmPayment} 
+          variant="contained" 
+          color="primary" 
+          autoFocus
+          disabled={isPaying}
+        >
+          {isPaying ? 'Processando...' : 'Confirmar Pagamento'}
         </Button>
       </DialogActions>
     </Dialog>
