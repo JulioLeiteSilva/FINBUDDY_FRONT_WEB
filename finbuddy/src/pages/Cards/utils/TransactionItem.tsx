@@ -6,12 +6,10 @@ import {
   Avatar,
   Typography,
 } from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import dayjs from 'dayjs';
-
-// Importa a função de formatação do nosso novo arquivo de utils
-import { formatCurrency } from '../utils/formatters'; // Ajuste o caminho se necessário
+import GetMuiIcon from '../../../utils/getMuiIcon';
+import { useCategoriesStore } from '../../../store/categoriesStore';
+import { formatCurrency } from '../utils/formatters';
 import { ProcessedTransaction } from './types';
 
 // É ideal que esta interface venha de um arquivo de tipos compartilhado (ex: src/types/index.ts)
@@ -26,7 +24,20 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction })
   const isIncome = transaction.type === 'income';
   const valueColor = isIncome ? 'success.main' : 'error.main';
   const avatarBgColor = isIncome ? 'success.light' : 'error.light';
-  const avatarIconColor = isIncome ? 'success.dark' : 'error.dark';
+  const { categories, defaultCategories } = useCategoriesStore();
+
+  const getCategoryInfo = (categoryIcon: string) => {
+    const category = categories.find(cat => cat.icon === categoryIcon);
+    const defaultCategory = defaultCategories.find(cat => cat.icon === categoryIcon);
+    const categoryInfo = category || defaultCategory;
+    
+    return {
+      icon: categoryInfo?.icon || categoryIcon,
+      name: categoryInfo?.name || categoryIcon
+    };
+  };
+
+  const categoryInfo = getCategoryInfo(transaction.category);
 
   return (
     <ListItem
@@ -39,7 +50,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction })
     >
       <ListItemIcon sx={{ minWidth: 52 }}>
         <Avatar sx={{ bgcolor: avatarBgColor }}>
-          {isIncome ? <ArrowUpwardIcon sx={{ color: avatarIconColor }} /> : <ArrowDownwardIcon sx={{ color: avatarIconColor }} />}
+          <GetMuiIcon iconName={categoryInfo.icon} sx={{ color: 'white' }} />
         </Avatar>
       </ListItemIcon>
       <ListItemText
@@ -48,7 +59,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction })
             {transaction.name}
           </Typography>
         }
-        secondary={`${transaction.category} • ${dayjs(transaction.date).format('DD/MM/YYYY')}`}
+        secondary={`${categoryInfo.name} • ${dayjs(transaction.date).format('DD/MM/YYYY')}`}
       />
     </ListItem>
   );

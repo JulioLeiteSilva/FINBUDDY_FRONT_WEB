@@ -22,41 +22,18 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import { TransactionItem } from '../utils/TransactionItem';
+import { ProcessedTransaction } from '../utils/types';
 
 dayjs.locale('pt-br');
 
 // --- INTERFACES ---
-
-interface ProcessedTransaction {
-  id: string;
-  name: string;
-  category: string;
-  value: number;
-  type: 'income' | 'expense';
-  date: Date;
-  isPaid: boolean;
-  invoiceMonth: number;
-  invoiceYear: number;
-}
 
 interface RecentTransactionsListProps {
   transactions?: ProcessedTransaction[];
 }
 
 const formatCurrency = (value: number): string => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-const TransactionItem: React.FC<{ transaction: ProcessedTransaction }> = ({ transaction }) => {
-  const isIncome = transaction.type === 'income';
-  const valueColor = isIncome ? 'success.main' : 'error.main';
-  const avatarBgColor = isIncome ? 'success.light' : 'error.light';
-  const avatarIconColor = isIncome ? 'success.dark' : 'error.dark';
-  return (
-    <ListItem sx={{ py: 1.5 }} secondaryAction={<Typography sx={{ fontWeight: 'bold', color: valueColor }}>{isIncome ? '+' : '-'} {formatCurrency(transaction.value)}</Typography>}>
-      <ListItemIcon sx={{ minWidth: 52 }}><Avatar sx={{ bgcolor: avatarBgColor }}>{isIncome ? <ArrowUpwardIcon sx={{ color: avatarIconColor }} /> : <ArrowDownwardIcon sx={{ color: avatarIconColor }} />}</Avatar></ListItemIcon>
-      <ListItemText primary={<Typography variant="body1" sx={{ fontWeight: 500 }} noWrap>{transaction.name}</Typography>} secondary={`${transaction.category} • ${dayjs(transaction.date).format('DD/MM/YYYY')}`} />
-    </ListItem>
-  );
-};
 
 // --- COMPONENTE PRINCIPAL ---
 
