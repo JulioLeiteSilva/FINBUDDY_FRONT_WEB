@@ -153,13 +153,13 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
           >
             Ver fatura
           </Link>
-          <IconButton
+          {/* <IconButton
             size="small"
             onClick={() => onEditClick?.(card)}
             sx={{ color: textColor }}
           >
             <EditIcon fontSize="small" />
-          </IconButton>
+          </IconButton> */}
         </Box>
       </CardContent>
     </Card>

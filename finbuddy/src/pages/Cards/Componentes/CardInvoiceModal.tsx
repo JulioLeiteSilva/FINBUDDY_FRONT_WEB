@@ -9,6 +9,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import { InvoiceStatus } from '../../../enums/InvoiceStatus';
 dayjs.locale('pt-br');
 
 
@@ -26,6 +27,16 @@ interface CardDetailsModalProps {
   card: CardDetails | null;
   transactions?: ProcessedTransaction[];
 }
+
+const getInvoiceStatusText = (status: InvoiceStatus): string => {
+  const statusMap = {
+    [InvoiceStatus.OPEN]: 'Aberta',
+    [InvoiceStatus.CLOSED]: 'Fechada',
+    [InvoiceStatus.PAID]: 'Paga',
+    [InvoiceStatus.OVERDUE]: 'Em Atraso'
+  };
+  return statusMap[status] || status;
+};
 
 const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   open,
@@ -185,7 +196,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
         {currentInvoice && (
           <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-              Status da Fatura: {currentInvoice.status}
+              Status da Fatura: {getInvoiceStatusText(currentInvoice.status)}
             </Typography>
             <Typography>
               Total: {formatCurrency(currentInvoice.total)}
