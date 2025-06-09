@@ -8,7 +8,11 @@ export const mapToProcessedTransactions = (
   invoices: Record<string, CreditCardInvoiceSchemaType[]>
 ): ProcessedTransaction[] => {
   return transactions.map(transaction => {
+    console.log('Transaction date object:', transaction.date);
+    console.log('Transaction date type:', typeof transaction.date);
+    console.log('Transaction date keys:', Object.keys(transaction.date));
     const transactionDate = firestoreTimestampToDate(transaction.date) || new Date();
+    console.log('Converted date:', transactionDate);
     const cardInvoices = transaction.creditCardId ? invoices[transaction.creditCardId] || [] : [];
     
     // Find the matching invoice for this transaction

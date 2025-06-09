@@ -12,6 +12,12 @@ export type FirestoreTimestamp = {
  * Retorna null se a entrada for inválida.
  */
 export const firestoreTimestampToDate = (timestamp: unknown): Date | null => {
+    // Se já for um objeto Date, retorna ele mesmo
+    if (timestamp instanceof Date) {
+        return timestamp;
+    }
+
+    // Tenta converter de Firestore Timestamp
     const ts = timestamp as FirestoreTimestamp;
     if (ts && typeof ts._seconds === 'number') {
         return new Date(ts._seconds * 1000);
