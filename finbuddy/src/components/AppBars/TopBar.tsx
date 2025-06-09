@@ -29,8 +29,13 @@ const TopBar: React.FC<TopBarProps> = ({ onOpenNewTransactionModal }) => {
     };
 
     const handleLogout = async () => {
-        handleClose();
-        await logout();
+        try {
+            handleClose();
+            await logout();
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+            // Aqui você pode adicionar uma notificação de erro se desejar
+        }
     };
 
     const getInitials = (email: string | null): string => {

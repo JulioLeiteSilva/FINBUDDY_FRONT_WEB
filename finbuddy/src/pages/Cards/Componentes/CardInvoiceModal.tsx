@@ -13,18 +13,10 @@ dayjs.locale('pt-br');
 
 
 // Importando de seus arquivos centralizados (ajuste os caminhos se necessário)
-import { ProcessedTransaction } from '../utils/TransactionItem';
-import { CardDetails } from '../utils/types';
+import { CardDetails, ProcessedTransaction } from '../utils/types';
 import { TransactionItem } from '../utils/TransactionItem';
 import { formatCurrency } from '../utils/formatters';
 import { set } from 'react-hook-form';
-
-// Dados mockados para que o modal funcione de forma isolada para testes
-const mockModalTransactions: ProcessedTransaction[] = [
-    { id: 'modal-tx-1', name: 'Compra Online Amazon', category: 'Compras', value: 125.50, type: 'expense', date: dayjs('2025-05-20').toDate(), isPaid: true, bankAccountId: 'mock-card-id' },
-    { id: 'modal-tx-2', name: 'Uber Viagem', category: 'Transporte', value: 32.80, type: 'expense', date: dayjs('2025-05-18').toDate(), isPaid: true, bankAccountId: 'mock-card-id' },
-    { id: 'modal-tx-3', name: 'iFood', category: 'Alimentação', value: 75.90, type: 'expense', date: dayjs('2025-05-15').toDate(), isPaid: true, bankAccountId: 'mock-card-id' },
-];
 
 interface CardDetailsModalProps {
   open: boolean;
@@ -50,10 +42,10 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
       setSelectedMonth(new Date());
     }
   }, [card]);
+  console.log(transactionsProp)
 
-  const transactions = transactionsProp && transactionsProp.length > 0
-                       ? transactionsProp
-                       : mockModalTransactions;
+  const transactions = transactionsProp
+  console.log(transactions)
 
   const handleNextMonth = () => setSelectedMonth(prev => dayjs(prev).add(1, 'month').toDate());
   const handlePrevMonth = () => setSelectedMonth(prev => dayjs(prev).subtract(1, 'month').toDate());
@@ -64,9 +56,9 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   const filteredTransactions = useMemo(() => {
     if (!card) return [];
     const useInternalMocks = !transactionsProp || transactionsProp.length === 0;
-    return transactions
+    return (transactions || [])
       .filter(tx =>
-        (useInternalMocks ? true : tx.bankAccountId === card.id) && 
+        (useInternalMocks ? true : tx.cardId === card.id) && 
         dayjs(tx.date).isSame(selectedMonth, 'month')
       )
       .sort((a, b) => b.date.getTime() - a.date.getTime());

@@ -12,19 +12,10 @@ import dayjs from 'dayjs';
 
 // Importa a função de formatação do nosso novo arquivo de utils
 import { formatCurrency } from '../utils/formatters'; // Ajuste o caminho se necessário
+import { ProcessedTransaction } from './types';
 
 // É ideal que esta interface venha de um arquivo de tipos compartilhado (ex: src/types/index.ts)
 // Mas, por enquanto, a definimos aqui para que o componente seja autocontido.
-export interface ProcessedTransaction {
-  id: string;
-  name: string;
-  category: string;
-  value: number;
-  type: 'income' | 'expense';
-  date: Date;
-  isPaid: boolean;
-  bankAccountId: string;
-}
 
 interface TransactionItemProps {
   transaction: ProcessedTransaction;

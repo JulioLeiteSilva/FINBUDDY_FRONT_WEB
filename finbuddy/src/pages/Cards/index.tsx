@@ -1,5 +1,5 @@
 // src/pages/Cards/CardPage.tsx (ou o caminho do seu arquivo)
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 
 // Importe todos os componentes que a página utiliza
 import CardList from './Componentes/CardList';
- // O modal para Adicionar/Editar Cartão
+// O modal para Adicionar/Editar Cartão
 
 // Importe seus tipos (idealmente de um arquivo compartilhado)
 import { ProcessedTransaction } from './utils/types';
@@ -16,52 +16,65 @@ import AddTransactionModal from './Componentes/AddTransactionModal';
 import CardFormModal from './Componentes/CardFormModal';
 import CardDetailsModal from './Componentes/CardInvoiceModal';
 import RecentTransactionsList from './Componentes/RecentTransactionsList';
-
-// --- DADOS MOCKADOS (definidos na página para desenvolvimento) ---
-const mockCards: CardDetails[] = [
-  {
-    id: 'nubank-card-id-01',
-    cardName: "Cartão Ultravioleta", bankName: "Nubank", brand: "MASTERCARD",
-    closingDay: 28, dueDate: dayjs('2025-06-05').toDate(),
-    invoiceTotal: 1250.77, limitTotal: 15000.00, amountSpent: 4300.50,
-  },
-  {
-    id: 'itau-card-id-02',
-    cardName: "Click Platinum", bankName: "Itau", brand: "MASTERCARD",
-    closingDay: 20, dueDate: dayjs('2025-06-28').toDate(),
-    invoiceTotal: 850.45, limitTotal: 8000.00, amountSpent: 2100.30,
-  },
-   {
-    id: 'bb-card-id-03',
-    cardName: "Ourocard Fácil", bankName: "Banco do Brasil", brand: "ELO",
-    closingDay: 15, dueDate: dayjs('2025-06-25').toDate(),
-    invoiceTotal: 430.10, limitTotal: 6000.00, amountSpent: 1250.00,
-  },
-];
-
-const mockTransactions: ProcessedTransaction[] = [
-  { id: 'tx-1', name: 'Netflix', category: 'Assinaturas', value: 39.90, type: 'expense', date: dayjs('2025-05-10').toDate(), isPaid: true, bankAccountId: 'nubank-card-id-01' },
-  { id: 'tx-2', name: 'Supermercado', category: 'Alimentação', value: 350.45, type: 'expense', date: dayjs('2025-05-15').toDate(), isPaid: true, bankAccountId: 'nubank-card-id-01' },
-  { id: 'tx-6', name: 'Conta de Internet', category: 'Contas', value: 109.90, type: 'expense', date: dayjs('2025-04-30').toDate(), isPaid: true, bankAccountId: 'nubank-card-id-01' },
-  { id: 'tx-4', name: 'Cinema', category: 'Lazer', value: 60.00, type: 'expense', date: dayjs('2025-05-12').toDate(), isPaid: true, bankAccountId: 'itau-card-id-02' },
-  { id: 'tx-5', name: 'Restaurante', category: 'Alimentação', value: 120.00, type: 'expense', date: dayjs('2025-05-18').toDate(), isPaid: true, bankAccountId: 'itau-card-id-02' },
-  { id: 'tx-7', name: 'Posto de Gasolina', category: 'Transporte', value: 150.00, type: 'expense', date: dayjs('2025-06-01').toDate(), isPaid: true, bankAccountId: 'bb-card-id-03' },
-  { id: 'tx-8', name: 'Padaria', category: 'Alimentação', value: 25.50, type: 'expense', date: dayjs('2025-06-04').toDate(), isPaid: true, bankAccountId: 'itau-card-id-02' },
-  { id: 'tx-9', name: 'Farmácia', category: 'Saúde', value: 75.20, type: 'expense', date: dayjs('2025-06-06').toDate(), isPaid: true, bankAccountId: 'nubank-card-id-01' },
-  { id: 'tx-10', name: 'Rendimento Poupança', category: 'Investimentos', value: 50.10, type: 'income', date: dayjs('2025-05-31').toDate(), isPaid: true, bankAccountId: 'conta-principal' },
-];
-
+import { useCreditCardStore } from '../../store/creditCardStore';
+import { useCreditCardInvoiceStore } from '../../store/creditCardInvoiceStore';
+import { useBankAccountStore } from '../../store/bankAccountStore';
+import { useBanks } from '../../hooks/useBanks';
+import { mapToCardDetails } from './utils/cardDetailsMapper';
+import { useInvoiceTransactionsStore } from '../../store/invoiceTransactionStore';
+import { mapToProcessedTransactions, filterTransactionsByCardId } from './utils/transactionMapper';
 
 const CardPage: React.FC = () => {
-  // Estado para o modal de detalhes do cartão
   const [detailsCard, setDetailsCard] = useState<CardDetails | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   
-  // Estado para o modal de formulário (Adicionar/Editar Cartão)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [cardToEdit, setCardToEdit] = useState<CardDetails | null>(null);
 
-  // NOVO: Estado para o modal de adicionar transação
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+
+  const { creditCards, isLoading, fetchCreditCards } = useCreditCardStore();
+  const { creditCardInvoices, isLoading: isLoadingCreditCardInvoices, fetchCreditCardInvoices } = useCreditCardInvoiceStore();
+  const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
+  const { invoicesTransactions, isLoading: isLoadingInvoiceTransactions, fetchInvoiceTransactions } = useInvoiceTransactionsStore();
+  const { banks } = useBanks();
+
+  useEffect(() => {
+    fetchCreditCards();
+    fetchBankAccounts();
+  }, [fetchCreditCards, fetchBankAccounts]);
+  console.log(bankAccounts);
+
+  useEffect(() => {
+    if (creditCards.length > 0) {
+      // Fetch invoices for all credit cards
+      const fetchAllInvoices = async () => {
+        const invoicePromises = creditCards.map(card => fetchCreditCardInvoices(card.id));
+        await Promise.all(invoicePromises);
+      };
+      fetchAllInvoices();
+      fetchInvoiceTransactions();
+    }
+  }, [creditCards, fetchCreditCardInvoices, fetchInvoiceTransactions]);
+  console.log(creditCardInvoices)
+
+  // Map credit cards to CardDetails format
+  const mappedCards = creditCards.map(card => {
+    const cardInvoices = creditCardInvoices[card.id] || [];
+    return mapToCardDetails(card, cardInvoices, bankAccounts, banks);
+  });
+  console.log(mappedCards)
+
+  // Map invoice transactions to ProcessedTransaction format
+  const processedTransactions = mapToProcessedTransactions(invoicesTransactions);
+  console.log(processedTransactions)
+
+  // Filter transactions by selected card ID if one is selected
+  const filteredTransactions = selectedCardId 
+    ? filterTransactionsByCardId(processedTransactions, selectedCardId)
+    : processedTransactions;
+
+  console.log(filteredTransactions)
 
   // --- Handlers para o Modal de Formulário de Cartão ---
   const handleOpenAddCardModal = () => {
@@ -73,15 +86,20 @@ const CardPage: React.FC = () => {
     setIsFormModalOpen(true);
   };
   const handleCloseFormModal = () => setIsFormModalOpen(false);
-  const handleSaveCard = (formData: any, cardId: string | null) => {
-    if (cardId) console.log('Salvando alterações para o cartão ID:', cardId, 'Dados:', formData);
-    else console.log('Criando novo cartão com os dados:', formData);
+  const handleSaveCard = (formData: any) => {
+    console.log('Criando/Editando cartão com os dados:', formData);
     handleCloseFormModal();
   };
 
   // --- Handlers para o Modal de Detalhes do Cartão ---
-  const handleViewDetailsClick = (card: CardDetails) => setDetailsCard(card);
-  const handleCloseDetailsModal = () => setDetailsCard(null);
+  const handleViewDetailsClick = (card: CardDetails) => {
+    setDetailsCard(card);
+    setSelectedCardId(card.id);
+  };
+  const handleCloseDetailsModal = () => {
+    setDetailsCard(null);
+    setSelectedCardId(null);
+  };
 
   // --- Handlers para o Modal de Adicionar Transação ---
   const handleOpenTransactionModal = () => setIsTransactionModalOpen(true);
@@ -106,7 +124,7 @@ const CardPage: React.FC = () => {
 
       <Box sx={{ mb: 3 }}>
         <CardList 
-          cards={mockCards}
+          cards={mappedCards}
           onViewDetailsClick={handleViewDetailsClick}
           onEditClick={handleOpenEditCardModal}
         />
@@ -119,7 +137,7 @@ const CardPage: React.FC = () => {
       </Box>
 
       <Box>
-        <RecentTransactionsList transactions={mockTransactions} />
+        <RecentTransactionsList transactions={filteredTransactions} />
       </Box>
 
       {/* MODAL 1: Detalhes do Cartão */}
@@ -127,7 +145,7 @@ const CardPage: React.FC = () => {
         open={!!detailsCard}
         onClose={handleCloseDetailsModal}
         card={detailsCard}
-        transactions={mockTransactions}
+        transactions={filteredTransactions}
       />
       
       {/* MODAL 2: Formulário de Adicionar/Editar Cartão */}
@@ -143,7 +161,7 @@ const CardPage: React.FC = () => {
         open={isTransactionModalOpen}
         onClose={handleCloseTransactionModal}
         onSave={handleSaveTransaction}
-        cards={mockCards}
+        cards={creditCards}
       />
       
     </Box>

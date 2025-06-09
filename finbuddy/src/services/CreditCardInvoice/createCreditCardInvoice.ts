@@ -14,7 +14,7 @@ export const CreateCreditCardInvoice = async (data: CreditCardInvoiceRequestDTOS
     console.log('Fatura criada:', response.data);
 
     const { fetchCreditCardInvoices } = useCreditCardInvoiceStore.getState();
-    await fetchCreditCardInvoices();
+    await fetchCreditCardInvoices(data.creditCardId);
 
     showSnackbar('Fatura criada com sucesso!', 'success');
   } catch (error) {

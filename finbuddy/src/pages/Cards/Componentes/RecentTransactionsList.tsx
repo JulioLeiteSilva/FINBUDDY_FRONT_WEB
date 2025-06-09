@@ -25,7 +25,7 @@ import 'dayjs/locale/pt-br';
 
 dayjs.locale('pt-br');
 
-// --- INTERFACES E DADOS MOCKADOS ---
+// --- INTERFACES ---
 
 interface ProcessedTransaction {
   id: string;
@@ -40,21 +40,6 @@ interface ProcessedTransaction {
 interface RecentTransactionsListProps {
   transactions?: ProcessedTransaction[];
 }
-
-const mockRecentTransactions: ProcessedTransaction[] = [
-  { id: 'tx-1', name: 'Salário Mensal', category: 'Salário', value: 7500, type: 'income', date: dayjs('2025-06-05').toDate(), isPaid: true },
-  { id: 'tx-2', name: 'Aluguel', category: 'Moradia', value: 2200, type: 'expense', date: dayjs('2025-06-05').toDate(), isPaid: true },
-  { id: 'tx-3', name: 'Supermercado', category: 'Alimentação', value: 670.45, type: 'expense', date: dayjs('2025-06-03').toDate(), isPaid: true },
-  { id: 'tx-4', name: 'Projeto Freelance', category: 'Trabalho Extra', value: 1200, type: 'income', date: dayjs('2025-06-02').toDate(), isPaid: true },
-  { id: 'tx-5', name: 'Almoço Restaurante', category: 'Alimentação', value: 45.50, type: 'expense', date: dayjs('2025-05-31').toDate(), isPaid: true },
-  { id: 'tx-6', name: 'Conta de Internet', category: 'Contas', value: 109.90, type: 'expense', date: dayjs('2025-05-30').toDate(), isPaid: true },
-  { id: 'tx-7', name: 'Cinema', category: 'Lazer', value: 60.00, type: 'expense', date: dayjs('2025-05-28').toDate(), isPaid: false },
-  { id: 'tx-8', name: 'Rendimento Investimento', category: 'Investimentos', value: 250.80, type: 'income', date: dayjs('2025-05-27').toDate(), isPaid: true },
-  { id: 'tx-9', name: 'Café', category: 'Alimentação', value: 12.00, type: 'expense', date: dayjs('2025-05-26').toDate(), isPaid: true },
-  { id: 'tx-10', name: 'Livro Técnico', category: 'Educação', value: 89.90, type: 'expense', date: dayjs('2025-05-25').toDate(), isPaid: true },
-  { id: 'tx-11', name: 'Presente Aniversário', category: 'Presentes', value: 150.00, type: 'expense', date: dayjs('2025-05-22').toDate(), isPaid: true },
-  { id: 'tx-12', name: 'Adiantamento', category: 'Salário', value: 1000, type: 'income', date: dayjs('2025-07-01').toDate(), isPaid: true },
-];
 
 const formatCurrency = (value: number): string => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -71,16 +56,13 @@ const TransactionItem: React.FC<{ transaction: ProcessedTransaction }> = ({ tran
   );
 };
 
-
 // --- COMPONENTE PRINCIPAL ---
 
 const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
-  transactions: transactionsProp,
+  transactions: transactionsProp = [],
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
-
-  const allTransactions = (transactionsProp && transactionsProp.length > 0) ? transactionsProp : mockRecentTransactions;
 
   const handleNextMonth = () => setSelectedMonth(prev => dayjs(prev).add(1, 'month').toDate());
   const handlePrevMonth = () => setSelectedMonth(prev => dayjs(prev).subtract(1, 'month').toDate());
@@ -88,11 +70,11 @@ const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
 
   const displayedTransactions = useMemo(() => {
     if (isExpanded) {
-      return [...allTransactions].sort((a, b) => b.date.getTime() - a.date.getTime());
+      return [...transactionsProp].sort((a, b) => b.date.getTime() - a.date.getTime());
     }
-    const filteredByMonth = allTransactions.filter(tx => dayjs(tx.date).isSame(selectedMonth, 'month'));
+    const filteredByMonth = transactionsProp.filter(tx => dayjs(tx.date).isSame(selectedMonth, 'month'));
     return filteredByMonth.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8);
-  }, [allTransactions, isExpanded, selectedMonth]);
+  }, [transactionsProp, isExpanded, selectedMonth]);
 
   const { firstColumn, secondColumn } = useMemo(() => {
     const splitIndex = Math.ceil(displayedTransactions.length / 2);
@@ -102,13 +84,13 @@ const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
     };
   }, [displayedTransactions]);
 
-  const canExpand = allTransactions.length > 8;
+  const canExpand = transactionsProp.length > 8;
 
-  if (allTransactions.length === 0) {
+  if (transactionsProp.length === 0) {
     return (
       <Card sx={{ mt: 3, borderRadius: '12px', boxShadow: 1 }}>
-        <CardContent sx={{ textAlign: 'center', color: 'text.secondary' }}>
-          <Typography>Nenhuma transação recente para exibir.</Typography>
+        <CardContent sx={{ textAlign: 'center', color: 'text.secondary', py: 4 }}>
+          <Typography>Nenhuma transação encontrada.</Typography>
         </CardContent>
       </Card>
     );
@@ -119,8 +101,6 @@ const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
       <CardContent>
         {/* --- INÍCIO: CABEÇALHO DO CARD COM TÍTULO E FILTRO --- */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-
-
           {/* O filtro de mês só aparece se a lista NÃO estiver expandida */}
           {!isExpanded && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

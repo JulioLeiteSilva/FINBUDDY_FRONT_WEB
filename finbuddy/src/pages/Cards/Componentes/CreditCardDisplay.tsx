@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import dayjs from 'dayjs';
+import { useBanks } from '../../../hooks/useBanks';
 
 // --- INTERFACES E DADOS MOCKADOS ---
 
@@ -37,7 +38,7 @@ interface CreditCardDisplayProps {
 const defaultMockCardData: CardDetails = {
   id: 'mock-001',
   cardName: "Cartão Ultravioleta",
-  bankName: "Nubank", // Mude para "Itau" ou "Banco do Brasil" para testar outras cores
+  bankName: "Nubank",
   brand: 'MASTERCARD',
   closingDay: 28,
   dueDate: dayjs('2025-06-05').toDate(),
@@ -47,16 +48,6 @@ const defaultMockCardData: CardDetails = {
 };
 
 // --- CONFIGURAÇÕES DE ESTILO E FORMATAÇÃO ---
-
-const bankColorMap: Record<string, string> = {
-  nubank: '#820ad1',
-  itau: '#ec7000',
-  'banco do brasil': '#fddc01',
-};
-
-const bankTextColorMap: Record<string, string> = {
-  'banco do brasil': '#003366', // Azul escuro para fundo amarelo
-};
 
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -72,7 +63,6 @@ const formatCardBrand = (brand: string): string => {
   return brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
 };
 
-
 // --- COMPONENTE PRINCIPAL ---
 
 const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
@@ -81,21 +71,20 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
   onEditClick,
 }) => {
   const theme = useTheme();
+  const { banks } = useBanks();
   const card = cardProp || defaultMockCardData;
 
   const { id, cardName, bankName, brand, closingDay, dueDate, invoiceTotal, limitTotal, amountSpent } = card;
 
-  // Lógica de Cores - Revisada para garantir funcionamento
-  const bankNameLower = bankName.toLowerCase();
-  const cardBackgroundColor = bankColorMap[bankNameLower] || '#ffffff';
+  // Encontra o banco correspondente
+  const bank = banks.find(b => b.name.toLowerCase() === bankName.toLowerCase());
   
-  // Define a cor de texto padrão para cards coloridos (branco ou a cor customizada do mapa)
-  const coloredCardDefaultText = bankTextColorMap[bankNameLower] || '#ffffff';
+  // Define as cores do cartão
+  const cardBackgroundColor = bank?.colors.primary || '#ffffff';
+  const textColor = bank?.colors.textColor || theme.palette.text.primary;
+  const secondaryTextColor = bank ? 'rgba(255,255,255,0.7)' : theme.palette.text.secondary;
 
-  // Define as cores primárias e secundárias com base no fundo do card
-  const primaryTextColor = cardBackgroundColor === '#ffffff' ? theme.palette.text.primary : coloredCardDefaultText;
-  const secondaryTextColor = cardBackgroundColor === '#ffffff' ? theme.palette.text.secondary : 'rgba(255,255,255,0.7)';
-
+  console.log(amountSpent)
   // Lógica de valores
   const usedPercentage = limitTotal > 0 ? (amountSpent / limitTotal) * 100 : 0;
   const availableLimit = limitTotal - amountSpent;
@@ -131,7 +120,7 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
         maxWidth: 380,
         margin: 'auto',
         backgroundColor: cardBackgroundColor,
-        color: primaryTextColor,
+        color: textColor,
       }}>
       <CardContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', height: '100%' }}>
         
@@ -160,7 +149,7 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
                 <Typography variant="caption" display="block" sx={{ fontSize: '0.7rem', color: secondaryTextColor, textTransform: 'uppercase' }}>
                     Fatura Atual
                 </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', color: cardBackgroundColor === '#ffffff' ? theme.palette.error.main : coloredCardDefaultText }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: bank ? textColor : theme.palette.error.main }}>
                     {formatCurrency(invoiceTotal)}
                 </Typography>
             </Box>
@@ -171,9 +160,9 @@ const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
             variant="determinate"
             value={usedPercentage}
             sx={{
-              backgroundColor: cardBackgroundColor === '#ffffff' ? theme.palette.success.light : 'rgba(255,255,255,0.3)',
+              backgroundColor: bank ? 'rgba(255,255,255,0.3)' : theme.palette.success.light,
               '& .MuiLinearProgress-bar': {
-                backgroundColor: cardBackgroundColor === '#ffffff' ? theme.palette.error.main : 'rgba(255,255,255,0.7)',
+                backgroundColor: bank ? 'rgba(255,255,255,0.7)' : theme.palette.error.main,
               },
             }}
           />

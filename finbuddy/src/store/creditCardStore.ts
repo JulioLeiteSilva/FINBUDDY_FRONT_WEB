@@ -23,7 +23,7 @@ export const useCreditCardStore = create<CreditCardState>((set) => ({
       const getAllCreditCardsResponse = response.data as unknown as CreditCardResponseDTOSchemaType;
 
       set({
-        creditCards: getAllCreditCardsResponse.creditCards as CreditCardSchemaType[],
+        creditCards: getAllCreditCardsResponse.cards as CreditCardSchemaType[],
         message: getAllCreditCardsResponse.message,
       });
     } catch (error) {

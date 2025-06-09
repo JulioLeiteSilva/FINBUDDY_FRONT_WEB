@@ -4,28 +4,31 @@ import { httpsCallable } from 'firebase/functions';
 import { functions } from '../services/firebase';
 
 interface CreditCardInvoiceState {
-  creditCardInvoices: CreditCardInvoiceSchemaType[];
+  creditCardInvoices: Record<string, CreditCardInvoiceSchemaType[]>;
   message: string;
   isLoading: boolean;
-  fetchCreditCardInvoices: () => Promise<void>;
+  fetchCreditCardInvoices: (cardId: string) => Promise<void>;
 }
 
 export const useCreditCardInvoiceStore = create<CreditCardInvoiceState>((set) => ({
-  creditCardInvoices: [],
+  creditCardInvoices: {},
   message: '',
   isLoading: false,
 
-  fetchCreditCardInvoices: async () => {
+  fetchCreditCardInvoices: async (cardId: string) => {
     set({ isLoading: true });
     try {
       const getAllCreditCardInvoicesFn = httpsCallable(functions, 'creditCardInvoice-getAll');
-      const response = await getAllCreditCardInvoicesFn();
+      const response = await getAllCreditCardInvoicesFn({ cardId });
       const getAllCreditCardInvoicesResponse = response.data as unknown as CreditCardInvoiceResponseDTOSchemaType;
 
-      set({
-        creditCardInvoices: getAllCreditCardInvoicesResponse.invoices as CreditCardInvoiceSchemaType[],
+      set((state) => ({
+        creditCardInvoices: {
+          ...state.creditCardInvoices,
+          [cardId]: getAllCreditCardInvoicesResponse.invoices as CreditCardInvoiceSchemaType[]
+        },
         message: getAllCreditCardInvoicesResponse.message,
-      });
+      }));
     } catch (error) {
       console.error('Erro ao pegar todas as faturas:', error);
     } finally {

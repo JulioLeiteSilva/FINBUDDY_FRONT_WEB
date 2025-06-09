@@ -11,99 +11,94 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Grid,
   Typography,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Box,
+  CircularProgress
 } from '@mui/material';
 import dayjs from 'dayjs';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CreditCardRequestDTOSchema } from '../../../schemas/CreditCard/CreditCardRequestDTOSchema';
+import { CreditCardFlag } from '../../../enums/CreditCardFlag';
+import { CreateCreditCard } from '../../../services/CreditCard/createCreditCard';
+import { useBankAccountStore } from '../../../store/bankAccountStore';
+import { z } from 'zod';
 
-// Importe a interface CardDetails do seu arquivo de tipos
-import { CardDetails } from '../utils/types'; // Ajuste o caminho conforme sua estrutura
-
-// Tipos para o formulário
-interface CardFormData {
-  name: string;
-  brand: string;
-  closingDay: string;
-  dueDay: string;
-  limit: string;
-  bankName: string;
-}
-
-// Estado inicial para o formulário (quando adicionando um novo cartão)
-const initialFormData: CardFormData = {
-  name: '',
-  brand: '',
-  closingDay: '',
-  dueDay: '',
-  limit: '',
-  bankName: '',
-};
-
-// Opções para o dropdown de bandeira
-const cardBrandOptions = [
-  { value: 'VISA', label: 'Visa' },
-  { value: 'MASTERCARD', label: 'Mastercard' },
-  { value: 'ELO', label: 'Elo' },
-  { value: 'AMEX', label: 'Amex' },
-  { value: 'OTHER', label: 'Outro' },
-];
-
-// Opções para os dropdowns de dia (1-31)
-const dayOptions = Array.from({ length: 31 }, (_, i) => {
-  const day = i + 1;
-  return { value: day.toString(), label: day.toString() };
-});
+type CreditCardRequestDTOSchemaType = z.infer<typeof CreditCardRequestDTOSchema>;
 
 // Props que o componente espera
 interface CardFormModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (cardData: CardFormData, cardId: string | null) => void;
-  initialData?: CardDetails | null; // Dados do cartão para o modo de edição
+  onSave?: (cardData: CreditCardRequestDTOSchemaType) => void;
+  initialData?: any | null; // Dados do cartão para o modo de edição
 }
 
 const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, initialData }) => {
-  const [formData, setFormData] = useState<CardFormData>(initialFormData);
-  const [formErrors, setFormErrors] = useState<Partial<Record<keyof CardFormData, string>>>({});
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CreditCardRequestDTOSchemaType>({
+    resolver: zodResolver(CreditCardRequestDTOSchema),
+    defaultValues: {
+      name: '',
+      flag: CreditCardFlag.VISA,
+      closingDay: 1,
+      dueDate: 1,
+      limit: 0,
+      bankAccountId: '',
+    },
+  });
 
+  const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
   const isEditMode = !!initialData;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Efeito para popular o formulário quando o modal abre no modo de edição
+  useEffect(() => {
+    fetchBankAccounts();
+  }, [fetchBankAccounts]);
+
   useEffect(() => {
     if (initialData && open) {
-      setFormData({
+      reset({
         name: initialData.cardName,
-        brand: initialData.brand,
-        closingDay: String(initialData.closingDay),
-        dueDay: String(dayjs(initialData.dueDate).date()),
-        limit: String(initialData.limitTotal),
-        bankName: initialData.bankName,
+        flag: initialData.brand as CreditCardFlag,
+        closingDay: initialData.closingDay,
+        dueDate: dayjs(initialData.dueDate).date(),
+        limit: initialData.limitTotal,
+        bankAccountId: initialData.bankAccountId,
       });
     } else if (!initialData && open) {
-      // Garante que o formulário esteja limpo ao abrir no modo de adição
-      setFormData(initialFormData);
+      reset({
+        name: '',
+        flag: CreditCardFlag.VISA,
+        closingDay: 1,
+        dueDate: 1,
+        limit: 0,
+        bankAccountId: '',
+      });
     }
-    // Limpa os erros sempre que o modal abre ou os dados mudam
-    setFormErrors({});
-  }, [initialData, open]);
+  }, [initialData, open, reset]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
-    const { name, value } = event.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (formErrors[name as keyof CardFormData]) {
-        setFormErrors(prev => ({...prev, [name]: undefined}));
+  const onSubmit = async (data: CreditCardRequestDTOSchemaType) => {
+    try {
+      setIsSubmitting(true);
+      if (isEditMode) {
+        // TODO: Implement edit functionality
+        console.log('Edit mode not implemented yet');
+      } else {
+        await CreateCreditCard(data);
+      }
+      onClose();
+      reset();
+    } catch (error) {
+      console.error('Error saving credit card:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const validateForm = (): boolean => {
-    // ... sua lógica de validação completa aqui ...
-    return true; // Simplificado para o exemplo, mantenha sua validação
-  };
-
-  const handleSubmit = () => {
-    if (!validateForm()) return;
-    onSave(formData, initialData ? initialData.id : null);
   };
 
   return (
@@ -111,60 +106,149 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
       <DialogTitle sx={{ pb: 1 }}>
         {isEditMode ? 'Editar Cartão' : 'Adicionar Novo Cartão'}
       </DialogTitle>
-      {/* O CONTEÚDO DO FORMULÁRIO ESTÁ AQUI */}
       <DialogContent>
-        <Grid container spacing={2} sx={{pt:1}}>
-          {/* Linha 1: Nome, Banco, Bandeira */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField autoFocus margin="dense" name="name" label="Nome do Cartão" type="text" fullWidth variant="outlined"
-              value={formData.name} onChange={handleChange} error={!!formErrors.name} helperText={formErrors.name} required />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField margin="dense" name="bankName" label="Banco" type="text" fullWidth variant="outlined"
-              value={formData.bankName} onChange={handleChange} error={!!formErrors.bankName} helperText={formErrors.bankName} required />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <FormControl fullWidth margin="dense" variant="outlined" required error={!!formErrors.brand}>
-              <InputLabel id="card-brand-label">Bandeira</InputLabel>
-              <Select labelId="card-brand-label" name="brand" value={formData.brand} onChange={handleChange} label="Bandeira">
-                {cardBrandOptions.map((option) => ( <MenuItem key={option.value} value={option.value}> {option.label} </MenuItem> ))}
-              </Select>
-              {formErrors.brand && <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>{formErrors.brand}</Typography>}
-            </FormControl>
-          </Grid>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            {/* Linha 1: Nome, Banco, Bandeira */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    autoFocus
+                    margin="dense"
+                    label="Nome do Cartão"
+                    fullWidth
+                    variant="outlined"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="bankAccountId"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth margin="dense" error={!!errors.bankAccountId}>
+                    <InputLabel>Banco</InputLabel>
+                    <Select {...field} label="Banco">
+                      {bankAccounts.map((account) => (
+                        <MenuItem key={account.id} value={account.id}>
+                          {account.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.bankAccountId && (
+                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                        {errors.bankAccountId.message}
+                      </Typography>
+                    )}
+                  </FormControl>
+                )}
+              />
+              <Controller
+                name="flag"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth margin="dense" error={!!errors.flag}>
+                    <InputLabel>Bandeira</InputLabel>
+                    <Select {...field} label="Bandeira">
+                      {Object.values(CreditCardFlag).map((flag) => (
+                        <MenuItem key={flag} value={flag}>
+                          {flag}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.flag && (
+                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                        {errors.flag.message}
+                      </Typography>
+                    )}
+                  </FormControl>
+                )}
+              />
+            </Box>
 
-          {/* Linha 2: Dia de Fechamento, Dia de Vencimento */}
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth margin="dense" variant="outlined" required error={!!formErrors.closingDay}>
-              <InputLabel id="closing-day-label">Dia de Fechamento</InputLabel>
-              <Select labelId="closing-day-label" name="closingDay" value={formData.closingDay} onChange={handleChange} label="Dia de Fechamento">
-                {dayOptions.map((option) => ( <MenuItem key={option.value} value={option.value}> {option.label} </MenuItem> ))}
-              </Select>
-              {formErrors.closingDay && <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>{formErrors.closingDay}</Typography>}
-            </FormControl>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth margin="dense" variant="outlined" required error={!!formErrors.dueDay}>
-              <InputLabel id="due-day-label">Dia de Vencimento</InputLabel>
-              <Select labelId="due-day-label" name="dueDay" value={formData.dueDay} onChange={handleChange} label="Dia de Vencimento">
-                {dayOptions.map((option) => ( <MenuItem key={option.value} value={option.value}> {option.label} </MenuItem> ))}
-              </Select>
-              {formErrors.dueDay && <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>{formErrors.dueDay}</Typography>}
-            </FormControl>
-          </Grid>
+            {/* Linha 2: Dia de Fechamento, Dia de Vencimento */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Controller
+                name="closingDay"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth margin="dense" error={!!errors.closingDay}>
+                    <InputLabel>Dia de Fechamento</InputLabel>
+                    <Select {...field} label="Dia de Fechamento">
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <MenuItem key={day} value={day}>
+                          {day}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.closingDay && (
+                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                        {errors.closingDay.message}
+                      </Typography>
+                    )}
+                  </FormControl>
+                )}
+              />
+              <Controller
+                name="dueDate"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth margin="dense" error={!!errors.dueDate}>
+                    <InputLabel>Dia de Vencimento</InputLabel>
+                    <Select {...field} label="Dia de Vencimento">
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <MenuItem key={day} value={day}>
+                          {day}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.dueDate && (
+                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                        {errors.dueDate.message}
+                      </Typography>
+                    )}
+                  </FormControl>
+                )}
+              />
+            </Box>
 
-          {/* Linha 3: Limite */}
-          <Grid size={{ xs: 12 }}>
-            <TextField margin="dense" name="limit" label="Limite do Cartão (R$)" type="number" fullWidth variant="outlined"
-              value={formData.limit} onChange={handleChange} InputProps={{ inputProps: { min: 0 } }}
-              error={!!formErrors.limit} helperText={formErrors.limit} required />
-          </Grid>
-        </Grid>
+            {/* Linha 3: Limite */}
+            <Controller
+              name="limit"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="dense"
+                  label="Limite do Cartão (R$)"
+                  type="number"
+                  fullWidth
+                  variant="outlined"
+                  error={!!errors.limit}
+                  helperText={errors.limit?.message}
+                  inputProps={{ min: 0 }}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              )}
+            />
+          </Box>
+        </form>
       </DialogContent>
       <DialogActions sx={{p: '16px 24px'}}>
-        <Button onClick={onClose} color="inherit">Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
-          {isEditMode ? 'Salvar Alterações' : 'Registrar Cartão'}
+        <Button onClick={onClose} color="inherit" disabled={isSubmitting}>Cancelar</Button>
+        <Button 
+          onClick={handleSubmit(onSubmit)} 
+          variant="contained" 
+          color="primary"
+          disabled={isSubmitting}
+          startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+        >
+          {isSubmitting ? 'Processando...' : (isEditMode ? 'Salvar Alterações' : 'Registrar Cartão')}
         </Button>
       </DialogActions>
     </Dialog>

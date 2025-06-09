@@ -10,6 +10,8 @@ export interface ProcessedTransaction {
   date: Date;
   isPaid: boolean;
   bankAccountId: string;
+  invoiceId: string | null;
+  cardId: string | null;
 }
 
 // Tipo para os detalhes de um cartão
