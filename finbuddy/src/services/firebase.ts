@@ -23,6 +23,6 @@ if (import.meta.env.DEV) {
     connectFunctionsEmulator(functions, 'localhost', 5001);
 }
 
-export const listenAuthState = (callback: (user: any) => void) => {
+export const listenAuthState = (callback: (user: unknown) => void) => {
     onAuthStateChanged(auth, callback);
 };

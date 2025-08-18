@@ -5,7 +5,7 @@ import NotFound from '../pages/NotFound';
 import { Box, Modal } from '@mui/material';
 import { SideBar } from '../components/';
 import { Content }  from '../components';
-import TransactionsPage from '../pages/Transactions';
+import TransactionsPageView from '../pages/Transactions/TransactionPageView';
 import { useState, useEffect, useCallback } from 'react';
 import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
@@ -67,7 +67,7 @@ const PrivateRoutes = () => {
       <Content title={title} onOpenNewTransactionModal={handleOpenNewTransactionModal}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions" element={<TransactionsPageView />} />
           <Route path="/bank-accounts" element={<BankAccountsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
