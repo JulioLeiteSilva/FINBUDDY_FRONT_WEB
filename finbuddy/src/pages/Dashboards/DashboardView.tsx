@@ -1,36 +1,29 @@
-import React, { useState } from 'react';
-import { Box, Container, Typography, IconButton } from '@mui/material';
+import { Box, Typography, IconButton, Container } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 
-import { useDashboardData} from '../../hooks/useDashboardData';
 
 import SummaryCards from './components/SummaryCards';
 import ExpenseByCategory from './components/ExpenseByCategory';
 import RevenueFlowTrendChart from './components/RevenueFlowTrendChart';
 import MonthlyComparisonBarChart from './components/MonthylComparisonChart';
+import { useDashboardViewModel } from './DashboardViewModel';
 
 dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);
 
-const Dashboard: React.FC = () => {
-  const [selectedMonth, setSelectedMonth] = useState(dayjs());
+const DashboardView = () => {
   const {
     isLoading,
     transactionsForCharts,
     dataForMonthlyBarChart,
-  } = useDashboardData();
-
-  const handlePreviousMonth = () => {
-    setSelectedMonth(prev => prev.subtract(1, 'month'));
-  };
-
-  const handleNextMonth = () => {
-    setSelectedMonth(prev => prev.add(1, 'month'));
-  };
+    handlePreviousMonth,
+    handleNextMonth,
+    selectedMonth,
+  } = useDashboardViewModel();
 
   if (isLoading) {
     return (
@@ -79,6 +72,5 @@ const Dashboard: React.FC = () => {
       </Box>
     </Box>
   );
-};
-
-export default Dashboard;
+}
+export default DashboardView;

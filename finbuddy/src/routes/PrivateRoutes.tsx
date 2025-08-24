@@ -1,18 +1,18 @@
 // src/routes/PrivateRoutes.tsx
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Home from '../pages/Home';
+import { HomeView } from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import { Box, Modal } from '@mui/material';
 import { SideBar } from '../components/';
-import { Content }  from '../components';
+import { Content } from '../components';
 import TransactionsPageView from '../pages/Transactions/TransactionPageView';
 import { useState, useEffect, useCallback } from 'react';
 import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
 import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
-import BankAccountsPage from '../pages/BankAccount';
-import CategoriesPage from '../pages/Categories';
-import Dashboard from '../pages/Dashboards';
+import { BankAccountView } from '../pages/BankAccount';
+import { CategoriesView } from '../pages/Categories';
+import { DashboardView } from '../pages/Dashboards';
 import CreditCardPage from '../pages/Cards';
 
 
@@ -57,7 +57,7 @@ const PrivateRoutes = () => {
       default:
         setTitle('Página não encontrada'); // Ou um título padrão
         break;
-      
+
     }
   }, [location.pathname]);
 
@@ -66,11 +66,11 @@ const PrivateRoutes = () => {
       <SideBar />
       <Content title={title} onOpenNewTransactionModal={handleOpenNewTransactionModal}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomeView />} />
           <Route path="/transactions" element={<TransactionsPageView />} />
-          <Route path="/bank-accounts" element={<BankAccountsPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/bank-accounts" element={<BankAccountView />} />
+          <Route path="/categories" element={<CategoriesView />} />
+          <Route path="/dashboard" element={<DashboardView />} />
           <Route path="/cards" element={<CreditCardPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,18 +1,15 @@
 import { useMemo, useEffect, useState } from "react";
-import { Box, Card, CardContent, Typography, Divider, Grid } from "@mui/material";
 import { useCategoriesStore } from "../../store/categoriesStore";
 import { CreateCategory } from "../../services/Categories";
-import { CategoryForm } from './components/CategoryForm';
-import { CategoryList } from './components/CategoryList';
 import { CategorySchemaType } from '../../schemas/Categories';
-import { CategoryOriginFilter, CategoryOrigin } from './components/CategoryOriginFilter';
-import { CategoryNatureFilter, CategoryNature } from './components/CategoryNatureFilter';
+import { CategoryOrigin } from './components/CategoryOriginFilter';
+import { CategoryNature } from './components/CategoryNatureFilter';
 
 export interface DisplayCategory extends CategorySchemaType {
     isDefault: boolean;
 }
 
-export const CategoriesPage = () => {
+export const useCategoriesViewModel = () => {
     const {
         categories: userCategories,
         defaultCategories,
@@ -63,38 +60,13 @@ export const CategoriesPage = () => {
         return [...customSorted, ...defaultSorted];
     }, [userCategories, defaultCategories, originFilter, natureFilter]);
 
-    return (
-        <Box sx={{ p: { xs: 2, md: 3 } }}>
-            <Card sx={{ m: 'auto' }}>
-                <CardContent>
-                    <Typography variant="h5" component="h1" gutterBottom sx={{ mb: 3 }}>
-                        Gerenciar Categorias
-                    </Typography>
-
-                    <CategoryForm onAddCategory={handleAddCategory} />
-
-                    <Divider sx={{ my: 3 }} />
-
-                    <Grid container spacing={2} sx={{ mb: 2 }} alignItems="stretch">
-                        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-                            <CategoryOriginFilter
-                                selectedOrigin={originFilter}
-                                onChange={setOriginFilter}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 6, md: 6 }} >
-                            <CategoryNatureFilter
-                                selectedNature={natureFilter}
-                                onChange={setNatureFilter}
-                            />
-                        </Grid>
-                    </Grid>
-
-                    <CategoryList categories={processedCategories} isLoading={isLoading} />
-                </CardContent>
-            </Card>
-        </Box>
-    );
-};
-
-export default CategoriesPage;
+   return {
+    isLoading,
+    handleAddCategory,
+    processedCategories,
+    originFilter,
+    setOriginFilter,
+    natureFilter,
+    setNatureFilter,
+   } 
+}
