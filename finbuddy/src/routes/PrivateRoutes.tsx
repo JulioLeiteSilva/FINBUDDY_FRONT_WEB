@@ -1,4 +1,3 @@
-// src/routes/PrivateRoutes.tsx
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HomeView } from '../pages/Home';
 import NotFound from '../pages/NotFound';
@@ -13,7 +12,7 @@ import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
 import { BankAccountView } from '../pages/BankAccount';
 import { CategoriesView } from '../pages/Categories';
 import { DashboardView } from '../pages/Dashboards';
-import CreditCardPage from '../pages/Cards';
+import { CardsView } from '../pages/Cards';
 
 
 const PrivateRoutes = () => {
@@ -55,7 +54,7 @@ const PrivateRoutes = () => {
         setTitle('Cartões de Crédito');
         break;
       default:
-        setTitle('Página não encontrada'); // Ou um título padrão
+        setTitle('Página não encontrada');
         break;
 
     }
@@ -71,7 +70,7 @@ const PrivateRoutes = () => {
           <Route path="/bank-accounts" element={<BankAccountView />} />
           <Route path="/categories" element={<CategoriesView />} />
           <Route path="/dashboard" element={<DashboardView />} />
-          <Route path="/cards" element={<CreditCardPage />} />
+          <Route path="/cards" element={<CardsView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
