@@ -5,10 +5,17 @@ import { CreateBankAccountDTOSchema } from './CreateBankAccountDTOSchema';
 import { UpdateBankAccountDTOSchema } from './UpdateBankAccountDTOSchema';
 import { UpdateBankAccountBalanceDTOSchema } from './UpdateBankAccountBalanceDTOSchema';
 import { BankAccountResponseDTOSchema } from './BankAccountResponseDTOSchema';
+import { BankAccountBalancesByMonthSchema, GetBalancesByMonthResponseSchema } from './GetBalancesByMonthResponseSchema';
+import { GetBalancesByMonthRequestSchema } from './GetBalancesByMonthRequestSchema';
 
 export type BankAccountSchemaType = z.infer<typeof BankAccountSchema>;
 export type BankAccountResponseDTOSchemaType = z.infer<typeof BankAccountResponseDTOSchema>;
 export type CreateBankAccountDTOSchemaType = z.infer<typeof CreateBankAccountDTOSchema>;
 export type UpdateBankAccountDTOSchemaType = z.infer<typeof UpdateBankAccountDTOSchema>;
 export type UpdateBankAccountBalanceDTOSchemaType = z.infer<typeof UpdateBankAccountBalanceDTOSchema>;
-export { BankAccountSchema, UpdateBankAccountDTOSchema, UpdateBankAccountBalanceDTOSchema, BankAccountResponseDTOSchema };
+export type GetBalancesByMonthResponseSchemaType = z.infer<typeof GetBalancesByMonthResponseSchema>;
+export type GetBalancesByMonthRequestSchemaType = z.infer<typeof GetBalancesByMonthRequestSchema>;
+export type BankAccountBalancesByMonthSchemaType = z.infer<typeof BankAccountBalancesByMonthSchema>;
+
+
+export { BankAccountSchema, UpdateBankAccountDTOSchema, UpdateBankAccountBalanceDTOSchema, BankAccountResponseDTOSchema, GetBalancesByMonthResponseSchema, GetBalancesByMonthRequestSchema, BankAccountBalancesByMonthSchema };
