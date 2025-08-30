@@ -3,5 +3,5 @@ import { CategorySchema } from './CategorySchema';
 
 export const CategoriesResponseDTOSchema = z.object({
     message: z.string(),
-    categories: z.array(CategorySchema)
+    data: z.array(CategorySchema)
 });

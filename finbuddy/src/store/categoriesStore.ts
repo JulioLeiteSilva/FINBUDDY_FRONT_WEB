@@ -22,15 +22,17 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
         try {
             const getAllCategoriesFn = httpsCallable(functions, 'category-getAllCategories');
             const responseAllCategories = await getAllCategoriesFn();
-            const getAllCategoriesResponse = responseAllCategories.data as unknown as CategoriesResponseDTOSchemaType;
+            const getAllCategoriesResponse = responseAllCategories.data as unknown as CategorySchemaType[];
+            console.log(getAllCategoriesResponse)
 
             const getAllDefaultCategoriesFn = httpsCallable(functions, 'globalCategory-getAllDefaultCategories');
             const responseDefaultCategories = await getAllDefaultCategoriesFn();
-            const getDefaultCategoriesResponse = responseDefaultCategories.data as unknown as CategorySchemaType[];
+            const getDefaultCategoriesResponse = responseDefaultCategories.data as unknown as CategoriesResponseDTOSchemaType;
+            console.log()
 
             set({
-                categories: getAllCategoriesResponse.categories,
-                defaultCategories: getDefaultCategoriesResponse,
+                categories: getAllCategoriesResponse,
+                defaultCategories: getDefaultCategoriesResponse.data,
                 message: "Sucesso ao pegar todas as categorias",
             });
         } catch (error) {

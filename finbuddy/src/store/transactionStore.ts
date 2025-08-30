@@ -24,7 +24,7 @@ export const useTransactionsStore = create<TransactionsState>((set) => ({
       const getAllTransactionsResponse = response.data as unknown as TransactionsResponseDTOSchemaType;
 
       set({
-        transactions: getAllTransactionsResponse.transactions as TransactionSchemaType[],
+        transactions: getAllTransactionsResponse.data as TransactionSchemaType[],
         message: getAllTransactionsResponse.message,
       });
     } catch (error) {

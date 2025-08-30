@@ -42,11 +42,11 @@ export const useBankAccountStore = create<BankAccountState>((set) => ({
       const response = await GetBalancesByMonth(data);
 
       if (!response) return;
-      const { message: responseMessage, ...rest } = response;
+      console.log(response)
 
       set({
-        bankAccountBalancesByMonth: rest as BankAccountBalancesByMonthSchemaType,
-        message: responseMessage,
+        bankAccountBalancesByMonth: response.data as BankAccountBalancesByMonthSchemaType,
+        message: response.message,
       })
     } catch (error) {
       console.error('Erro ao pegar todas as contas bancárias:', error);
