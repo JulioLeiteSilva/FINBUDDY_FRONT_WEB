@@ -14,6 +14,7 @@ import BankAccountsPage from '../pages/BankAccount';
 import CategoriesPage from '../pages/Categories';
 import Dashboard from '../pages/Dashboards';
 import CreditCardPage from '../pages/Cards';
+import { PlanningPage } from '../pages/Planning';
 
 
 const PrivateRoutes = () => {
@@ -54,6 +55,9 @@ const PrivateRoutes = () => {
       case '/cards':
         setTitle('Cartões de Crédito');
         break;
+      case '/planning':
+        setTitle('Planning');
+        break;
       default:
         setTitle('Página não encontrada'); // Ou um título padrão
         break;
@@ -72,6 +76,7 @@ const PrivateRoutes = () => {
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/cards" element={<CreditCardPage />} />
+          <Route path="/planning" element={<PlanningPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
