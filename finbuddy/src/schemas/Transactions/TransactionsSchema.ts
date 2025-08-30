@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { TransactionFrequency } from '../../enums';
-import { firestoreIdSchema } from '../Common/FirestoreSchemas';
+import { FirestoreIdSchema } from '../Common';
 
 export const TransactionSchema = z.object({
-    id: firestoreIdSchema,
+    id: FirestoreIdSchema,
     name: z.string().min(1),
     category: z.string().min(1),
     value: z.number(),
@@ -15,8 +15,8 @@ export const TransactionSchema = z.object({
     endDate: z.date().nullable(),
     isPaid: z.boolean(),
     currency: z.string(),
-    bankAccountId: firestoreIdSchema,
-    invoiceId: firestoreIdSchema.nullable(),
-    creditCardId: firestoreIdSchema.nullable(),
-    primaryTransactionId: firestoreIdSchema.nullable(),
+    bankAccountId: FirestoreIdSchema,
+    invoiceId: FirestoreIdSchema.nullable(),
+    creditCardId: FirestoreIdSchema.nullable(),
+    primaryTransactionId: FirestoreIdSchema.nullable(),
 });
