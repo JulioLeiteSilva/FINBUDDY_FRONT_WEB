@@ -81,7 +81,7 @@ const BudgetTable: React.FC<BudgetTableProps> = ({ data }) => {
                         <LinearProgress
                           variant="determinate"
                           value={progressValue > 100 ? 100 : progressValue}
-                          color={isOverBudget ? "error" : "primary"}
+                          color={isOverBudget ? "error" : "success"}
                         />
                       </Box>
                       <Box sx={{ minWidth: 35 }}>

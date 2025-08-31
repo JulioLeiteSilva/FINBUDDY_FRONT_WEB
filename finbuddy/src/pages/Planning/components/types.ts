@@ -4,4 +4,5 @@ export interface BudgetItem {
   category: string;
   value: number;    // Mapeado de "Orçado"
   spent: number;    // Mapeado de "Gasto"
+  paid: number;    // Mapeado de "Pago"
 }
