@@ -3,6 +3,7 @@ import BudgetTable from './components/BudgetTable';
 import CategoryTable from './components/CategoryTable';
 import {Typography, Container} from '@mui/material';
 import { BudgetItem } from './components/types';
+import { TabConfig, TabsContainer } from './components/TabsContainer';
 
 const mockDataFromFirebase: BudgetItem[] = [
     { id: 'cat1', category: 'Alimentação', value: 1500, spent: 750, paid: 600 },
@@ -13,9 +14,21 @@ const mockDataFromFirebase: BudgetItem[] = [
     { id: 'cat6', category: 'Saúde', value: 400, spent: 550, paid: 300 },
 ];
 
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
+
+
 export const PlanningPage: React.FC = () => {
     const [budgetData, setBudgetData] = useState<BudgetItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+
+    const [selectedTab, setSelectedTab] = useState(0);
+    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setSelectedTab(newValue);
+    };
 
     useEffect(() => {
         setTimeout(() => {
@@ -24,31 +37,34 @@ export const PlanningPage: React.FC = () => {
         }, 1000);
     }, []);
 
-    return (
-    <>
-      <Container>
-        <Typography variant="h4" gutterBottom sx={{ mt: 3, mb: 3 }}>
-          Meu orçamento mensal
-        </Typography>
-        
-        {loading ? (
-          <Typography variant="body1">Carregando dados...</Typography>
-        ) : (
-          <BudgetTable data={budgetData} />
-        )}
-      </Container>
+    const tabsConfig: TabConfig[] = [
+        {
+            label: 'Planejamento Mensal',
+            content: <BudgetTable data={budgetData}/>
+        },
+        {
+            label: 'Orçamento por Categoria',
+            content: <CategoryTable data={budgetData}/>
+        }
+    ];
 
+    const activeTabTitle = tabsConfig[selectedTab]?.label || 'Planejamento';
+
+    return (
       <Container>
         <Typography variant="h4" gutterBottom sx={{ mt: 3, mb: 3 }}>
-          Orçamento por Categoria
+          {activeTabTitle}
         </Typography>
         
         {loading ? (
           <Typography variant="body1">Carregando dados...</Typography>
         ) : (
-          <CategoryTable data={budgetData} />
+          <TabsContainer
+           tabs={tabsConfig}
+           value={selectedTab}
+           onChange={handleTabChange}
+           />
         )}
       </Container>
-    </>
   );
 };
