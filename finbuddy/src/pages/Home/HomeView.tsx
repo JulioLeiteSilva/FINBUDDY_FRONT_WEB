@@ -11,7 +11,7 @@ const HomeView = () => {
         monthlyExpenses,
         recentTransactions,
         formatCurrency,
-        bankAccountBalancesByMonth,
+        bankAccountsBalancesByMonth,
         banks,
     } = useHomeViewModel();
 
@@ -27,7 +27,7 @@ const HomeView = () => {
             <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                     <BankAccountsList
-                        bankAccounts={bankAccountBalancesByMonth.accounts}
+                        bankAccounts={bankAccountsBalancesByMonth.data.accounts}
                         banks={banks}
                         formatCurrency={formatCurrency}
                     />

@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AccountType } from '../../enums/accountType';
+import { AccountType } from '../../../enums/accountType';
 
-export const CreateBankAccountDTOSchema = z.object({
+export const CreateBankAccountSchema = z.object({
     name: z.string().min(1, { message: "O nome da conta é obrigatório" }),
     type: z.nativeEnum(AccountType, { 
         required_error: "O tipo da conta é obrigatório",
@@ -14,3 +14,7 @@ export const CreateBankAccountDTOSchema = z.object({
     }),
     currency: z.string().min(1, { message: "A moeda é obrigatória" }),
 });
+
+export type CreateBankAccountType = z.infer<
+  typeof CreateBankAccountSchema
+>;

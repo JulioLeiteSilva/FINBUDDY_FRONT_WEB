@@ -1,23 +1,32 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useMemo, useState, useCallback } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useMemo, useState } from "react";
 import { useBankAccountStore } from "../../store/bankAccountStore";
-import { useTransactionsStore } from "../../store/transactionStore";
-import { CreateBankAccountDTOSchemaType } from "../../schemas/BankAccount";
 import { CreateBankAccount } from "../../services/BankAccount";
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import isBetween from 'dayjs/plugin/isBetween';
-import { firestoreTimestampToDate } from "../../pages/Transactions/components/TransactionDetailsModal/utils/transactionUtils";
+import { CreateBankAccountRequestType } from "../../schemas/BankAccount";
 
 export const useBankAccountViewModel = () => {
     dayjs.extend(isBetween);
-    const { bankAccounts, isLoading, fetchBankAccounts } = useBankAccountStore();
-    const { transactions, fetchTransactions, isLoading: isTransactionsLoading } = useTransactionsStore();
+    dayjs.locale('pt-br');
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const { bankAccountsBalancesByMonth, isLoading, fetchBankAccountsBalancesByMonth } = useBankAccountStore();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
-
+    const [selectedMonth, setSelectedMonth] = useState(dayjs().tz("America/Sao_Paulo"));
+    const [totalBalance, setTotalBalance] = useState(0);
+    const [forecastTotalBalance, setForecastTotalBalance] = useState(0);
+    const [pastMonthTotalBalance, setPastMonthTotalBalance] = useState(0);
+    const [showCurrentBalance, setShowCurrentBalance] = useState(true);
+    const [showForecastBalance, setShowForecastBalance] = useState(true);
+    const [showPastMonthBalance, setShowPastMonthBalance] = useState(false);
+    const today = dayjs();
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(event.target.value);
@@ -27,93 +36,42 @@ export const useBankAccountViewModel = () => {
         setIsModalOpen(true);
     };
 
-    const handleCreateNewAccount = (newAccount: CreateBankAccountDTOSchemaType) => {
+    const handleCreateNewAccount = (newAccount: CreateBankAccountRequestType) => {
         CreateBankAccount(newAccount);
         setIsModalOpen(false);
     };
-    const [selectedMonth, setSelectedMonth] = useState(dayjs());
 
     useEffect(() => {
-        fetchBankAccounts();
-        fetchTransactions();
-    }, [fetchBankAccounts, fetchTransactions, selectedMonth]);
+        fetchBankAccountsBalancesByMonth({ data: { month: selectedMonth.format('YYYY-MM') } });
+    }, [selectedMonth]);
 
+    useEffect(() => {
+        const { totalBalance, forecastTotalBalance, pastMonthTotalBalance } = bankAccountsBalancesByMonth.data
+        const isCurrentMonth = selectedMonth.isSame(today, 'month');
+        const isFutureMonth = selectedMonth.isAfter(today, 'month');
+        const isPastMonth = selectedMonth.isBefore(today, 'month') && !selectedMonth.isSame(today, 'month');
+
+        const showCurrentBalance = isCurrentMonth
+        const showForecastBalance = (isCurrentMonth || isFutureMonth)
+        const showPastMonthBalance = isPastMonth
+
+
+        setTotalBalance(totalBalance)
+        setForecastTotalBalance(forecastTotalBalance)
+        setPastMonthTotalBalance(pastMonthTotalBalance)
+        setShowCurrentBalance(showCurrentBalance)
+        setShowForecastBalance(showForecastBalance)
+        setShowPastMonthBalance(showPastMonthBalance)
+    }, [bankAccountsBalancesByMonth])
 
     const filteredBankAccounts = useMemo(() => {
-        return bankAccounts.filter((account) => {
+        return bankAccountsBalancesByMonth.data.accounts.filter((account) => {
             const matchesSearch =
                 searchText === "" ||
                 account.name.toLowerCase().includes(searchText.toLowerCase());
             return matchesSearch;
         });
-    }, [bankAccounts, searchText]);
-
-    const calculateBalances = useCallback(() => {
-        let totalBalance = 0;
-        let projectedChangeForSelectedMonth = 0;
-        let netActivityForPastMonth = 0;
-
-        bankAccounts.forEach(account => {
-            totalBalance += account.balance;
-        });
-
-        const currentMonth = dayjs();
-        const isCurrentMonth = selectedMonth.isSame(currentMonth, 'month');
-        const isFutureMonth = selectedMonth.isAfter(currentMonth, 'month');
-        const isPastMonth = selectedMonth.isBefore(currentMonth, 'month');
-
-        const monthStart = selectedMonth.startOf('month');
-        const monthEnd = selectedMonth.endOf('month');
-
-        transactions.forEach(tx => {
-            const transactionDate = firestoreTimestampToDate(tx.date);
-            if (!transactionDate) return;
-            const txDate = dayjs(transactionDate);
-
-            if (!txDate.isBetween(monthStart, monthEnd, 'day', '[]')) {
-                return;
-            }
-
-            const multiplier = tx.type === "INCOME" ? 1 : -1;
-
-            if (isCurrentMonth) {
-                if (!tx.isPaid) {
-                    projectedChangeForSelectedMonth += tx.value * multiplier;
-                }
-            } else if (isFutureMonth) {
-                projectedChangeForSelectedMonth += tx.value * multiplier;
-            } else if (isPastMonth) {
-                if (tx.isPaid) {
-                    netActivityForPastMonth += tx.value * multiplier;
-                }
-            }
-        });
-
-        let finalForecastBalance;
-        if (isCurrentMonth || isFutureMonth) {
-            finalForecastBalance = totalBalance + projectedChangeForSelectedMonth;
-        } else {
-            finalForecastBalance = totalBalance;
-        }
-
-        return {
-            totalBalance,
-            forecastBalance: finalForecastBalance,
-            pastMonthBalance: netActivityForPastMonth,
-            showCurrentBalance: isCurrentMonth,
-            showForecastBalance: isCurrentMonth || isFutureMonth,
-            showPastMonthBalance: isPastMonth,
-        };
-    }, [bankAccounts, transactions, selectedMonth]);
-
-    const {
-        totalBalance,
-        forecastBalance,
-        pastMonthBalance,
-        showCurrentBalance,
-        showForecastBalance,
-        showPastMonthBalance,
-    } = useMemo(() => calculateBalances(), [calculateBalances]);
+    }, [bankAccountsBalancesByMonth.data.accounts, searchText]);
 
     const handlePreviousMonth = () => {
         setSelectedMonth(prev => prev.subtract(1, 'month'));
@@ -125,7 +83,6 @@ export const useBankAccountViewModel = () => {
 
     return {
         isLoading,
-        isTransactionsLoading,
         isModalOpen,
         searchText,
         setIsModalOpen,
@@ -133,15 +90,15 @@ export const useBankAccountViewModel = () => {
         handleAddAccount,
         handleCreateNewAccount,
         selectedMonth,
-        setSelectedMonth,
         filteredBankAccounts,
         handlePreviousMonth,
         handleNextMonth,
-        totalBalance,
-        forecastBalance,
-        pastMonthBalance,
         showCurrentBalance,
         showForecastBalance,
         showPastMonthBalance,
+        bankAccountsBalancesByMonth,
+        totalBalance,
+        forecastTotalBalance,
+        pastMonthTotalBalance
     }
 }

@@ -1,18 +1,18 @@
 import { httpsCallable } from "firebase/functions";
-import { GetBalancesByMonthRequestSchemaType, GetBalancesByMonthResponseSchemaType } from "../../schemas/BankAccount";
 import { functions } from "../firebase";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
+import { GetBalancesByMonthRequestType, GetBalancesByMonthResponseType } from "../../schemas/BankAccount";
 
-export const GetBalancesByMonth = async (data: GetBalancesByMonthRequestSchemaType): Promise<GetBalancesByMonthResponseSchemaType | undefined> => {
+export const GetBalancesByMonth = async (body: GetBalancesByMonthRequestType): Promise<GetBalancesByMonthResponseType | undefined> => {
     const { showSnackbar } = useSnackbarStore.getState();
 
     try {
         const getBalancesByMonthFn = httpsCallable(functions, 'bank-getBalancesByMonth');
-        const response = await getBalancesByMonthFn(data);
+        const response = await getBalancesByMonthFn(body.data);
         console.log('Saldo da conta bancária atualizado:', response.data);
 
-        return response.data as GetBalancesByMonthResponseSchemaType;
+        return response.data as GetBalancesByMonthResponseType;
     } catch (error) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const errorCode = (error as any)?.code || 'unknown';

@@ -1,19 +1,13 @@
-import React from 'react';
 import { TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Typography, Box } from '@mui/material';
-import { Control, Controller, FieldErrors, UseFormRegister } from 'react-hook-form';
-import { UpdateBankAccountDTOSchemaType } from '../../../../schemas/BankAccount';
-import { Bank } from '../../../../hooks/useBanks';
-import { AccountType } from '../../../../enums/accountType';
-import { getAccountTypeLabel } from './utils/bankAccountUtils';
+import { Controller } from 'react-hook-form';
+import { AccountType } from '../../../../../../enums/accountType';
+import { getAccountTypeLabel } from '../../../utils/bankAccountUtils';
 
-interface AccountEditFormProps {
-    control: Control<UpdateBankAccountDTOSchemaType>;
-    register: UseFormRegister<UpdateBankAccountDTOSchemaType>;
-    errors: FieldErrors<UpdateBankAccountDTOSchemaType>;
-    banks: Bank[];
-}
+import { AccountEditFormProps } from "./AccountEditFormModel";
 
-export const AccountEditForm: React.FC<AccountEditFormProps> = ({ control, register, errors, banks }) => {
+const AccountEditForm = (props: AccountEditFormProps) => {
+    const { control, register, errors, banks } = props;
+
     return (
         <>
             <TextField
@@ -64,7 +58,6 @@ export const AccountEditForm: React.FC<AccountEditFormProps> = ({ control, regis
                                                 marginRight: '12px',
                                                 objectFit: 'contain',
                                             }}
-                                            // Opcional: Adiciona um logo padrão se a imagem falhar
                                             onError={(e) => {
                                                 e.currentTarget.src = 'https://cdn-icons-png.flaticon.com/512/1086/1086741.png';
                                             }}
@@ -89,4 +82,5 @@ export const AccountEditForm: React.FC<AccountEditFormProps> = ({ control, regis
             />
         </>
     );
-};
+}
+export default AccountEditForm;

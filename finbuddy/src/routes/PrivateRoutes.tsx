@@ -38,21 +38,21 @@ const PrivateRoutes = () => {
       case '/':
         setTitle('Home');
         break;
-      case '/transactions':
-        setTitle('Transações');
-        break;
+      // case '/transactions':
+      //   setTitle('Transações');
+      //   break;
       case '/bank-accounts':
         setTitle('Contas');
         break;
-      case '/categories':
-        setTitle('Categorias');
-        break;
-      case '/dashboard':
-        setTitle('Dashboard');
-        break;
-      case '/cards':
-        setTitle('Cartões de Crédito');
-        break;
+      // case '/categories':
+      //   setTitle('Categorias');
+      //   break;
+      // case '/dashboard':
+      //   setTitle('Dashboard');
+      //   break;
+      // case '/cards':
+      //   setTitle('Cartões de Crédito');
+      //   break;
       default:
         setTitle('Página não encontrada');
         break;
@@ -66,11 +66,11 @@ const PrivateRoutes = () => {
       <Content title={title} onOpenNewTransactionModal={handleOpenNewTransactionModal}>
         <Routes>
           <Route path="/" element={<HomeView />} />
-          <Route path="/transactions" element={<TransactionsPageView />} />
           <Route path="/bank-accounts" element={<BankAccountView />} />
+          {/* <Route path="/transactions" element={<TransactionsPageView />} />
           <Route path="/categories" element={<CategoriesView />} />
           <Route path="/dashboard" element={<DashboardView />} />
-          <Route path="/cards" element={<CardsView />} />
+          <Route path="/cards" element={<CardsView />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>

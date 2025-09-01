@@ -2,22 +2,25 @@ import { useEffect } from "react";
 import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useTransactionsStore } from "../../store/transactionStore";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { firestoreTimestampToDate } from "../Transactions/components/TransactionDetailsModal/utils/transactionUtils";
 import { useBanks } from "../../hooks/useBanks";
 import { formatCurrency } from "./utils/formatUtils";
 
 export const useHomeViewModel = () => {
-  const { bankAccountBalancesByMonth, fetchBankAccountsBalancesByMonth } =
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  const { bankAccountsBalancesByMonth, fetchBankAccountsBalancesByMonth } =
     useBankAccountStore();
   const { transactions, fetchTransactions } = useTransactionsStore();
   const { banks } = useBanks();
-  const currentMonth = dayjs().format("YYYY-MM");
+  const currentMonth = dayjs().tz("America/Sao_Paulo").format("YYYY-MM");
 
   useEffect(() => {
-    fetchBankAccountsBalancesByMonth({ month: currentMonth });
+    fetchBankAccountsBalancesByMonth({ data: { month: currentMonth } });
     fetchTransactions();
   }, []);
-  console.log(transactions)
 
   // Filtra transações da última semana
   const recentTransactions = transactions
@@ -35,9 +38,8 @@ export const useHomeViewModel = () => {
     })
     .slice(0, 5); // Pega apenas as 5 transações mais recentes
 
-    console.log(bankAccountBalancesByMonth)
   // Calcula totais para os cards
-  const totalBalance = bankAccountBalancesByMonth.totalBalance
+  const totalBalance = bankAccountsBalancesByMonth.data.totalBalance
   const monthlyIncome = transactions
     .filter((tx) => {
       const txDate = firestoreTimestampToDate(tx.date);
@@ -66,7 +68,7 @@ export const useHomeViewModel = () => {
     monthlyExpenses,
     recentTransactions,
     formatCurrency,
-    bankAccountBalancesByMonth,
+    bankAccountsBalancesByMonth,
     transactions,
     banks,
   };

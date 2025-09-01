@@ -1,48 +1,26 @@
+import { NewBankAccountModalProps } from "./NewBankAccountModalModel";
 import {
     Dialog, DialogTitle, DialogContent, Typography, TextField, InputAdornment,
     DialogActions, Button, Select, MenuItem, InputLabel, FormControl, FormHelperText,
     Box, CircularProgress,
     Avatar
 } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
-import { CreateBankAccountDTOSchemaType } from "../../../schemas/BankAccount";
-import { AccountType, getAccountTypeLabel } from "../../../enums/accountType";
-import { useBanks } from "../../../hooks/useBanks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateBankAccountDTOSchema } from "../../../schemas/BankAccount/CreateBankAccountDTOSchema";
+import { Controller } from "react-hook-form";
+import { AccountType } from "../../../../enums/accountType";
+import { useNewBankAccountModalViewModel } from "./NewBankAccountModalViewModel";
+import { getAccountTypeLabel } from "../utils/bankAccountUtils";
 
-interface NewBankAccountModalProps {
-    onClose: () => void;
-    onCreateNew: (bankAccount: CreateBankAccountDTOSchemaType) => void;
-}
-
-const NewBankAccountModal: React.FC<NewBankAccountModalProps> = ({ onClose, onCreateNew }) => {
+const NewBankAccountModal = (props: NewBankAccountModalProps) => {
+    const { onClose } = props;
     const {
         register,
         handleSubmit,
+        errors,
         control,
-        formState: { errors },
-        reset,
-    } = useForm<CreateBankAccountDTOSchemaType>({
-        resolver: zodResolver(CreateBankAccountDTOSchema),
-        defaultValues: {
-            name: "",
-            type: AccountType.CHECKING,
-            bank: "",
-            balance: 0,
-            currency: "BRL",
-        },
-    });
-
-    const { banks, loading: loadingBanks } = useBanks();
-    console.log('Banks:', banks);
-
-    const onSubmit = (data: CreateBankAccountDTOSchemaType) => {
-        console.log('Nova Conta:', data);
-        onCreateNew(data);
-        onClose();
-        reset();
-    };
+        banks,
+        loadingBanks,
+        onSubmit
+    } = useNewBankAccountModalViewModel(props);
 
     return (
         <Dialog open onClose={onClose} fullWidth maxWidth="sm">
@@ -140,6 +118,5 @@ const NewBankAccountModal: React.FC<NewBankAccountModalProps> = ({ onClose, onCr
             </DialogActions>
         </Dialog>
     );
-};
-
+}
 export default NewBankAccountModal;

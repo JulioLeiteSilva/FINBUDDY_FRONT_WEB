@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { CreateBankAccountDTOSchemaType } from "../../schemas/BankAccount";
 import { functions } from "../firebase";
 import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
+import { CreateBankAccountRequestType } from "../../schemas/BankAccount";
 
 export const CreateBankAccount = async (
-    data: CreateBankAccountDTOSchemaType
+    body: CreateBankAccountRequestType
 ) => {
     const { showSnackbar } = useSnackbarStore.getState();
 
     try {
         const createBankAccountFn = httpsCallable(functions, 'bank-createBankAccount');
-        const response = await createBankAccountFn(data);
+        const response = await createBankAccountFn(body.data);
         console.log('Conta bancária criada:', response.data);
 
         const { fetchBankAccounts } = useBankAccountStore.getState();
         await fetchBankAccounts();
+        await
 
         showSnackbar('Conta bancária criada com sucesso!', 'success');
     } catch (error) {

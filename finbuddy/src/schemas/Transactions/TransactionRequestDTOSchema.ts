@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { TransactionFrequency } from '../../enums';
-import { firestoreIdSchema } from '../Common/FirestoreSchemas';
+import { FirestoreIdSchema } from '../Common/FirestoreSchemas';
 
 export const TransactionRequestDTOSchema = z.object({
     name: z.string().min(1, { message: "O nome da transação é obrigatório" }),
@@ -28,7 +28,7 @@ export const TransactionRequestDTOSchema = z.object({
     }).nullable(),
     isPaid: z.boolean({ required_error: "É necessário informar se a transação está paga" }),
     currency: z.string().min(1, { message: "A moeda é obrigatória" }),
-    bankAccountId: firestoreIdSchema.refine((val) => val !== '', { 
+    bankAccountId: FirestoreIdSchema.refine((val) => val !== '', { 
         message: "A conta bancária é obrigatória" 
     }),
     primaryTransactionId: z.string().nullable().optional(),

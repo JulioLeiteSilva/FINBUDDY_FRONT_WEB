@@ -12,8 +12,6 @@ import {
     Button,
     IconButton,
 } from "@mui/material";
-import BankAccountList from "./components/BankAccountList";
-import NewBankAccountModal from "./components/NewBankAccountModal";
 import { useBankAccountViewModel } from "./BankAccountViewModel";
 
 import dayjs from 'dayjs';
@@ -21,29 +19,32 @@ import 'dayjs/locale/pt-br';
 import isBetween from 'dayjs/plugin/isBetween';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import BankAccountListView from "./components/BankAccountList/BankAccountListView";
+import NewBankAccountModalView from "./components/NewBankAccountModal/NewBankAccountModalView";
 
 const BankAccountsPage = () => {
     dayjs.extend(isBetween);
+    dayjs.locale('pt-br');
     const {
         isLoading,
-        isTransactionsLoading,
         isModalOpen,
         searchText,
+        setIsModalOpen,
         handleSearchChange,
         handleAddAccount,
         handleCreateNewAccount,
         selectedMonth,
-        setIsModalOpen,
         filteredBankAccounts,
         handlePreviousMonth,
         handleNextMonth,
-        totalBalance,
-        forecastBalance,
-        pastMonthBalance,
         showCurrentBalance,
         showForecastBalance,
         showPastMonthBalance,
+        totalBalance,
+        forecastTotalBalance,
+        pastMonthTotalBalance
     } = useBankAccountViewModel();
+
     return (
         <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
             <Card sx={{ minWidth: 900 }}>
@@ -77,14 +78,14 @@ const BankAccountsPage = () => {
                         </IconButton>
                     </Box>
 
-                    {!isTransactionsLoading && (
+                    {!isLoading && (
                         <Grid container spacing={2} mb={2}>
                             {showCurrentBalance && (
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <Card>
                                         <CardContent>
                                             <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                                                Saldo Total
+                                                Saldo Atual
                                             </Typography>
                                             <Typography variant="h5">
                                                 R$ {totalBalance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
@@ -94,7 +95,7 @@ const BankAccountsPage = () => {
                                 </Grid>
                             )}
 
-                            {showForecastBalance && (
+                            {showForecastBalance  && (
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <Card>
                                         <CardContent>
@@ -102,7 +103,7 @@ const BankAccountsPage = () => {
                                                 Saldo Previsto
                                             </Typography>
                                             <Typography variant="h5">
-                                                R$ {forecastBalance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                                R$ {forecastTotalBalance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                                             </Typography>
                                         </CardContent>
                                     </Card>
@@ -117,7 +118,7 @@ const BankAccountsPage = () => {
                                                 Saldo no final do mês
                                             </Typography>
                                             <Typography variant="h5">
-                                                R$ {pastMonthBalance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                                R$ {pastMonthTotalBalance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                                             </Typography>
                                         </CardContent>
                                     </Card>
@@ -141,12 +142,12 @@ const BankAccountsPage = () => {
                             ))}
                         </>
                     ) : (
-                        <BankAccountList bankAccounts={filteredBankAccounts} selectedMonth={selectedMonth} />
+                        <BankAccountListView bankAccounts={filteredBankAccounts} selectedMonth={selectedMonth} />
                     )}
                 </CardContent>
             </Card>
             {isModalOpen && (
-                <NewBankAccountModal
+                <NewBankAccountModalView
                     onClose={() => setIsModalOpen(false)}
                     onCreateNew={handleCreateNewAccount}
                 />
