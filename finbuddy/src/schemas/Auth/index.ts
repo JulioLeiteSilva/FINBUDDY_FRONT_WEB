@@ -8,7 +8,7 @@ export { PreRegisterUserResponseSchema } from './Functions/PreRegisterUser/PreRe
 export type { PreRegisterUserResponseType } from './Functions/PreRegisterUser/PreRegisterUserResponse';
 export { PreRegisterUserRequestSchema } from './Functions/PreRegisterUser/PreRegisterUserRequest';
 export type { PreRegisterUserRequestType } from './Functions/PreRegisterUser/PreRegisterUserRequest';
-export { CompleteUserProfileResponseSchema } from './Functions/CompleteUserProfile/CompleteUserProfileResponse';
+export { CompleteUserProfileResponseSchema  } from './Functions/CompleteUserProfile/CompleteUserProfileResponse';
 export type { CompleteUserProfileResponseType } from './Functions/CompleteUserProfile/CompleteUserProfileResponse';
 export { CompleteUserProfileRequestSchema } from './Functions/CompleteUserProfile/CompleteUserProfileRequest';
 export type { CompleteUserProfileRequestType } from './Functions/CompleteUserProfile/CompleteUserProfileRequest';

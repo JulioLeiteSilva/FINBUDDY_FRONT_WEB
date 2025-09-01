@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, LoginSchemaType } from "../../../schemas/Auth";
 
 import { useLoadingStore } from "../../../store/loadingStore";
 import { Login } from "../../../services/Auth";
 import { useAuthStore } from "../../../store/authStore";
+import { LoginSchema, LoginType } from "../../../schemas/Auth";
 
 export const useLoginPageViewModel = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,8 +17,8 @@ export const useLoginPageViewModel = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginSchemaType>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<LoginType>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -26,7 +26,7 @@ export const useLoginPageViewModel = () => {
   });
   const { startLoading, stopLoading, isLoading } = useLoadingStore();
 
-  const onSubmit = async (data: LoginSchemaType) => {
+  const onSubmit = async (data: LoginType) => {
     try {
       await Login(data.email, data.password, login, startLoading, stopLoading);
       navigate("/");

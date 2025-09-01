@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, RegisterSchemaType } from '../../../schemas/Auth';
 
 import { useLoadingStore } from '../../../store/loadingStore';
 import { Register } from '../../../services/Auth';
+import { RegisterType, RegisterSchema } from '../../../schemas/Auth';
 
 export const useRegisterPageViewModel = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,8 +14,8 @@ export const useRegisterPageViewModel = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchemaType>({
-    resolver: zodResolver(registerSchema),
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterType>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -25,7 +25,7 @@ export const useRegisterPageViewModel = () => {
   });
   const { isLoading, startLoading, stopLoading } = useLoadingStore();
 
-  const onSubmit = async (data: RegisterSchemaType) => {
+  const onSubmit = async (data: RegisterType) => {
     startLoading();
     try {
       Register(
