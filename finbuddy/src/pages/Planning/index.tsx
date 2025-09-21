@@ -1,7 +1,9 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import BudgetTable from './components/BudgetTable';
 import CategoryTable from './components/CategoryTable';
-import {Typography, Container} from '@mui/material';
+import { Typography, Container, IconButton, Button } from '@mui/material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { BudgetItem } from './components/types';
 import { TabConfig, TabsContainer } from './components/TabsContainer';
 
@@ -14,16 +16,10 @@ const mockDataFromFirebase: BudgetItem[] = [
     { id: 'cat6', category: 'Saúde', value: 400, spent: 550, paid: 300 },
 ];
 
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-}
-
-
 export const PlanningPage: React.FC = () => {
     const [budgetData, setBudgetData] = useState<BudgetItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [currentDate, setCurrentDate] = useState(new Date());
 
     const [selectedTab, setSelectedTab] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -31,40 +27,97 @@ export const PlanningPage: React.FC = () => {
     };
 
     useEffect(() => {
+        setLoading(true);
+        // Simulação: busca de dados com base no mês e ano
         setTimeout(() => {
-            setBudgetData(mockDataFromFirebase);
+            // Se o mês for setembro (índice 8), retorna os dados de exemplo.
+            // Caso contrário, retorna um array vazio.
+            const hasDataForSelectedMonth = currentDate.getMonth() === 8;
+            
+            if (hasDataForSelectedMonth) {
+                setBudgetData(mockDataFromFirebase);
+            } else {
+                setBudgetData([]);
+            }
             setLoading(false);
         }, 1000);
-    }, []);
+    }, [currentDate]);
+
+    const handlePrevMonth = () => {
+        setCurrentDate(prevDate => {
+            const newDate = new Date(prevDate.getFullYear(), prevDate.getMonth() - 1, 1);
+            return newDate;
+        });
+    };
+
+    const handleNextMonth = () => {
+        setCurrentDate(prevDate => {
+            const newDate = new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 1);
+            return newDate;
+        });
+    };
+
+    const monthNames = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    const selectedMonth = monthNames[currentDate.getMonth()];
+    const selectedYear = currentDate.getFullYear();
+
+    const hasRecords = budgetData.length > 0;
 
     const tabsConfig: TabConfig[] = [
         {
             label: 'Planejamento Mensal',
-            content: <BudgetTable data={budgetData}/>
+            content: <BudgetTable data={budgetData} />
         },
         {
             label: 'Orçamento por Categoria',
-            content: <CategoryTable data={budgetData}/>
+            content: <CategoryTable data={budgetData} />
         }
     ];
 
-    const activeTabTitle = tabsConfig[selectedTab]?.label || 'Planejamento';
-
     return (
-      <Container>
-        <Typography variant="h4" gutterBottom sx={{ mt: 3, mb: 3 }}>
-          {activeTabTitle}
-        </Typography>
-        
-        {loading ? (
-          <Typography variant="body1">Carregando dados...</Typography>
-        ) : (
-          <TabsContainer
-           tabs={tabsConfig}
-           value={selectedTab}
-           onChange={handleTabChange}
-           />
-        )}
-      </Container>
-  );
+        <Container maxWidth="md">
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
+                <IconButton onClick={handlePrevMonth} size="large">
+                    <ArrowBackIosIcon />
+                </IconButton>
+                <Typography variant="h5" sx={{ margin: '0 20px', fontWeight: 'bold' }}>
+                    {selectedMonth} De {selectedYear}
+                </Typography>
+                <IconButton onClick={handleNextMonth} size="large">
+                    <ArrowForwardIosIcon />
+                </IconButton>
+            </div>
+            
+            {loading ? (
+                <Typography variant="body1" align="center">Carregando dados...</Typography>
+            ) : (
+                hasRecords ? (
+                    <TabsContainer
+                        tabs={tabsConfig}
+                        value={selectedTab}
+                        onChange={handleTabChange}
+                    />
+                ) : (
+                    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                        <Typography variant="h6" color="text.secondary" gutterBottom>
+                            Parece que você não tem registros para este mês.
+                        </Typography>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            size="large"
+                            sx={{ mt: 2 }}
+                            // Adicionar a função de navegação para a página de adicionar registro
+                            onClick={() => console.log('Botão de adicionar registro clicado')} 
+                        >
+                            Botão do weder
+                        </Button>
+                    </div>
+                )
+            )}
+        </Container>
+    );
 };
