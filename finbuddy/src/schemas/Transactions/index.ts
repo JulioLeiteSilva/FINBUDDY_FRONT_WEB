@@ -32,3 +32,5 @@ export { PayInvoiceInstallmentRequestSchema } from "./Functions/PayInvoiceInstal
 export type { PayInvoiceInstallmentRequestType } from "./Functions/PayInvoiceInstallment/PayInvoiceInstallmentRequest";
 export { PayInvoiceInstallmentResponseSchema } from "./Functions/PayInvoiceInstallment/PayInvoiceInstallmentResponse";
 export type { PayInvoiceInstallmentResponseType } from "./Functions/PayInvoiceInstallment/PayInvoiceInstallmentResponse";
+export { CreateTransactionSchema } from "./Forms/CreateTransaction";
+export type { CreateTransactionType } from "./Forms/CreateTransaction";

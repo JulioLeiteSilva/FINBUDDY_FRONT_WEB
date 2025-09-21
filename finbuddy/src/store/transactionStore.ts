@@ -1,8 +1,10 @@
-import { create } from 'zustand';
-import { GetAllIncomeOrExpenseResponseType, TransactionType } from '../schemas/Transactions';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../services/firebase';
-
+import { create } from "zustand";
+import {
+  GetAllIncomeOrExpenseResponseType,
+  TransactionType,
+} from "../schemas/Transactions";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "../services/firebase";
 
 interface TransactionsState {
   transactions: TransactionType[];
@@ -13,22 +15,27 @@ interface TransactionsState {
 
 export const useTransactionsStore = create<TransactionsState>((set) => ({
   transactions: [],
-  message: '',
+  message: "",
   isLoading: false,
 
   fetchTransactions: async () => {
     set({ isLoading: true });
     try {
-      const getAllTransactionsFn = httpsCallable(functions, 'transaction-getAllIncomeOrExpense');
+      const getAllTransactionsFn = httpsCallable(
+        functions,
+        "transaction-getAllIncomeOrExpense"
+      );
       const response = await getAllTransactionsFn();
-      const getAllTransactionsResponse = response.data as unknown as GetAllIncomeOrExpenseResponseType;
+      const getAllTransactionsResponse =
+        response.data as unknown as GetAllIncomeOrExpenseResponseType;
+        console.log(getAllTransactionsResponse.data)
 
       set({
-        transactions: getAllTransactionsResponse.data.transactions as TransactionType[],
+        transactions: getAllTransactionsResponse.data as unknown as TransactionType[],
         message: getAllTransactionsResponse.message,
       });
     } catch (error) {
-      console.error('Erro ao pegar todas as transações:', error);
+      console.error("Erro ao pegar todas as transações:", error);
     } finally {
       set({ isLoading: false });
     }

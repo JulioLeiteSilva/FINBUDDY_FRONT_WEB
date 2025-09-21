@@ -8,7 +8,7 @@ import TransactionsPageView from '../pages/Transactions/TransactionPageView';
 import { useState, useEffect, useCallback } from 'react';
 import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
-import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
+import { CreateTransactionType } from '../schemas/Transactions';
 import { BankAccountView } from '../pages/BankAccount';
 import { CategoriesView } from '../pages/Categories';
 import { DashboardView } from '../pages/Dashboards';
@@ -28,7 +28,7 @@ const PrivateRoutes = () => {
     setIsNewTransactionModalOpen(false);
   }, []);
 
-  const handleCreateNewTransaction = useCallback((newTransaction: TransactionRequestDTOSchemaType) => {
+  const handleCreateNewTransaction = useCallback((newTransaction: CreateTransactionType) => {
     CreateTransaction(newTransaction);
     handleCloseNewTransactionModal();
   }, [handleCloseNewTransactionModal]);
@@ -38,9 +38,9 @@ const PrivateRoutes = () => {
       case '/':
         setTitle('Home');
         break;
-      // case '/transactions':
-      //   setTitle('Transações');
-      //   break;
+      case '/transactions':
+        setTitle('Transações');
+        break;
       case '/bank-accounts':
         setTitle('Contas');
         break;
@@ -67,8 +67,8 @@ const PrivateRoutes = () => {
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/bank-accounts" element={<BankAccountView />} />
-          {/* <Route path="/transactions" element={<TransactionsPageView />} />
-          <Route path="/categories" element={<CategoriesView />} />
+          <Route path="/transactions" element={<TransactionsPageView />} />
+          {/* <Route path="/categories" element={<CategoriesView />} />
           <Route path="/dashboard" element={<DashboardView />} />
           <Route path="/cards" element={<CardsView />} /> */}
           <Route path="*" element={<NotFound />} />

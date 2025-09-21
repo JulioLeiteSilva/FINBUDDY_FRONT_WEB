@@ -21,11 +21,14 @@ export const useHomeViewModel = () => {
     fetchBankAccountsBalancesByMonth({ month: currentMonth });
     fetchTransactions();
   }, []);
+  console.log(transactions)
 
   // Filtra transações da última semana
   const recentTransactions = transactions
     .filter((transaction) => {
+      console.log(transaction)
       const transactionDate = firestoreTimestampToDate(transaction.date);
+      console.log(transactionDate)
       if (!transactionDate) return false;
       const txDate = dayjs(transactionDate);
       const oneWeekAgo = dayjs().subtract(7, "day");
@@ -37,6 +40,7 @@ export const useHomeViewModel = () => {
       return (dateA?.getTime() ?? 0) - (dateB?.getTime() ?? 0);
     })
     .slice(0, 5); // Pega apenas as 5 transações mais recentes
+    console.log(recentTransactions)
 
   // Calcula totais para os cards
   const totalBalance = bankAccountsBalancesByMonth.data.totalBalance
