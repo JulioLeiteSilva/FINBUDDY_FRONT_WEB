@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { TransactionSchemaType, TransactionsResponseDTOSchemaType } from '../schemas/Transactions';
+import { GetAllIncomeOrExpenseResponseType, TransactionType } from '../schemas/Transactions';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../services/firebase';
 
 
 interface TransactionsState {
-  transactions: TransactionSchemaType[];
+  transactions: TransactionType[];
   message: string;
   isLoading: boolean;
   fetchTransactions: () => Promise<void>;
@@ -21,10 +21,10 @@ export const useTransactionsStore = create<TransactionsState>((set) => ({
     try {
       const getAllTransactionsFn = httpsCallable(functions, 'transaction-getAllIncomeOrExpense');
       const response = await getAllTransactionsFn();
-      const getAllTransactionsResponse = response.data as unknown as TransactionsResponseDTOSchemaType;
+      const getAllTransactionsResponse = response.data as unknown as GetAllIncomeOrExpenseResponseType;
 
       set({
-        transactions: getAllTransactionsResponse.data as TransactionSchemaType[],
+        transactions: getAllTransactionsResponse.data.transactions as TransactionType[],
         message: getAllTransactionsResponse.message,
       });
     } catch (error) {

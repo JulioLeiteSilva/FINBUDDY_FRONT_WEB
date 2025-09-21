@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { TransactionFrequency } from '../../enums';
-import { FirestoreIdSchema } from '../Common/FirestoreSchemas';
+import { TransactionFrequency } from '../../../enums';
+import { FirestoreIdSchema } from '../../Common/FirestoreSchemas';
 
-export const TransactionRequestDTOSchema = z.object({
+export const CreateTransactionSchema = z.object({
     name: z.string().min(1, { message: "O nome da transação é obrigatório" }),
     category: z.string().min(1, { message: "A categoria é obrigatória" }),
     value: z.number({ message: "O valor deve ser maior que zero" }).gt(0, { message: "O valor deve ser maior que zero" }),
@@ -33,3 +33,5 @@ export const TransactionRequestDTOSchema = z.object({
     }),
     primaryTransactionId: z.string().nullable().optional(),
 });
+
+export type CreateTransactionType = z.infer<typeof CreateTransactionSchema>;

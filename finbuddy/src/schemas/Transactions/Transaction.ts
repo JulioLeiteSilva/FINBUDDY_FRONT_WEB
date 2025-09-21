@@ -20,3 +20,5 @@ export const TransactionSchema = z.object({
     creditCardId: FirestoreIdSchema.nullable(),
     primaryTransactionId: FirestoreIdSchema.nullable(),
 });
+
+export type TransactionType = z.infer<typeof TransactionSchema>;

@@ -18,7 +18,7 @@ export const useHomeViewModel = () => {
   const currentMonth = dayjs().tz("America/Sao_Paulo").format("YYYY-MM");
 
   useEffect(() => {
-    fetchBankAccountsBalancesByMonth({ data: { month: currentMonth } });
+    fetchBankAccountsBalancesByMonth({ month: currentMonth });
     fetchTransactions();
   }, []);
 
