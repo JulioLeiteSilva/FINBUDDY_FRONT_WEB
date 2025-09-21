@@ -1,6 +1,5 @@
 import z from "zod";
 import { BankAccountSchema } from "../../BankAccount";
-import { FunctionsGenericRequestSchema } from "../../../Common";
 
 const DataSchema = BankAccountSchema.pick({
     name: true,
@@ -10,8 +9,6 @@ const DataSchema = BankAccountSchema.pick({
     currency: true,
 });
 
-export const CreateBankAccountRequestSchema = FunctionsGenericRequestSchema.extend({
-    data: DataSchema,
-});
+export const CreateBankAccountRequestSchema = DataSchema
 
 export type CreateBankAccountRequestType = z.infer<typeof CreateBankAccountRequestSchema>;

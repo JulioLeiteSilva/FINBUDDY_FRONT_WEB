@@ -5,8 +5,9 @@ import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
 import { DeleteBankAccountRequestType } from "../../schemas/BankAccount";
+import dayjs from "dayjs";
 
-export const DeleteBankAccount = async (body: DeleteBankAccountRequestType) => {
+export const DeleteBankAccount = async (body: DeleteBankAccountRequestType, month: string) => {
     const { showSnackbar } = useSnackbarStore.getState();
 
     try {
@@ -14,8 +15,8 @@ export const DeleteBankAccount = async (body: DeleteBankAccountRequestType) => {
         const response = await deleteBankAccountFn(body);
         console.log('Conta bancária deletada:', response.data);
 
-        const { fetchBankAccounts } = useBankAccountStore.getState();
-        await fetchBankAccounts();
+        const { fetchBankAccountsBalancesByMonth } = useBankAccountStore.getState();
+        await fetchBankAccountsBalancesByMonth({ month: month ?? dayjs().tz("America/Sao_Paulo").format('YYYY-MM').toString() });
 
         showSnackbar('Conta bancária deletada com sucesso!', 'success');
     } catch (error) {

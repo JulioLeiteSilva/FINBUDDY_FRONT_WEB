@@ -9,7 +9,8 @@ export const GetBalancesByMonth = async (body: GetBalancesByMonthRequestType): P
 
     try {
         const getBalancesByMonthFn = httpsCallable(functions, 'bank-getBalancesByMonth');
-        const response = await getBalancesByMonthFn(body.data);
+        console.log(body)
+        const response = await getBalancesByMonthFn(body);
         console.log('Saldo da conta bancária atualizado:', response.data);
 
         return response.data as GetBalancesByMonthResponseType;

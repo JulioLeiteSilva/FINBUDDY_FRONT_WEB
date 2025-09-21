@@ -37,12 +37,12 @@ export const useBankAccountViewModel = () => {
     };
 
     const handleCreateNewAccount = (newAccount: CreateBankAccountRequestType) => {
-        CreateBankAccount(newAccount);
+        CreateBankAccount(newAccount, selectedMonth.format('YYYY-MM'));
         setIsModalOpen(false);
     };
 
     useEffect(() => {
-        fetchBankAccountsBalancesByMonth({ data: { month: selectedMonth.format('YYYY-MM') } });
+        fetchBankAccountsBalancesByMonth({ month: selectedMonth.format('YYYY-MM') });
     }, [selectedMonth]);
 
     useEffect(() => {
@@ -50,6 +50,7 @@ export const useBankAccountViewModel = () => {
         const isCurrentMonth = selectedMonth.isSame(today, 'month');
         const isFutureMonth = selectedMonth.isAfter(today, 'month');
         const isPastMonth = selectedMonth.isBefore(today, 'month') && !selectedMonth.isSame(today, 'month');
+
 
         const showCurrentBalance = isCurrentMonth
         const showForecastBalance = (isCurrentMonth || isFutureMonth)

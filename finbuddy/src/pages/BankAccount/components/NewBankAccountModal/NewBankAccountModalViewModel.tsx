@@ -28,7 +28,7 @@ export const useNewBankAccountModalViewModel = (props: NewBankAccountModalProps)
     const { banks, loading: loadingBanks } = useBanks();
 
     const onSubmit = (data: CreateBankAccountType) => {
-        const body = { data } as unknown as CreateBankAccountRequestType;
+        const body = data as unknown as CreateBankAccountRequestType;
         onCreateNew(body);
         onClose();
         reset();

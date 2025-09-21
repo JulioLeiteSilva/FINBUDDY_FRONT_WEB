@@ -41,7 +41,7 @@ export const useBankAccountCardViewModel = (props: BankAccountCardProps) => {
     const matchedBank = banks.find((bank) => bank.code === bankAccount?.bank);
 
     const handleDelete = async (data: DeleteBankAccountRequestType) => {
-        await DeleteBankAccount(data);
+        await DeleteBankAccount(data, selectedMonth.format('YYYY-MM'));
         setOpenModal(false);
     };
 

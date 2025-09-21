@@ -42,7 +42,7 @@ export const useBankAccountStore = create<BankAccountState>((set) => ({
       const response = await GetBalancesByMonth(body);
 
       if (!response) return;
-      const {message, ...rest} = response;
+      const { message, ...rest } = response;
       const data = rest as BalancesByMonthType;
 
       set({

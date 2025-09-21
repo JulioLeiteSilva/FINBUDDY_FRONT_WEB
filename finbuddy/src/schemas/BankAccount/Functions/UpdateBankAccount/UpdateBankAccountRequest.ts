@@ -1,6 +1,5 @@
 import z from "zod";
 import { BankAccountSchema } from "../../BankAccount";
-import { FunctionsGenericRequestSchema } from "../../../Common";
 
 const DataSchema = BankAccountSchema
     .partial()
@@ -8,8 +7,6 @@ const DataSchema = BankAccountSchema
         id: true,
     });
 
-export const UpdateBankAccountRequestSchema = FunctionsGenericRequestSchema.extend({
-    data: DataSchema,
-});
+export const UpdateBankAccountRequestSchema = DataSchema;
 
 export type UpdateBankAccountRequestType = z.infer<typeof UpdateBankAccountRequestSchema>;

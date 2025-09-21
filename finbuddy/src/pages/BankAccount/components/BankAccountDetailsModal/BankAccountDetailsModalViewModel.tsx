@@ -43,13 +43,13 @@ export const useBankAccountDetailsModalViewModel = (props: BankAccountDetailsMod
     }, [bankAccount, open, reset]);
 
     const handleUpdate = (form: UpdateBankAccountSchemaType) => {
-        const body = { data: form } as unknown as UpdateBankAccountRequestType;
+        const body = form as unknown as UpdateBankAccountRequestType;
         onUpdate(body);
         setIsEditing(false);
     };
 
     const handleDelete = () => {
-        onDelete({ data: { id: props.bankAccount.id } } as DeleteBankAccountRequestType);
+        onDelete({ id: props.bankAccount.id } as DeleteBankAccountRequestType);
         onClose();
     };
 
