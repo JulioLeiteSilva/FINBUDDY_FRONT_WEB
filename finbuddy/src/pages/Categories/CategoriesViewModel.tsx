@@ -1,11 +1,11 @@
 import { useMemo, useEffect, useState } from "react";
 import { useCategoriesStore } from "../../store/categoriesStore";
 import { CreateCategory } from "../../services/Categories";
-import { CategorySchemaType } from '../../schemas/Categories';
+import { CategoryType } from '../../schemas/Categories';
 import { CategoryOrigin } from './components/CategoryOriginFilter';
 import { CategoryNature } from './components/CategoryNatureFilter';
 
-export interface DisplayCategory extends CategorySchemaType {
+export interface DisplayCategory extends CategoryType {
     isDefault: boolean;
 }
 
@@ -16,6 +16,8 @@ export const useCategoriesViewModel = () => {
         isLoading,
         fetchCategories,
     } = useCategoriesStore();
+    console.log(userCategories)
+    console.log(defaultCategories)
 
     const [originFilter, setOriginFilter] = useState<CategoryOrigin>('all');
     const [natureFilter, setNatureFilter] = useState<CategoryNature>('all');
@@ -24,7 +26,7 @@ export const useCategoriesViewModel = () => {
         fetchCategories();
     }, [fetchCategories]);
 
-    const handleAddCategory = async (categoryData: Omit<CategorySchemaType, 'id'>) => {
+    const handleAddCategory = async (categoryData: Omit<CategoryType, 'id'>) => {
         try {
             await CreateCategory(categoryData);
         } catch (error) {

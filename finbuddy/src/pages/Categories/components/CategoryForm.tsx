@@ -5,9 +5,9 @@ import { Box, TextField, ToggleButtonGroup, ToggleButton, Button, CircularProgre
 import { AddCircleOutline } from '@mui/icons-material';
 import GetMuiIcon from '../../../utils/getMuiIcon'; // Ajuste o caminho
 import { IconPickerModal } from './IconPickerModal';
-import { CategorySchemaType } from '../../../schemas/Categories'; // Ajuste o caminho
+import { CategoryType } from '../../../schemas/Categories'; // Ajuste o caminho
 
-type NewCategoryData = Omit<CategorySchemaType, 'id'>;
+type NewCategoryData = Omit<CategoryType, 'id'>;
 
 interface CategoryFormProps {
     onAddCategory: (category: NewCategoryData) => Promise<void>;

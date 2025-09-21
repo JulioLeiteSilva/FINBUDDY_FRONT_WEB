@@ -6,3 +6,11 @@ export {CreateCategoryResponseSchema} from './Functions/CreateCategory/CreateCat
 export type {CreateCategoryResponseType} from './Functions/CreateCategory/CreateCategoryResponse';
 export {UpdateCategoryRequestSchema} from './Functions/UpdateCategory/UpdateCategoryRequest';
 export type {UpdateCategoryRequestType} from './Functions/UpdateCategory/UpdateCategoryRequest';
+export {GetAllCategoriesResponseSchema} from './Functions/GetAllCategories/GetAllCategoriesResponse';
+export type {GetAllCategoriesResponseType} from './Functions/GetAllCategories/GetAllCategoriesResponse';
+export {DeleteCategoryRequestSchema} from './Functions/DeleteCategory/DeleteCategoryRequest';
+export type {DeleteCategoryRequestType} from './Functions/DeleteCategory/DeleteCategoryRequest';
+export {CategoryFormSchema} from './Forms/CategoryForm';
+export type {CategoryFormType} from './Forms/CategoryForm';
+export {GetAllDefaultCategoriesResponseSchema} from './Functions/GetAllCategories/GetAllDefaultCategoriesResponse';
+export type {GetAllDefaultCategoriesResponseType} from './Functions/GetAllCategories/GetAllDefaultCategoriesResponse';

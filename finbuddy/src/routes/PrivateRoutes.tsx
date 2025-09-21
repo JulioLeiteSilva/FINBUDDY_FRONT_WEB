@@ -44,9 +44,9 @@ const PrivateRoutes = () => {
       case '/bank-accounts':
         setTitle('Contas');
         break;
-      // case '/categories':
-      //   setTitle('Categorias');
-      //   break;
+      case '/categories':
+        setTitle('Categorias');
+        break;
       // case '/dashboard':
       //   setTitle('Dashboard');
       //   break;
@@ -68,9 +68,9 @@ const PrivateRoutes = () => {
           <Route path="/" element={<HomeView />} />
           <Route path="/bank-accounts" element={<BankAccountView />} />
           <Route path="/transactions" element={<TransactionsPageView />} />
-          {/* <Route path="/categories" element={<CategoriesView />} />
+          <Route path="/categories" element={<CategoriesView />} />
           <Route path="/dashboard" element={<DashboardView />} />
-          <Route path="/cards" element={<CardsView />} /> */}
+          {/* <Route path="/cards" element={<CardsView />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
