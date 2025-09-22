@@ -4,6 +4,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import { LibraryBooks } from "@mui/icons-material";
 import { Category } from "@mui/icons-material";
 import { useSideBarStore } from "../../store/sideBarStore";
 import { FinbuddyLogoHeader, FinbuddyLogoHeaderCollapsed } from "..";
@@ -21,6 +22,7 @@ const SideBar = () => {
         { path: "/transactions", text: "Transações", icon: <ReceiptLongIcon /> },
         { path: "/cards", text: "Cartões", icon: <CreditCardIcon /> },
         { path: "/dashboard", text: "Dashboards", icon: <TrendingUpIcon /> },
+        { path: "/planning", text: "Planejamento", icon: <LibraryBooks /> },
     ];
 
     return (
