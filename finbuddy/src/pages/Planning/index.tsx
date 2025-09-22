@@ -6,6 +6,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { BudgetItem } from './components/types';
 import { TabConfig, TabsContainer } from './components/TabsContainer';
+import { PlanningForm } from './components/PlanningForm';
 
 const mockDataFromFirebase: BudgetItem[] = [
     { id: 'cat1', category: 'Alimentação', value: 1500, spent: 750, paid: 600 },
@@ -20,6 +21,7 @@ export const PlanningPage: React.FC = () => {
     const [budgetData, setBudgetData] = useState<BudgetItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [isCreatingPlanning, setIsCreatingPlanning] = useState(false);
 
     const [selectedTab, setSelectedTab] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -33,7 +35,7 @@ export const PlanningPage: React.FC = () => {
             // Se o mês for setembro (índice 8), retorna os dados de exemplo.
             // Caso contrário, retorna um array vazio.
             const hasDataForSelectedMonth = currentDate.getMonth() === 8;
-            
+
             if (hasDataForSelectedMonth) {
                 setBudgetData(mockDataFromFirebase);
             } else {
@@ -79,45 +81,49 @@ export const PlanningPage: React.FC = () => {
 
     return (
         <Container maxWidth="md">
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
-                <IconButton onClick={handlePrevMonth} size="large">
-                    <ArrowBackIosIcon />
-                </IconButton>
-                <Typography variant="h5" sx={{ margin: '0 20px', fontWeight: 'bold' }}>
-                    {selectedMonth} De {selectedYear}
-                </Typography>
-                <IconButton onClick={handleNextMonth} size="large">
-                    <ArrowForwardIosIcon />
-                </IconButton>
-            </div>
-            
-            {loading ? (
-                <Typography variant="body1" align="center">Carregando dados...</Typography>
-            ) : (
-                hasRecords ? (
-                    <TabsContainer
-                        tabs={tabsConfig}
-                        value={selectedTab}
-                        onChange={handleTabChange}
-                    />
-                ) : (
-                    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            Parece que você não tem registros para este mês.
+            {!isCreatingPlanning ? (
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
+                        <IconButton onClick={handlePrevMonth} size="large">
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                        <Typography variant="h5" sx={{ margin: '0 20px', fontWeight: 'bold' }}>
+                            {selectedMonth} De {selectedYear}
                         </Typography>
-                        <Button 
-                            variant="contained" 
-                            color="primary" 
-                            size="large"
-                            sx={{ mt: 2 }}
-                            // Adicionar a função de navegação para a página de adicionar registro
-                            onClick={() => console.log('Botão de adicionar registro clicado')} 
-                        >
-                            Botão do weder
-                        </Button>
+                        <IconButton onClick={handleNextMonth} size="large">
+                            <ArrowForwardIosIcon />
+                        </IconButton>
                     </div>
-                )
-            )}
+
+                    {loading ? (
+                        <Typography variant="body1" align="center">Carregando dados...</Typography>
+                    ) : (
+                        hasRecords ? (
+                            <TabsContainer
+                                tabs={tabsConfig}
+                                value={selectedTab}
+                                onChange={handleTabChange}
+                            />
+                        ) : (
+                            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                                <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    Parece que você não tem registros para este mês.
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    sx={{ mt: 2 }}
+                                    // Adicionar a função de navegação para a página de adicionar registro
+                                    onClick={() => setIsCreatingPlanning(true)}
+                                >
+                                    Botão do weder
+                                </Button>
+                            </div>
+                        )
+                    )}
+                </>
+            ) : <PlanningForm />}
         </Container>
     );
 };
