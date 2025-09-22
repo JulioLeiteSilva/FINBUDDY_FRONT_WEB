@@ -4,10 +4,10 @@ import React from 'react';
 import { ListItem, ListItemText, IconButton, Tooltip, Box } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Lock as LockIcon } from '@mui/icons-material';
 import GetMuiIcon from '../../../utils/getMuiIcon'; // Ajuste o caminho
-import { CategorySchemaType } from '../../../schemas/Categories'; // Ajuste o caminho
+import { CategoryType } from '../../../schemas/Categories'; // Ajuste o caminho
 
 // Tipo combinado para uso interno no componente
-interface DisplayCategory extends CategorySchemaType {
+interface DisplayCategory extends CategoryType {
     isDefault: boolean;
 }
 

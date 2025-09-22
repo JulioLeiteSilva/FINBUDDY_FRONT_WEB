@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, Avatar } from '@mui/material';
-import { BankAccountSchemaType } from '../../../../schemas/BankAccount';
 import { Bank } from '../../../../hooks/useBanks';
 import { useNavigate } from 'react-router-dom';
+import { BalancesByMonthAccountType } from '../../../../schemas/BankAccount';
 
 interface BankAccountsListProps {
-  bankAccounts: BankAccountSchemaType[];
+  bankAccounts: BalancesByMonthAccountType[];
   banks: Bank[];
   formatCurrency: (value: number) => string;
 }

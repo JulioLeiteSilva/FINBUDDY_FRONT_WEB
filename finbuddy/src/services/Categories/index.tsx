@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { CategoryRequestDTOSchemaType } from "../../schemas/Categories";
+import { CreateCategoryRequestType } from "../../schemas/Categories";
 import { functions } from "../firebase";
 import { useCategoriesStore } from "../../store/categoriesStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
 
 export const CreateCategory = async (
-  data: CategoryRequestDTOSchemaType
+  data: CreateCategoryRequestType
 ) => {
   const { showSnackbar } = useSnackbarStore.getState();
 

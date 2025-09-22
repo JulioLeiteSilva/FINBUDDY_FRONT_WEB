@@ -1,19 +1,18 @@
-// src/routes/PrivateRoutes.tsx
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Home from '../pages/Home';
+import { HomeView } from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import { Box, Modal } from '@mui/material';
 import { SideBar } from '../components/';
-import { Content }  from '../components';
-import TransactionsPage from '../pages/Transactions';
+import { Content } from '../components';
+import TransactionsPageView from '../pages/Transactions/TransactionPageView';
 import { useState, useEffect, useCallback } from 'react';
 import { NewTransactionModal } from '../components';
 import { CreateTransaction } from '../services/Transactions';
-import { TransactionRequestDTOSchemaType } from '../schemas/Transactions';
-import BankAccountsPage from '../pages/BankAccount';
-import CategoriesPage from '../pages/Categories';
-import Dashboard from '../pages/Dashboards';
-import CreditCardPage from '../pages/Cards';
+import { CreateTransactionType } from '../schemas/Transactions';
+import { BankAccountView } from '../pages/BankAccount';
+import { CategoriesView } from '../pages/Categories';
+import { DashboardView } from '../pages/Dashboards';
+import { CardsView } from '../pages/Cards';
 import { PlanningPage } from '../pages/Planning';
 
 
@@ -30,7 +29,7 @@ const PrivateRoutes = () => {
     setIsNewTransactionModalOpen(false);
   }, []);
 
-  const handleCreateNewTransaction = useCallback((newTransaction: TransactionRequestDTOSchemaType) => {
+  const handleCreateNewTransaction = useCallback((newTransaction: CreateTransactionType) => {
     CreateTransaction(newTransaction);
     handleCloseNewTransactionModal();
   }, [handleCloseNewTransactionModal]);
@@ -49,19 +48,19 @@ const PrivateRoutes = () => {
       case '/categories':
         setTitle('Categorias');
         break;
-      case '/dashboard':
-        setTitle('Dashboard');
-        break;
-      case '/cards':
-        setTitle('Cartões de Crédito');
-        break;
+      // case '/dashboard':
+      //   setTitle('Dashboard');
+      //   break;
+      // case '/cards':
+      //   setTitle('Cartões de Crédito');
+      //   break;
       case '/planning':
         setTitle('Planning');
         break;
       default:
-        setTitle('Página não encontrada'); // Ou um título padrão
+        setTitle('Página não encontrada');
         break;
-      
+
     }
   }, [location.pathname]);
 
@@ -70,12 +69,12 @@ const PrivateRoutes = () => {
       <SideBar />
       <Content title={title} onOpenNewTransactionModal={handleOpenNewTransactionModal}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/bank-accounts" element={<BankAccountsPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/cards" element={<CreditCardPage />} />
+          <Route path="/" element={<HomeView />} />
+          <Route path="/bank-accounts" element={<BankAccountView />} />
+          <Route path="/transactions" element={<TransactionsPageView />} />
+          <Route path="/categories" element={<CategoriesView />} />
+          <Route path="/dashboard" element={<DashboardView />} />
+          {/* <Route path="/cards" element={<CardsView />} /> */}
           <Route path="/planning" element={<PlanningPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

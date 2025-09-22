@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { UpdateBankAccountDTOSchemaType } from "../../schemas/BankAccount";
 import { functions } from "../firebase";
 import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
+import { UpdateBankAccountRequestType } from "../../schemas/BankAccount";
 
 export const UpdateBankAccount = async (
-    data: UpdateBankAccountDTOSchemaType & { id: string }
+    body: UpdateBankAccountRequestType
 ) => {
     const { showSnackbar } = useSnackbarStore.getState();
 
     try {
         const updateBankAccountFn = httpsCallable(functions, 'bank-updateBankAccount');
-        const response = await updateBankAccountFn(data);
+        const response = await updateBankAccountFn(body);
         console.log('Conta bancária atualizada:', response.data);
 
         const { fetchBankAccounts } = useBankAccountStore.getState();

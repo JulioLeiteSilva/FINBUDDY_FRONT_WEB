@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { TransactionRequestDTOSchemaType } from "../../schemas/Transactions";
+import { UpdateTransactionRequestType } from "../../schemas/Transactions";
 import { functions } from "../firebase";
 import { useTransactionsStore } from "../../store/transactionStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
 
 export const UpdateTransaction = async (
-    data: TransactionRequestDTOSchemaType & { id: string }
+    data: UpdateTransactionRequestType
 ) => {
     const { showSnackbar } = useSnackbarStore.getState();
 

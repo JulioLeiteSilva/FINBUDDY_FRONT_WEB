@@ -19,7 +19,7 @@ import {
 import dayjs from 'dayjs';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreditCardRequestDTOSchema } from '../../../schemas/CreditCard/CreditCardRequestDTOSchema';
+import { CreditCardRequestDTOSchema } from '../../../schemas/CreditCard/Forms/CreditCardRequestDTOSchema';
 import { CreditCardFlag } from '../../../enums/CreditCardFlag';
 import { CreateCreditCard } from '../../../services/CreditCard/createCreditCard';
 import { useBankAccountStore } from '../../../store/bankAccountStore';
