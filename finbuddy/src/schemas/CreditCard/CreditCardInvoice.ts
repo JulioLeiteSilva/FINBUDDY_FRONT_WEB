@@ -1,12 +1,14 @@
 import { z } from "zod";
-import { firestoreIdSchema } from "../Common/FirestoreSchemas";
+import { FirestoreIdSchema } from "../Common/FirestoreSchemas";
 import { InvoiceStatus } from "../../enums/InvoiceStatus";
 
 export const CreditCardInvoiceSchema = z.object({
-    id: firestoreIdSchema,
+    id: FirestoreIdSchema,
     status: z.nativeEnum(InvoiceStatus),
     total: z.number(),
     month : z.number(),
     year : z.number(),
-    bankAccountId: firestoreIdSchema.nullable(),
+    bankAccountId: FirestoreIdSchema.nullable(),
 });
+
+export type CreditCardInvoiceType = z.infer<typeof CreditCardInvoiceSchema>;

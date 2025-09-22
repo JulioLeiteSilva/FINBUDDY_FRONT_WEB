@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { firestoreIdSchema } from '../Common/FirestoreSchemas';
+import { FirestoreIdSchema } from '../../Common/FirestoreSchemas';
 
-export const CreditCardInvoiceRequestDTOSchema = z.object({
-    creditCardId: firestoreIdSchema.refine((val) => val !== '', { 
+export const CreditCardInvoiceFormSchema = z.object({
+    creditCardId: FirestoreIdSchema.refine((val) => val !== '', { 
         message: "O cartão de crédito é obrigatório" 
     }),
     dueDate: z.date({ required_error: "A data de vencimento é obrigatória" }),
@@ -14,3 +14,5 @@ export const CreditCardInvoiceRequestDTOSchema = z.object({
     isPaid: z.boolean({ required_error: "É necessário informar se a fatura está paga" }),
     paymentDate: z.date().nullable(),
 }); 
+
+export type CreditCardInvoiceFormType = z.infer<typeof CreditCardInvoiceFormSchema>;
