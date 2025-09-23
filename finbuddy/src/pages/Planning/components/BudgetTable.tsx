@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { BudgetItem } from "./types";
+import { BudgetItem } from "./PlanningModel";
 
 
 interface BudgetTableProps {

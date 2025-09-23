@@ -13,7 +13,7 @@ import { BankAccountView } from '../pages/BankAccount';
 import { CategoriesView } from '../pages/Categories';
 import { DashboardView } from '../pages/Dashboards';
 import { CardsView } from '../pages/Cards';
-import { PlanningPage } from '../pages/Planning';
+import { PlanningView } from '../pages/Planning';
 
 
 const PrivateRoutes = () => {
@@ -55,7 +55,7 @@ const PrivateRoutes = () => {
       //   setTitle('Cartões de Crédito');
       //   break;
       case '/planning':
-        setTitle('Planning');
+        setTitle('Planejamento');
         break;
       default:
         setTitle('Página não encontrada');
@@ -75,7 +75,7 @@ const PrivateRoutes = () => {
           <Route path="/categories" element={<CategoriesView />} />
           <Route path="/dashboard" element={<DashboardView />} />
           {/* <Route path="/cards" element={<CardsView />} /> */}
-          <Route path="/planning" element={<PlanningPage />} />
+          <Route path="/planning" element={<PlanningView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>

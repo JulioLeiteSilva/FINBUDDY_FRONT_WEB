@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Paper, useTheme } from '@mui/material';
-import { BudgetItem } from './types';
+import { BudgetItem } from './PlanningModel';
 
 interface CategoryTableProps {
   data: BudgetItem[];
