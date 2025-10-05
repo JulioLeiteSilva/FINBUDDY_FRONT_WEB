@@ -14,6 +14,7 @@ import { CategoriesView } from '../pages/Categories';
 import { DashboardView } from '../pages/Dashboards';
 import { CardsView } from '../pages/Cards';
 import { PlanningPage } from '../pages/Planning';
+import { PatrimonialManagementPage } from '../pages/PatrimonialManagement';
 
 
 const PrivateRoutes = () => {
@@ -57,6 +58,9 @@ const PrivateRoutes = () => {
       case '/planning':
         setTitle('Planning');
         break;
+      case '/patrimonial-management':
+        setTitle('Gestão Patrimonial');
+        break;
       default:
         setTitle('Página não encontrada');
         break;
@@ -76,6 +80,7 @@ const PrivateRoutes = () => {
           <Route path="/dashboard" element={<DashboardView />} />
           {/* <Route path="/cards" element={<CardsView />} /> */}
           <Route path="/planning" element={<PlanningPage />} />
+          <Route path="/patrimonial-management" element={<PatrimonialManagementPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>

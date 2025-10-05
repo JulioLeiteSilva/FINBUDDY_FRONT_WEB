@@ -23,6 +23,7 @@ const SideBar = () => {
         { path: "/cards", text: "Cartões", icon: <CreditCardIcon /> },
         { path: "/dashboard", text: "Dashboards", icon: <TrendingUpIcon /> },
         { path: "/planning", text: "Planejamento", icon: <LibraryBooks /> },
+        { path: "/patrimonial-management", text: "Gestão Patrimonial", icon: <AccountBalanceIcon /> }
     ];
 
     return (
