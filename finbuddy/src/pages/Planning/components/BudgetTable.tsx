@@ -13,12 +13,12 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import { CategoryAllocationType } from "../../../schemas/FinancialPlanning";
 
-import { BudgetItem } from "./PlanningModel";
 
 
 interface BudgetTableProps {
-    data: BudgetItem[];
+    data: CategoryAllocationType[];
 }
 
 const formatCurrency = (value: number): string => {
@@ -57,23 +57,21 @@ const BudgetTable: React.FC<BudgetTableProps> = ({ data }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row: BudgetItem) => {
-              // 'row' agora é explicitamente do tipo BudgetItem
-              // Lógica de Progresso e Status
+            {data.map((row: CategoryAllocationType) => {
               const progressValue =
-                row.value > 0 ? (row.spent / row.value) * 100 : 0;
-              const isOverBudget = row.spent > row.value;
+                row.value > 0 ? ((row.spent || 0) / row.value) * 100 : 0;
+              const isOverBudget = (row.spent || 0) > row.value;
 
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.category.id}>
                   <TableCell align="left" component="th" scope="row">
-                    {row.category}
+                    {row.category.name}
                   </TableCell>
                   <TableCell align="left">
                     {formatCurrency(row.value)}
                   </TableCell>
-                  <TableCell align="left">
-                    {formatCurrency(row.spent)}
+                  <TableCell align="left" sx={{ color: isOverBudget ? 'error.main' : 'inherit' }}>
+                    {formatCurrency(row.spent || 0)}
                   </TableCell>
                   <TableCell align="left">
                     <Box sx={{ display: "flex", alignItems: "center" }}>

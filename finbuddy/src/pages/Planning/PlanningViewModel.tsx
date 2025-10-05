@@ -5,19 +5,12 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import isBetween from "dayjs/plugin/isBetween";
 import { useEffect, useState } from "react";
-import { BudgetItem } from "./components/PlanningModel";
 import BudgetTable from "./components/BudgetTable";
 import CategoryTable from "./components/CategoryTable";
 import { TabConfig } from "./components/TabsContainer";
-
-const mockDataFromFirebase: BudgetItem[] = [
-  { id: "cat1", category: "Alimentação", value: 1500, spent: 750, paid: 600 },
-  { id: "cat2", category: "Transporte", value: 300, spent: 320.5, paid: 200.0 },
-  { id: "cat3", category: "Moradia", value: 2000, spent: 2000, paid: 2000 },
-  { id: "cat4", category: "Lazer", value: 500, spent: 150.75, paid: 100 },
-  { id: "cat5", category: "Educação", value: 800, spent: 0, paid: 0 },
-  { id: "cat6", category: "Saúde", value: 400, spent: 550, paid: 300 },
-];
+import { useLoadingStore } from "../../store/loadingStore";
+import { CategoryAllocationType, GetFinancialPlanningByMonthResponseType } from "../../schemas/FinancialPlanning";
+import { GetFinancialPlanningByMonth } from "../../services/FinancialPlanning";
 
 export const usePlanningViewModel = () => {
   dayjs.extend(isBetween);
@@ -25,14 +18,14 @@ export const usePlanningViewModel = () => {
   dayjs.extend(utc);
   dayjs.extend(timezone);
 
-  const [budgetData, setBudgetData] = useState<BudgetItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { isLoading, startLoading, stopLoading } = useLoadingStore();
+  const [financialPlanningData, setFinancialPlanningData] = useState<GetFinancialPlanningByMonthResponseType>({} as GetFinancialPlanningByMonthResponseType);
+  const [allocationsData, setAllocationsData] = useState<CategoryAllocationType[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(
     dayjs().tz("America/Sao_Paulo")
   );
   const [isCreatingPlanning, setIsCreatingPlanning] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
-  const today = dayjs();
 
   const handlePreviousMonth = () => {
     setSelectedMonth((prev) => prev.subtract(1, "month"));
@@ -50,36 +43,43 @@ export const usePlanningViewModel = () => {
     setIsCreatingPlanning(value);
   };
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const hasDataForSelectedMonth = selectedMonth.month() === today.month(); //Adicionar função
+  const getFinancialPlanningData = async (month: string) => {
+    if (!month) return;
+    const body = { month };
+    const response = await GetFinancialPlanningByMonth(body);
+    if (response) {
+      const FinancialPlanning = response as GetFinancialPlanningByMonthResponseType;
+      setFinancialPlanningData(FinancialPlanning);
+      if (!FinancialPlanning.data) return; 
+      setAllocationsData(FinancialPlanning.data.categoryAllocations || []);
+    } else {
+      setAllocationsData([]);
+    }
+  };
 
-      if (hasDataForSelectedMonth) {
-        setBudgetData(mockDataFromFirebase);
-      } else {
-        setBudgetData([]);
-      }
-      setLoading(false);
-    }, 1000);
+  useEffect(() => {
+    startLoading();
+    getFinancialPlanningData(selectedMonth.format("YYYY-MM"));
+    stopLoading();
   }, [selectedMonth]);
 
-  const hasRecords = budgetData.length > 0;
+  const hasRecords = allocationsData.length > 0;
 
   const tabsConfig: TabConfig[] = [
     {
       label: "Planejamento Mensal",
-      content: <BudgetTable data={budgetData} />,
+      content: <BudgetTable data={allocationsData} />,
     },
     {
       label: "Orçamento por Categoria",
-      content: <CategoryTable data={budgetData} />,
+      content: <CategoryTable data={allocationsData} />,
     },
   ];
 
   return {
-    budgetData,
-    loading,
+    financialPlanningData,
+    allocationsData,
+    isLoading,
     selectedMonth,
     isCreatingPlanning,
     selectedTab,

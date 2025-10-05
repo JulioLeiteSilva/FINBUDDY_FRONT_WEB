@@ -3,6 +3,7 @@ import { functions } from "../firebase";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
 import { GetFinancialPlanningByMonthRequestType, GetFinancialPlanningByMonthResponseType } from "../../schemas/FinancialPlanning";
+import { FirebaseError } from "firebase/app";
 
 export const GetFinancialPlanningByMonth = async (body: GetFinancialPlanningByMonthRequestType): Promise<GetFinancialPlanningByMonthResponseType | undefined> => {
     const { showSnackbar } = useSnackbarStore.getState();
@@ -13,10 +14,12 @@ export const GetFinancialPlanningByMonth = async (body: GetFinancialPlanningByMo
 
         return response.data as GetFinancialPlanningByMonthResponseType;
     } catch (error) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const errorCode = (error as any)?.code || 'unknown';
-        const message = getFirebaseAuthErrorMessage(errorCode);
-        showSnackbar(message, 'error');
+        const firebaseError = error as FirebaseError;
+        const backendMessage = firebaseError.message;
+        const fallbackMessage = getFirebaseAuthErrorMessage(firebaseError.code || 'unknown');
+        const messageToShow = backendMessage || fallbackMessage;
+
+        showSnackbar(messageToShow, 'error');
     }
     return undefined;
 }

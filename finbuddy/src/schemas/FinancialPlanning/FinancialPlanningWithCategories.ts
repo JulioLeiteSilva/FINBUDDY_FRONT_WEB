@@ -2,7 +2,7 @@ import z from "zod";
 import { CategorySchema } from "../Categories";
 import { FinancialPlanningSchema } from "./FinancialPlanning";
 
-const categoryAllocationSchema = z.object({
+export const CategoryAllocationSchema = z.object({
   category: CategorySchema,
   value: z.number(),
   spent: z.number().optional(),
@@ -16,7 +16,7 @@ const categoryAllocationSchema = z.object({
 
 export const FinancialPlanningWithCategoriesSchema =
   FinancialPlanningSchema.omit({ categoryAllocations: true }).extend({
-    categoryAllocations: z.array(categoryAllocationSchema),
+    categoryAllocations: z.array(CategoryAllocationSchema),
     totalSpent: z.number().optional(),
     totalPaidSpent: z.number().optional(),
     totalUnpaidSpent: z.number().optional(),
@@ -27,6 +27,7 @@ export const FinancialPlanningWithCategoriesSchema =
     unallocatedAmount: z.number().optional(),
   });
 
+export type CategoryAllocationType = z.infer<typeof CategoryAllocationSchema>;
 export type FinancialPlanningWithCategoriesType = z.infer<
   typeof FinancialPlanningWithCategoriesSchema
 >;

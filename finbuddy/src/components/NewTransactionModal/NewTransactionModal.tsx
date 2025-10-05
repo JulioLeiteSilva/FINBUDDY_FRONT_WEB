@@ -15,7 +15,7 @@ import {
 import { useBankAccountStore } from "../../store/bankAccountStore";
 import { useCategoriesStore } from "../../store/categoriesStore";
 import { TransactionForm } from "./TransactionForm";
-import { CategorySchemaType } from "../../schemas/Categories";
+import { CategoryType } from "../../schemas/Categories";
 
 interface NewTransactionModalProps {
   onClose: () => void;
@@ -86,7 +86,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
           isRecurring={!!isRecurring}
           bankAccounts={bankAccounts}
           categories={
-            [...categories, ...defaultCategories] as CategorySchemaType[]
+            [...categories, ...defaultCategories] as CategoryType[]
           }
         />
       </DialogContent>

@@ -13,7 +13,7 @@ const PlanningPage = () => {
   dayjs.locale("pt-br");
 
   const {
-    loading,
+    isLoading,
     selectedMonth,
     isCreatingPlanning,
     selectedTab,
@@ -57,7 +57,7 @@ const PlanningPage = () => {
               </IconButton>
             </div>
 
-            {loading ? (
+            {isLoading ? (
               <Typography variant="body1" align="center">
                 Carregando dados...
               </Typography>
