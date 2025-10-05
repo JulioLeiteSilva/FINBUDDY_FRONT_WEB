@@ -2,10 +2,10 @@ export {CreateFinancialPlanningRequestSchema} from "./Functions/CreateFinancialP
 export type {CreateFinancialPlanningRequestType} from "./Functions/CreateFinancialPlanning/CreateFinancialPlanningRequest";
 export {CreateFinancialPlanningResponseSchema} from "./Functions/CreateFinancialPlanning/CreateFinancialPlanningResponse";
 export type {CreateFinancialPlanningResponseType} from "./Functions/CreateFinancialPlanning/CreateFinancialPlanningResponse";
-export {GetByMonthRequestSchema} from "./Functions/GetByMonth/GetByMonthRequest";
-export type {GetByMonthRequestType} from "./Functions/GetByMonth/GetByMonthRequest";
-export {GetByMonthResponseSchema} from "./Functions/GetByMonth/GetByMonthResponse";
-export type {GetByMonthResponseType} from "./Functions/GetByMonth/GetByMonthResponse";
+export {GetByMonthRequestSchema as GetFinancialPlanningByMonthRequestScema} from "./Functions/GetByMonth/GetByMonthRequest";
+export type {GetByMonthRequestType as GetFinancialPlanningByMonthRequestType} from "./Functions/GetByMonth/GetByMonthRequest";
+export {GetByMonthResponseSchema as GetFinancialPlanningByMonthResponseSchema } from "./Functions/GetByMonth/GetByMonthResponse";
+export type {GetByMonthResponseType as GetFinancialPlanningByMonthResponseType} from "./Functions/GetByMonth/GetByMonthResponse";
 export {FinancialPlanningWithCategoriesSchema} from "./FinancialPlanningWithCategories";
 export type {FinancialPlanningWithCategoriesType} from "./FinancialPlanningWithCategories";
 export {FinancialPlanningSchema} from "./FinancialPlanning";
