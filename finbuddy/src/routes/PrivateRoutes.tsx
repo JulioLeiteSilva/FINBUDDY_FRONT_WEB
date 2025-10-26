@@ -57,6 +57,10 @@ const PrivateRoutes = () => {
       case '/planning':
         setTitle('Planejamento');
         break;
+      case '/patrimonial-management':
+        setTitle('Gestão Patrimonial');
+        break;
+        break;
       default:
         setTitle('Página não encontrada');
         break;
@@ -76,6 +80,7 @@ const PrivateRoutes = () => {
           <Route path="/dashboard" element={<DashboardView />} />
           {/* <Route path="/cards" element={<CardsView />} /> */}
           <Route path="/planning" element={<PlanningView />} />
+          <Route path="/patrimonial-management" element={<PatrimonialManagementPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Content>
