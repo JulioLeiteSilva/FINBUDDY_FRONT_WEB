@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 
 // --- Helpers para o funcionamento das Abas ---
