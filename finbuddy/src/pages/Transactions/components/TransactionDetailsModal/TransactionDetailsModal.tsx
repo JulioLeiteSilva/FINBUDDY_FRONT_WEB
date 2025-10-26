@@ -4,18 +4,18 @@ import React, { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TransactionRequestDTOSchema, TransactionRequestDTOSchemaType, TransactionSchemaType } from '../../../../schemas/Transactions';
+import { CreateTransactionSchema, CreateTransactionType, TransactionType } from '../../../../schemas/Transactions';
 import { useBankAccountStore } from '../../../../store/bankAccountStore';
 import { formatDateForInput } from './utils/transactionUtils';
 import { TransactionDisplayInfo } from './TransactionDisplayInfo';
 import { TransactionEditForm } from './TransactionEditForm';
 
 interface TransactionDetailsModalProps {
-    transaction: TransactionSchemaType;
+    transaction: TransactionType;
     open: boolean;
     onClose: () => void;
     onDelete: (id: string) => void;
-    onUpdate: (updatedTransaction: TransactionRequestDTOSchemaType) => void;
+    onUpdate: (updatedTransaction: CreateTransactionType) => void;
 }
 
 export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
@@ -28,8 +28,8 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
     const [isEditing, setIsEditing] = useState(false);
     const { bankAccounts, fetchBankAccounts } = useBankAccountStore();
 
-    const methods = useForm<TransactionRequestDTOSchemaType>({
-        resolver: zodResolver(TransactionRequestDTOSchema),
+    const methods = useForm<CreateTransactionType>({
+        resolver: zodResolver(CreateTransactionSchema),
     });
 
     useEffect(() => {
@@ -57,7 +57,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
 
     const bankAccountName = bankAccounts.find(acc => acc.id === transaction.bankAccountId)?.name || 'Conta não encontrada';
 
-    const onSubmit = (data: TransactionRequestDTOSchemaType) => {
+    const onSubmit = (data: CreateTransactionType) => {
         onUpdate(data);
         setIsEditing(false);
     };

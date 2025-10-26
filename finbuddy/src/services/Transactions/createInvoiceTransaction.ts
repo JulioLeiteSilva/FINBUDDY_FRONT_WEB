@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { TransactionRequestDTOSchemaType } from "../../schemas/Transactions";
+import { CreateInvoiceRequestType } from "../../schemas/Transactions";
 import { functions } from "../firebase";
 import { useTransactionsStore } from "../../store/transactionStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
@@ -9,7 +9,7 @@ import { useCreditCardInvoiceStore } from "../../store/creditCardInvoiceStore";
 import { useInvoiceTransactionsStore } from "../../store/invoiceTransactionStore";
 
 export const CreateInvoiceTransaction = async (
-  data: TransactionRequestDTOSchemaType
+  data: CreateInvoiceRequestType
 ) => {
   const { showSnackbar } = useSnackbarStore.getState();
 

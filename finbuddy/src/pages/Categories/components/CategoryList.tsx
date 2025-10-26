@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Box, Typography, TextField, List, Skeleton, InputAdornment } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { CategoryListItem } from './CategoryListItem';
-import { DisplayCategory } from '../'; // Importando o tipo DisplayCategory
+import { DisplayCategory } from '../CategoriesViewModel'; // Importando o tipo DisplayCategory
 
 interface CategoryListProps {
     categories: DisplayCategory[]; // Recebe as categorias já processadas
