@@ -43,6 +43,20 @@ export const usePlanningViewModel = () => {
     setIsCreatingPlanning(value);
   };
 
+  const handleOnEdit = (row: CategoryAllocationType) => {
+    console.log("Editar o registro", row.category.name);
+    // adicionar a lógica pra editar o registro
+  };
+
+  const handleOnDelete = (row: CategoryAllocationType) => {
+    const confirmDelete = window.confirm(`Tem certeza que deseja deletar "${row.category.name}"?`);
+    
+    if (confirmDelete) {
+        console.log("Deletar registro", row.category.name);
+        // adicionar a lógica para deletar registro
+    }
+  };
+
   const getFinancialPlanningData = async (month: string) => {
     if (!month) return;
     const body = { month };
@@ -68,7 +82,11 @@ export const usePlanningViewModel = () => {
   const tabsConfig: TabConfig[] = [
     {
       label: "Planejamento Mensal",
-      content: <BudgetTable data={allocationsData} />,
+      content: <BudgetTable
+        data={allocationsData} 
+        onEdit={handleOnEdit}
+        onDelete={handleOnDelete} 
+      />,
     },
     {
       label: "Orçamento por Categoria",

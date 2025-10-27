@@ -14,6 +14,7 @@ import { CategoriesView } from '../pages/Categories';
 import { DashboardView } from '../pages/Dashboards';
 import { CardsView } from '../pages/Cards';
 import { PlanningView } from '../pages/Planning';
+import { PatrimonialManagementPage } from '../pages/PatrimonialManagement';
 
 
 const PrivateRoutes = () => {
