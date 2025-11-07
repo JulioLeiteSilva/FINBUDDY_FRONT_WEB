@@ -43,6 +43,10 @@ export const usePlanningViewModel = () => {
     setIsCreatingPlanning(value);
   };
 
+  const handleCancelPlanning = () => {
+    setIsCreatingPlanning(false);
+  };
+
   const handleOnEdit = (row: CategoryAllocationType) => {
     console.log("Editar o registro", row.category.name);
     // adicionar a lógica pra editar o registro
@@ -107,5 +111,6 @@ export const usePlanningViewModel = () => {
     handleOnClickCreatePlanning,
     hasRecords,
     tabsConfig,
+    handleCancelPlanning
   };
 };

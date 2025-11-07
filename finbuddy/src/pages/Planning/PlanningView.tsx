@@ -23,6 +23,7 @@ const PlanningPage = () => {
     handleOnClickCreatePlanning,
     hasRecords,
     tabsConfig,
+    handleCancelPlanning
   } = usePlanningViewModel();
 
   return (
@@ -99,7 +100,7 @@ const PlanningPage = () => {
             )}
           </>
         ) : (
-          <PlanningForm />
+          <PlanningForm onClose={handleCancelPlanning} />
         )}
       </Card>
     </Box>
