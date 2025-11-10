@@ -3,6 +3,17 @@ export enum patrimonialItemCategory {
     LIABILITY = "Liability"
 }
 
+export function mapPatrimonialCategoryToPortuguese(category: patrimonialItemCategory): string {
+    switch (category) {
+        case patrimonialItemCategory.ASSET:
+            return 'ativo';
+        case patrimonialItemCategory.LIABILITY:
+            return 'passivo';
+        default:
+            throw new Error(`Categoria patrimonial desconhecida: ${category}`);
+    }
+}
+
 export enum AssetSubtype {
     ASSETS = "ASSETS",
     TANGIBLE_GOODS = "TANGIBLE_GOODS"

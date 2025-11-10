@@ -21,6 +21,7 @@ import { AssetSubtype, AssetType, patrimonialItemCategory, TangibleGoodsType } f
 import { CreatePatrimonialItemRequestType } from '../../schemas/PatrimonialManagement/Functions/CreatePatrimonialItem/CreatePatrimonialItemRequest';
 import { CreatePatrimonialItem } from '../../services/PatrimonialManagement/createPatrimonialItem';
 import dayjs from 'dayjs';
+import { usePatrimonialManagementStore } from '../../store/patrimonialManagementStore';
 
 interface MeuModalProps {
   open: boolean;
@@ -43,6 +44,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
       name: '',
     }
   });
+  const { fetchPatrimonialItens } = usePatrimonialManagementStore()
   const today = dayjs().toDate();
 
   const selectedPatrimonyType = watch('patrimonyType');
@@ -86,6 +88,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
     }
 
     CreatePatrimonialItem(body);
+    fetchPatrimonialItens();
 
     reset();
     onClose();
@@ -176,7 +179,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
                 required
                 error={!!errors.totalDebtAmount}
                 helperText={errors.totalDebtAmount?.message}
-                InputProps={{ inputProps: { min: 0.01 } }}
+                InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
               />
               <TextField
                 {...register('interestRate')}
@@ -206,7 +209,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
                 required
                 error={!!errors.installmentValue}
                 helperText={errors.installmentValue?.message}
-                InputProps={{ inputProps: { min: 0.01 } }}
+                InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
               />
             </Box>
           )}
@@ -281,7 +284,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
                     required
                     error={!!errors.avgCost}
                     helperText={errors.avgCost?.message}
-                    InputProps={{ inputProps: { min: 0.01 } }}
+                    InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
                   />
                   <TextField
                     {...register('tag')}
@@ -332,7 +335,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
                     required
                     error={!!errors.observationValue}
                     helperText={errors.observationValue?.message}
-                    InputProps={{ inputProps: { min: 0.01 } }}
+                    InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
                   />
                   <TextField
                     {...register('initialValue')}
@@ -342,7 +345,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
                     required
                     error={!!errors.initialValue}
                     helperText={errors.initialValue?.message}
-                    InputProps={{ inputProps: { min: 0.01 } }}
+                    InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
                   />
                 </Box>
               )}

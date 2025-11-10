@@ -1,27 +1,51 @@
-import { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 import { Button, Box, Stack, Typography, Card, CardContent, Paper } from '@mui/material';
 import { ModalPatrimonios } from './modal';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { ptBR } from '@mui/x-data-grid/locales';
+import { usePatrimonialManagementStore } from '../../store/patrimonialManagementStore';
+import { AnyPatrimonialItemType } from '../../schemas/PatrimonialManagement/PatrimonialItem';
+import { mapPatrimonialCategoryToPortuguese } from '../../enums/patrimonialManagement';
+import { formatToBrazilianReals } from '../../utils/format';
+
+interface FormattedPatrimonialItem {
+  id: string;
+  name: string;
+  formattedCategory: string;
+}
 
 export const PatrimonialManagementPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formatedData, setFormatedData] = useState<FormattedPatrimonialItem[]>([]);
 
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
-  const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID' },
-    { field: 'name', headerName: 'Nome' },
-    { field: 'category', headerName: 'Categoria' },
-    { field: 'value', headerName: 'Valor atual' },
-  ];
+  const { fetchPatrimonialItens, patrimonialItens, totalPatrimonyValue } = usePatrimonialManagementStore()
 
-  const rows = [
-    { id: 1, name: 'Corrola 2017', category: 'Ativo', value: 90000 },
-    { id: 2, name: 'Snow', category: 'Jon', value: 35 },
-    { id: 3, name: 'Snow', category: 'Jon', value: 35 },
-    { id: 4, name: 'Snow', category: 'Jon', value: 35 },
-    { id: 5, name: 'Snow', category: 'Jon', value: 35 },
+  useEffect(() => {
+    fetchPatrimonialItens();
+  }, []);
+
+  useEffect(() => {
+    if (!patrimonialItens || !Array.isArray(patrimonialItens)) {
+      setFormatedData([]);
+      return;
+    }
+
+    const newFormatedData = patrimonialItens.map((item: AnyPatrimonialItemType) => ({
+      id: item.id || crypto.randomUUID(),
+      name: item.name,
+      formattedCategory: mapPatrimonialCategoryToPortuguese(item.category),
+    }));
+
+    setFormatedData(newFormatedData);
+  }, [patrimonialItens])
+
+  const columns: GridColDef<FormattedPatrimonialItem>[] = [
+    { field: 'name', headerName: 'Nome', flex: 2, renderCell: (params) => <Typography sx={{ textTransform: 'capitalize' }}>{params.value}</Typography> },
+    { field: 'formattedCategory', headerName: 'Categoria', flex: 1, renderCell: (params) => <Typography sx={{ textTransform: 'capitalize' }}>{params.value}</Typography> },
   ];
 
   const paginationModel = { page: 0, pageSize: 5 };
@@ -43,22 +67,25 @@ export const PatrimonialManagementPage = () => {
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Stack sx={{ alignItems: 'center' }}>
             <Typography variant='h4'>Patrimônio Total:</Typography>
-            <Typography variant='h2'>R$ 10.00,00</Typography>
+            <Typography variant='h2'>{formatToBrazilianReals(totalPatrimonyValue)}</Typography>
           </Stack>
         </Box>
         <Box sx={{ bgcolor: 'yellow', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Card sx={{ width: '100%' }}>
               <CardContent>
-                <Paper sx={{ height: 400, width: '100%' }}>
-                  <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    initialState={{ pagination: { paginationModel } }}
-                    pageSizeOptions={[5, 10]}
-                    sx={{ border: 0 }}
-                  />
-                </Paper>
+                {patrimonialItens &&
+                  <Paper sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                      rows={formatedData}
+                      columns={columns}
+                      initialState={{ pagination: { paginationModel } }}
+                      pageSizeOptions={[5, 10]}
+                      sx={{ border: 0 }}
+                      localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
+                    />
+                  </Paper>}
+
                 <Button
                   variant="contained"
                   color="primary"
@@ -71,11 +98,11 @@ export const PatrimonialManagementPage = () => {
               </CardContent>
             </Card>
           </Box>
-          <Box sx={{ bgcolor: 'cyan', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {/* <Box sx={{ bgcolor: 'cyan', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Typography variant='h2'>
               Grafico
             </Typography>
-          </Box>
+          </Box> */}
         </Box>
       </Stack>
 
