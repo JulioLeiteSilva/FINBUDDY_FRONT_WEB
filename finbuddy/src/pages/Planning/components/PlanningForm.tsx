@@ -12,7 +12,11 @@ import { CreatFinancialPlanningSchema, CreatFinancialPlanningType } from '../../
 import { CreateFinancialPlanning } from '../../../services/FinancialPlanning';
 import dayjs from 'dayjs';
 
-export const PlanningForm: React.FC = () => {
+interface PlanningFormProps {
+  onClose: () => void;
+}
+
+export const PlanningForm: React.FC<PlanningFormProps> = ({ onClose }) => {
   const today = dayjs().tz("America/Sao_Paulo");
   const {
     register,
@@ -64,8 +68,15 @@ export const PlanningForm: React.FC = () => {
     setValue('budgetAmount', parseFloat(newSpendingGoal.toFixed(2)), { shouldValidate: true });
   };
 
-  const totalAllocated = categoryAllocations.reduce((sum, alloc) => sum + alloc.value, 0);
+  const totalAllocated = categoryAllocations.reduce((sum, alloc) => {
+    // Se alloc.value for NaN (ou null/undefined), vai aparecer 0. Caso contrário, vai aparecer o valor digitado
+    const value = Number.isNaN(alloc.value) ? 0 : alloc.value;
+    return sum + value;
+  }, 0);
   const remainingToAllocate = spendingGoal - totalAllocated;
+
+
+  
 
   return (
     <Paper sx={{ p: 4 }}>
@@ -186,9 +197,28 @@ export const PlanningForm: React.FC = () => {
             </>
           )}
 
-          <Button type="submit" variant="contained" size="large" onClick={handleSubmit(onSubmit)}>
-            Salvar Planejamento
-          </Button>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
+
+            <Button 
+              type="submit" 
+              variant="contained" 
+              size="large" 
+              onClick={handleSubmit(onSubmit)}
+            >
+              Salvar Planejamento
+            </Button>
+            
+            <Button 
+              variant="outlined" 
+              size="large" 
+              onClick={onClose} // Navega para /planning
+            >
+              Cancelar
+            </Button>
+          
+          </Stack>
+          {/* >> FIM Botões de Ação << */}
+          
         </Stack>
       </Box>
     </Paper>
