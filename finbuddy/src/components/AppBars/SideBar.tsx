@@ -1,5 +1,6 @@
 import { Drawer, Toolbar, Box, List, useTheme } from "@mui/material";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import PatternIcon from '@mui/icons-material/Pattern';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
@@ -23,6 +24,8 @@ const SideBar = () => {
         { path: "/cards", text: "Cartões", icon: <CreditCardIcon /> },
         { path: "/dashboard", text: "Dashboards", icon: <TrendingUpIcon /> },
         { path: "/planning", text: "Planejamento", icon: <LibraryBooks /> },
+        { path: "/patrimonial-management", text: "Gestão Patrimonial", icon: <AccountBalanceIcon /> },
+        { path: "/simulation", text: "Simulação de impacto", icon: <PatternIcon /> }
     ];
 
     return (
