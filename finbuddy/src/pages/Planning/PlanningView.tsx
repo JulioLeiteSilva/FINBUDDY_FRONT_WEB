@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import isBetween from "dayjs/plugin/isBetween";
 import { usePlanningViewModel } from "./PlanningViewModel";
-import { Box, Button, Card, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, IconButton, Stack, Typography } from "@mui/material";
 import { PlanningForm } from "./components/PlanningForm";
 import { TabsContainer } from "./components/TabsContainer";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -23,6 +23,7 @@ const PlanningPage = () => {
     handleOnClickCreatePlanning,
     hasRecords,
     tabsConfig,
+    handleCancelPlanning
   } = usePlanningViewModel();
 
   return (
@@ -72,20 +73,34 @@ const PlanningPage = () => {
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   Parece que você não tem registros para este mês.
                 </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  sx={{ mt: 2 }}
-                  onClick={() => handleOnClickCreatePlanning(true)}
-                >
-                  Criar Planejamento
-                </Button>
+                <Stack 
+                  spacing={2} 
+                  direction="column" 
+                  alignItems="center" 
+                  sx={{ mt: 2 }} 
+              >
+                  <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      onClick={() => handleOnClickCreatePlanning(true)}
+                  >
+                      Criar novo planejamento
+                  </Button>
+                  <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      onClick={() => handleOnClickCreatePlanning(true)}
+                  >
+                      Copiar planejamento do mês anterior
+                  </Button>
+              </Stack>
               </div>
             )}
           </>
         ) : (
-          <PlanningForm />
+          <PlanningForm onClose={handleCancelPlanning} />
         )}
       </Card>
     </Box>
