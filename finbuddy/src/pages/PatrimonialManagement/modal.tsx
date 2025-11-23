@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Button,
   Typography,
@@ -10,26 +9,100 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  FormHelperText,
 } from '@mui/material';
 
-// Interface para definir os tipos das props do componente do Modal
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { formPatrimonySchema, FormPatrimonyType } from '../../schemas/PatrimonialManagement/Forms/CreatePatrimonialItem';
+
+import { AssetSubtype, AssetType, patrimonialItemCategory, TangibleGoodsType } from '../../enums/patrimonialManagement';
+import { CreatePatrimonialItemRequestType } from '../../schemas/PatrimonialManagement/Functions/CreatePatrimonialItem/CreatePatrimonialItemRequest';
+import { CreatePatrimonialItem } from '../../services/PatrimonialManagement/createPatrimonialItem';
+import dayjs from 'dayjs';
+import { usePatrimonialManagementStore } from '../../store/patrimonialManagementStore';
+
 interface MeuModalProps {
   open: boolean;
   onClose: () => void;
 }
 
 export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
-  const [selectedTipo, setSelectedTipo] = useState<'ativo' | 'passivo' | null>(null);
-  const [selectedAssetType, setSelectedAssetType] = useState<string>('');
+  const {
+    control,
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<FormPatrimonyType>({
+    resolver: zodResolver(formPatrimonySchema),
+    defaultValues: {
+      patrimonyType: patrimonialItemCategory.ASSET,
+      assetSubtype: undefined,
+      name: '',
+    }
+  });
+  const { fetchPatrimonialItens } = usePatrimonialManagementStore()
+  const today = dayjs().toDate();
 
-  const handleAssetTypeChange = (event: any) => {
-    setSelectedAssetType(event.target.value);
+  const selectedPatrimonyType = watch('patrimonyType');
+  const selectedAssetSubtype = watch('assetSubtype');
+
+  const handleFormSubmit = (data: FormPatrimonyType) => {
+    console.log('Formulário válido! Enviando dados:', data);
+    let body: CreatePatrimonialItemRequestType;
+
+    if (data.patrimonyType === patrimonialItemCategory.ASSET) {
+      if (data.assetSubtype === AssetSubtype.ASSETS) {
+        body = {
+          name: data.name!,
+          onCreate: today,
+          category: data.patrimonyType,
+          AssetType: data.assetType,
+          quantity: data.quantity,
+          avgCost: data.avgCost,
+        } as CreatePatrimonialItemRequestType;
+      } else {
+        body = {
+          name: data.name!,
+          onCreate: today as unknown as Date,
+          category: data.patrimonyType,
+          type: data.type,
+          obersationValue: data.observationValue,
+          initialValue: data.initialValue,
+        } as CreatePatrimonialItemRequestType;
+      }
+    } else {
+      body = {
+        name: data.name!,
+        onCreate: today as unknown as Date,
+        category: data.patrimonyType,
+        updatedDebtsAmount: 0,
+        totalDebtAmount: data.totalDebtAmount,
+        interestRate: data.interestRate,
+        term: data.term,
+        installmentValue: data.installmentValue,
+      } as CreatePatrimonialItemRequestType;
+    }
+
+    CreatePatrimonialItem(body);
+    fetchPatrimonialItens();
+
+    reset();
+    onClose();
+  };
+
+  const handleCloseModal = () => {
+    onClose();
+    reset();
   };
 
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleCloseModal}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
@@ -55,121 +128,239 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
         <Typography id="modal-description" sx={{ mt: 1, mb: 2, color: 'text.secondary' }}>
           Preencha os valores para o cadastro de um novo patrimônio.
         </Typography>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body1" sx={{ mb: 1 }}>Tipo de Patrimônio</Typography>
-          <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{ width: '50%' }}>
-            <Button
-              onClick={() => setSelectedTipo('ativo')}
-              variant={selectedTipo === 'ativo' ? 'contained' : 'outlined'}
-            >
-              Ativo
-            </Button>
-            <Button
-              onClick={() => setSelectedTipo('passivo')}
-              variant={selectedTipo === 'passivo' ? 'contained' : 'outlined'}
-            >
-              Passivo
-            </Button>
-          </ButtonGroup>
-        </Box>
-
-        {selectedTipo === 'passivo' && (
-          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              fullWidth
-              label="Valor Total da Dívida"
-              type="number"
-              name="totalDebtAmount"
-              required
-              InputProps={{ inputProps: { min: 0.01 } }}
+        <Box component="form" onSubmit={handleSubmit(handleFormSubmit)} noValidate sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1 }}>
+            <Typography variant="body1" sx={{ mb: 1 }}>Tipo de Patrimônio</Typography>
+            <Controller
+              name="patrimonyType"
+              control={control}
+              render={({ field }) => (
+                <ButtonGroup variant="outlined" aria-label="outlined button group" sx={{ width: '50%' }}>
+                  <Button
+                    onClick={() => {
+                      reset();
+                      field.onChange(patrimonialItemCategory.ASSET)
+                    }}
+                    variant={field.value === patrimonialItemCategory.ASSET ? 'contained' : 'outlined'}
+                  >
+                    Ativo
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      reset();
+                      field.onChange(patrimonialItemCategory.LIABILITY)
+                    }}
+                    variant={field.value === patrimonialItemCategory.LIABILITY ? 'contained' : 'outlined'}
+                  >
+                    Passivo
+                  </Button>
+                </ButtonGroup>
+              )}
             />
-            <TextField
-              fullWidth
-              label="Taxa de Juros (%)"
-              type="number"
-              name="interestRate"
-              required
-              InputProps={{ inputProps: { min: 0, max: 100, step: 0.01 } }}
-            />
-            <TextField
-              fullWidth
-              label="Prazo (em meses)"
-              type="number"
-              name="term"
-              required
-              InputProps={{ inputProps: { min: 1 } }}
-            />
-            <TextField
-              fullWidth
-              label="Valor da Parcela"
-              type="number"
-              name="installmentValue"
-              required
-              InputProps={{ inputProps: { min: 0.01 } }}
-            />
-          </Box>
-        )}
-
-        {selectedTipo === 'ativo' && (
-          <Box sx={{ mt: 2, mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <FormControl fullWidth>
-              <InputLabel id="asset-type-label">Tipo de Ativo</InputLabel>
-              <Select
-                labelId="asset-type-label"
-                id="asset-type"
-                value={selectedAssetType}
-                label="Tipo de Ativo"
-                onChange={handleAssetTypeChange}
-              >
-                <MenuItem value="Acoes">Ações</MenuItem>
-                <MenuItem value="Bens Materiais">Bens Materiais</MenuItem>
-              </Select>
-            </FormControl>
-
-            {selectedAssetType === 'Acoes' && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Tipo de Ativo</InputLabel>
-                  <Select name="assetType" label="Tipo de Ativo" defaultValue="">
-                    <MenuItem value="Renda Fixa">Renda Fixa</MenuItem>
-                    <MenuItem value="Acoes">Ações</MenuItem>
-                    <MenuItem value="FII">FII</MenuItem>
-                    <MenuItem value="Cripto">Cripto</MenuItem>
-                  </Select>
-                </FormControl>
-                <TextField fullWidth label="Nome" name="name" required />
-                <TextField fullWidth label="Quantidade" type="number" name="quantity" required InputProps={{ inputProps: { min: 0.01 } }} />
-                <TextField fullWidth label="Custo Médio" type="number" name="avgCost" required InputProps={{ inputProps: { min: 0.01 } }} />
-                <TextField fullWidth label="Tag" name="tag" />
-              </Box>
-            )}
-
-            {selectedAssetType === 'Bens Materiais' && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Tipo de Bem</InputLabel>
-                  <Select name="type" label="Tipo de Bem" defaultValue="">
-                    <MenuItem value="Imovel">Imóvel</MenuItem>
-                    <MenuItem value="Veiculo">Veículo</MenuItem>
-                    <MenuItem value="Outro">Outro</MenuItem>
-                  </Select>
-                </FormControl>
-                <TextField fullWidth label="Descrição" name="description" required />
-                <TextField fullWidth label="Valor de Observação" type="number" name="observationValue" required InputProps={{ inputProps: { min: 0.01 } }} />
-                <TextField fullWidth label="Valor Inicial" type="number" name="initialValue" required InputProps={{ inputProps: { min: 0.01 } }} />
-              </Box>
+            {errors.patrimonyType && (
+              <FormHelperText error>{errors.patrimonyType.message}</FormHelperText>
             )}
           </Box>
-        )}
+          {selectedPatrimonyType === patrimonialItemCategory.LIABILITY && (
+            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                {...register('name')}
+                fullWidth
+                label="Nome da Dívida"
+                required
+                error={!!errors.name}
+                helperText={errors.name?.message}
+              />
+              <TextField
+                {...register('totalDebtAmount')}
+                fullWidth
+                label="Valor Total da Dívida"
+                type="number"
+                required
+                error={!!errors.totalDebtAmount}
+                helperText={errors.totalDebtAmount?.message}
+                InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
+              />
+              <TextField
+                {...register('interestRate')}
+                fullWidth
+                label="Taxa de Juros (%)"
+                type="number"
+                required
+                error={!!errors.interestRate}
+                helperText={errors.interestRate?.message}
+                InputProps={{ inputProps: { min: 0, max: 100, step: 0.01 } }}
+              />
+              <TextField
+                {...register('term')}
+                fullWidth
+                label="Prazo (em meses)"
+                type="number"
+                required
+                error={!!errors.term}
+                helperText={errors.term?.message}
+                InputProps={{ inputProps: { min: 1 } }}
+              />
+              <TextField
+                {...register('installmentValue')}
+                fullWidth
+                label="Valor da Parcela"
+                type="number"
+                required
+                error={!!errors.installmentValue}
+                helperText={errors.installmentValue?.message}
+                InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
+              />
+            </Box>
+          )}
 
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-          <Button onClick={onClose} color="inherit">
-            Cancelar
-          </Button>
-          <Button variant="contained" color="primary">
-            Cadastrar
-          </Button>
+          {selectedPatrimonyType === patrimonialItemCategory.ASSET && (
+            <Box sx={{ mt: 2, mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Controller
+                name="assetSubtype"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth error={!!errors.assetSubtype}>
+                    <InputLabel id="asset-type-label">Tipo de Ativo</InputLabel>
+                    <Select
+                      {...field}
+                      value={field.value || ''}
+                      labelId="asset-type-label"
+                      label="Tipo de Ativo"
+                    >
+                      <MenuItem value={AssetSubtype.ASSETS}>Ativos Financeiros (Ações, FIIs...)</MenuItem>
+                      <MenuItem value={AssetSubtype.TANGIBLE_GOODS}>Bens Materiais (Carro, Imóvel...)</MenuItem>
+                    </Select>
+                    {errors.assetSubtype && (
+                      <FormHelperText>{errors.assetSubtype.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                )}
+              />
+
+              {selectedAssetSubtype === AssetSubtype.ASSETS && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Controller
+                    name="assetType"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={!!errors.assetType}>
+                        <InputLabel>Tipo de Ativo Financeiro</InputLabel>
+                        <Select {...field} value={field.value || ''} label="Tipo de Ativo Financeiro">
+                          <MenuItem value={AssetType.FIXED_INCOME}>Renda Fixa</MenuItem>
+                          <MenuItem value={AssetType.STOCKS}>Ações</MenuItem>
+                          <MenuItem value={AssetType.REIT}>FII</MenuItem>
+                          <MenuItem value={AssetType.CRYPTOCURRENCY}>Cripto</MenuItem>
+                        </Select>
+                        {errors.assetType && (
+                          <FormHelperText>{errors.assetType.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    )}
+                  />
+                  <TextField
+                    {...register('name')}
+                    fullWidth
+                    label="Nome do Ativo (Ex: ITUB4, Tesouro Selic 2029)"
+                    required
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                  />
+                  <TextField
+                    {...register('quantity')}
+                    fullWidth
+                    label="Quantidade"
+                    type="number"
+                    required
+                    error={!!errors.quantity}
+                    helperText={errors.quantity?.message}
+                    InputProps={{ inputProps: { min: 0.01 } }}
+                  />
+                  <TextField
+                    {...register('avgCost')}
+                    fullWidth
+                    label="Custo Médio"
+                    type="number"
+                    required
+                    error={!!errors.avgCost}
+                    helperText={errors.avgCost?.message}
+                    InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
+                  />
+                  <TextField
+                    {...register('tag')}
+                    fullWidth
+                    label="Tag (Opcional, ex: 'Reserva')"
+                    error={!!errors.tag}
+                    helperText={errors.tag?.message}
+                  />
+                </Box>
+              )}
+
+              {selectedAssetSubtype === AssetSubtype.TANGIBLE_GOODS && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Controller
+                    name="type"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={!!errors.type}>
+                        <InputLabel>Tipo de Bem</InputLabel>
+                        <Select {...field} value={field.value || ''} label="Tipo de Bem">
+                          <MenuItem value={TangibleGoodsType.REAL_ESTATE}>Imóvel</MenuItem>
+                          <MenuItem value={TangibleGoodsType.VEHICLE}>Veículo</MenuItem>
+                          <MenuItem value={TangibleGoodsType.JEWELRY}>Joia</MenuItem>
+                          <MenuItem value={TangibleGoodsType.ELECTRONICS}>Eletrônicos</MenuItem>
+                          <MenuItem value={TangibleGoodsType.ART}>Arte</MenuItem>
+                          <MenuItem value={TangibleGoodsType.FURNITURE}>Móvel</MenuItem>
+                          <MenuItem value={TangibleGoodsType.OTHER}>Outro</MenuItem>
+                        </Select>
+                        {errors.type && (
+                          <FormHelperText>{errors.type.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    )}
+                  />
+                  <TextField
+                    {...register('name')}
+                    fullWidth
+                    label="Nome / Descrição (Ex: 'Corolla 2017', 'Apto Praia')"
+                    required
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                  />
+                  <TextField
+                    {...register('observationValue')}
+                    fullWidth
+                    label="Valor de Observação (Valor Atual)"
+                    type="number"
+                    required
+                    error={!!errors.observationValue}
+                    helperText={errors.observationValue?.message}
+                    InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
+                  />
+                  <TextField
+                    {...register('initialValue')}
+                    fullWidth
+                    label="Valor Inicial (Quanto você pagou)"
+                    type="number"
+                    required
+                    error={!!errors.initialValue}
+                    helperText={errors.initialValue?.message}
+                    InputProps={{ inputProps: { min: 0.01 }, startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>R$</Typography> }}
+                  />
+                </Box>
+              )}
+            </Box>
+          )}
+
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            <Button onClick={handleCloseModal} color="inherit">
+              Cancelar
+            </Button>
+
+            <Button type="submit" variant="contained" color="primary">
+              Cadastrar
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Modal>
