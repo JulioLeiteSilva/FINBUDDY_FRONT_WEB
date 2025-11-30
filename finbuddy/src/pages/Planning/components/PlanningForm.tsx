@@ -10,14 +10,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreatFinancialPlanningSchema, CreatFinancialPlanningType } from '../../../schemas/FinancialPlanning';
 import { CreateFinancialPlanning } from '../../../services/FinancialPlanning';
-import dayjs from 'dayjs';
 
 interface PlanningFormProps {
   onClose: () => void;
+  month: string;
 }
 
-export const PlanningForm: React.FC<PlanningFormProps> = ({ onClose }) => {
-  const today = dayjs().tz("America/Sao_Paulo");
+export const PlanningForm: React.FC<PlanningFormProps> = ({ onClose, month }) => {
   const {
     register,
     handleSubmit,
@@ -31,7 +30,7 @@ export const PlanningForm: React.FC<PlanningFormProps> = ({ onClose }) => {
     defaultValues: {
       monthlyIncome: 0,
       budgetAmount: 0,
-      month: today.format('YYYY-MM').toString(),
+      month: month,
       categoryAllocations: [],
     },
   });
@@ -58,9 +57,9 @@ export const PlanningForm: React.FC<PlanningFormProps> = ({ onClose }) => {
         value: alloc.value,
       })),
     };
-
     CreateFinancialPlanning(apiPayload);
     reset();
+    onClose();
   };
 
   const handlePercentageChange = (newValue: number) => {

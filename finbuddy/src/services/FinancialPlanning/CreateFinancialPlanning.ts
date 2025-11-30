@@ -4,14 +4,16 @@ import { CreateFinancialPlanningRequestType, CreateFinancialPlanningResponseType
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
 import { functions } from "../firebase";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
+import { useFinancialPlanningStore } from "../../store/financialPlanningStore";
 
 export const CreateFinancialPlanning = async (body: CreateFinancialPlanningRequestType) => {
     const { showSnackbar } = useSnackbarStore.getState();
+    const { fetchFinancialPlanningByMonth} = useFinancialPlanningStore.getState();
 
     try {
         const createFinancialPlanningFn = httpsCallable(functions, 'financialPlanning-create');
         const response = await createFinancialPlanningFn(body);
-        console.log('Planejamento financeiro criado:', response.data);
+        fetchFinancialPlanningByMonth(body.month);
 
         showSnackbar('Planejamento financeiro criado com sucesso!', 'success');
         return response.data as CreateFinancialPlanningResponseType;

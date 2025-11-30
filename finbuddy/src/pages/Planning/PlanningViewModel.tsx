@@ -8,9 +8,9 @@ import { useEffect, useState } from "react";
 import BudgetTable from "./components/BudgetTable";
 import CategoryTable from "./components/CategoryTable";
 import { TabConfig } from "./components/TabsContainer";
-import { useLoadingStore } from "../../store/loadingStore";
-import { CategoryAllocationType, GetFinancialPlanningByMonthResponseType } from "../../schemas/FinancialPlanning";
-import { GetFinancialPlanningByMonth } from "../../services/FinancialPlanning";
+import { CategoryAllocationType, CopyFromMonthRequestType, FinancialPlanningWithCategoriesType } from "../../schemas/FinancialPlanning";
+import { CopyPlanningFromMonth } from "../../services/FinancialPlanning/CopyPlanningFromMonth";
+import { useFinancialPlanningStore } from "../../store/financialPlanningStore";
 
 export const usePlanningViewModel = () => {
   dayjs.extend(isBetween);
@@ -18,8 +18,8 @@ export const usePlanningViewModel = () => {
   dayjs.extend(utc);
   dayjs.extend(timezone);
 
-  const { isLoading, startLoading, stopLoading } = useLoadingStore();
-  const [financialPlanningData, setFinancialPlanningData] = useState<GetFinancialPlanningByMonthResponseType>({} as GetFinancialPlanningByMonthResponseType);
+  const { fetchFinancialPlanningByMonth, financialPlan, clearFinancialPlanning, isLoading } = useFinancialPlanningStore();
+  const [financialPlanningData, setFinancialPlanningData] = useState<FinancialPlanningWithCategoriesType>({} as FinancialPlanningWithCategoriesType);
   const [allocationsData, setAllocationsData] = useState<CategoryAllocationType[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(
     dayjs().tz("America/Sao_Paulo")
@@ -43,43 +43,33 @@ export const usePlanningViewModel = () => {
     setIsCreatingPlanning(value);
   };
 
+  const handleOnClickCopyPlanning = () => {
+    const payload = {
+      sourceMonth: selectedMonth.subtract(1, "month").format("YYYY-MM"),
+      targetMonth: selectedMonth.format("YYYY-MM"),
+    } as CopyFromMonthRequestType;
+    CopyPlanningFromMonth(payload);
+  }
+
   const handleCancelPlanning = () => {
     setIsCreatingPlanning(false);
   };
 
-  const handleOnEdit = (row: CategoryAllocationType) => {
-    console.log("Editar o registro", row.category.name);
-    // adicionar a lógica pra editar o registro
-  };
+  useEffect(() => {
+    clearFinancialPlanning();
+    fetchFinancialPlanningByMonth(selectedMonth.format("YYYY-MM"));
+  }, [selectedMonth]);
 
-  const handleOnDelete = (row: CategoryAllocationType) => {
-    const confirmDelete = window.confirm(`Tem certeza que deseja deletar "${row.category.name}"?`);
-    
-    if (confirmDelete) {
-        console.log("Deletar registro", row.category.name);
-        // adicionar a lógica para deletar registro
-    }
-  };
-
-  const getFinancialPlanningData = async (month: string) => {
-    if (!month) return;
-    const body = { month };
-    const response = await GetFinancialPlanningByMonth(body);
-    if (response) {
-      const FinancialPlanning = response as GetFinancialPlanningByMonthResponseType;
+  useEffect(() => {
+    if (financialPlan) {
+      const FinancialPlanning = financialPlan;
       setFinancialPlanningData(FinancialPlanning);
-      if (!FinancialPlanning.data) return; 
-      setAllocationsData(FinancialPlanning.data.categoryAllocations || []);
+      if (!FinancialPlanning) return;
+      setAllocationsData(FinancialPlanning.categoryAllocations || []);
     } else {
       setAllocationsData([]);
     }
-  };
-
-  useEffect(() => {
-    startLoading();
-    getFinancialPlanningData(selectedMonth.format("YYYY-MM"));
-    stopLoading();
-  }, [selectedMonth]);
+  }, [financialPlan]);
 
   const hasRecords = allocationsData.length > 0;
 
@@ -87,9 +77,7 @@ export const usePlanningViewModel = () => {
     {
       label: "Planejamento Mensal",
       content: <BudgetTable
-        data={allocationsData} 
-        onEdit={handleOnEdit}
-        onDelete={handleOnDelete} 
+        data={allocationsData}
       />,
     },
     {
@@ -109,6 +97,7 @@ export const usePlanningViewModel = () => {
     handleNextMonth,
     handleTabChange,
     handleOnClickCreatePlanning,
+    handleOnClickCopyPlanning,
     hasRecords,
     tabsConfig,
     handleCancelPlanning

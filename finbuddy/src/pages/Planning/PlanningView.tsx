@@ -16,6 +16,7 @@ const PlanningPage = () => {
     isLoading,
     selectedMonth,
     isCreatingPlanning,
+    handleOnClickCopyPlanning,
     selectedTab,
     handlePreviousMonth,
     handleNextMonth,
@@ -91,7 +92,7 @@ const PlanningPage = () => {
                       variant="contained"
                       color="primary"
                       size="large"
-                      onClick={() => handleOnClickCreatePlanning(true)}
+                      onClick={() => handleOnClickCopyPlanning()}
                   >
                       Copiar planejamento do mês anterior
                   </Button>
@@ -100,7 +101,7 @@ const PlanningPage = () => {
             )}
           </>
         ) : (
-          <PlanningForm onClose={handleCancelPlanning} />
+          <PlanningForm onClose={handleCancelPlanning} month={selectedMonth.format("YYYY-MM")} />
         )}
       </Card>
     </Box>
