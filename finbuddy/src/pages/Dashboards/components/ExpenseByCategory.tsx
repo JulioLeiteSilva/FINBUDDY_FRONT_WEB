@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   PieChart,
@@ -11,7 +12,6 @@ import {
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { useCategoriesStore } from '../../../store/categoriesStore';
 import dayjs from 'dayjs';
-import { firestoreTimestampToDate } from '../../../pages/Transactions/components/TransactionDetailsModal/utils/transactionUtils';
 
 // Interface para os dados da categoria que o gráfico de rosca espera (saída da agregação)
 interface ChartCategoryData {

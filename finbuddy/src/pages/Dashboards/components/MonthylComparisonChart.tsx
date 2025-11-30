@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/MonthlyComparisonBarChart.tsx
 import React from 'react';
 import {

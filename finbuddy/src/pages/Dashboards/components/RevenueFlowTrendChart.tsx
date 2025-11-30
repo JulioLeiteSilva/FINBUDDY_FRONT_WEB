@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/RevenueFlowTrendChart.tsx
 import React, { useMemo } from 'react';
 import {
@@ -11,8 +12,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import dayjs from 'dayjs';
-import { firestoreTimestampToDate } from '../../../pages/Transactions/components/TransactionDetailsModal/utils/transactionUtils';
-import { useBankAccountStore } from '../../../store/bankAccountStore';
 
 interface ProcessedTransaction {
   id: string;
@@ -55,7 +54,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const RevenueFlowTrendChart: React.FC<RevenueFlowTrendChartProps> = ({ transactions, selectedMonth }) => {
-  const { bankAccounts } = useBankAccountStore();
   const currentMonth = dayjs();
   const isCurrentMonth = selectedMonth.isSame(currentMonth, 'month');
   const isFutureMonth = selectedMonth.isAfter(currentMonth, 'month');

@@ -29,6 +29,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   const {
     register,
     handleSubmit,
+    setValue,
     control,
     formState: { errors },
     reset,
@@ -37,7 +38,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
     defaultValues: {
       name: "",
       category: "",
-      value: undefined,
+      value: 0,
       date: new Date(),
       type: "EXPENSE",
       isRecurring: false,
@@ -48,6 +49,11 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
       startDate: null,
       endDate: null,
     },
+  });
+
+  const watchedDate = useWatch({
+    control,
+    name: "date",
   });
 
   const { categories, defaultCategories, fetchCategories } =
@@ -62,6 +68,15 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   useEffect(() => {
     fetchBankAccounts();
   }, [fetchBankAccounts]);
+
+  useEffect(() => {
+  if (watchedDate) {
+    setValue("startDate", watchedDate, {
+      shouldValidate: true, // Opcional: valida o campo ao mudar
+      shouldDirty: true,    // Opcional: marca como modificado
+    });
+  }
+}, [watchedDate, setValue]);
 
   const isRecurring = useWatch({
     control,
@@ -85,9 +100,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
           errors={errors}
           isRecurring={!!isRecurring}
           bankAccounts={bankAccounts}
-          categories={
-            [...categories, ...defaultCategories] as CategoryType[]
-          }
+          categories={[...categories, ...defaultCategories] as CategoryType[]}
         />
       </DialogContent>
       <DialogActions>

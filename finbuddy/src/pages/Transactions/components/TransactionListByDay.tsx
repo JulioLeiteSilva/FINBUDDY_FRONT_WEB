@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, Typography, List, Box, Skeleton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TransactionCard from './TransactionCard';
-import { TransactionSchemaType } from '../../../schemas/Transactions';
+import { TransactionType } from '../../../schemas/Transactions';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -12,7 +12,7 @@ dayjs.locale('pt-br');
 dayjs.extend(localizedFormat);
 
 interface TransactionListByDayProps {
-    transactions: TransactionSchemaType[];
+    transactions: TransactionType[];
     isLoading: boolean;
     onDataChange: () => void;
 }
@@ -21,7 +21,7 @@ export const TransactionListByDay: React.FC<TransactionListByDayProps> = ({ tran
 
     const transactionsByDay = useMemo(() => {
         console.log(transactions);
-        return transactions.reduce((acc: { [key: string]: TransactionSchemaType[] }, transaction) => {
+        return transactions.reduce((acc: { [key: string]: TransactionType[] }, transaction) => {
             // Usando o utilitário para um código mais limpo e seguro
             const dateObj = firestoreTimestampToDate(transaction.date);
             if (dateObj) {

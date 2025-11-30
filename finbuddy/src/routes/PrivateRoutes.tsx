@@ -50,9 +50,9 @@ const PrivateRoutes = () => {
       case '/categories':
         setTitle('Categorias');
         break;
-      // case '/dashboard':
-      //   setTitle('Dashboard');
-      //   break;
+      case '/dashboard':
+        setTitle('Dashboard');
+        break;
       // case '/cards':
       //   setTitle('Cartões de Crédito');
       //   break;

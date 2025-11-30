@@ -1,13 +1,13 @@
 // src/components/TransactionDetailsModal/TransactionDisplayInfo.tsx
 import React from 'react';
 import { Typography, Box, Chip } from '@mui/material';
-import { TransactionSchemaType } from '../../../../schemas/Transactions';
+import { TransactionType } from '../../../../schemas/Transactions';
 import { formatDate, frequencyMap, typeMap } from './utils/transactionUtils';
 import GetMuiIcon from '../../../../utils/getMuiIcon';
 import { useCategoriesStore } from '../../../../store/categoriesStore';
 
 interface TransactionDisplayInfoProps {
-    transaction: TransactionSchemaType;
+    transaction: TransactionType;
     bankAccountName: string;
 }
 

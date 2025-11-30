@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
-import { TransactionSchemaType } from '../../../../schemas/Transactions';
+import { TransactionType } from '../../../../schemas/Transactions';
 import GetMuiIcon from '../../../../utils/getMuiIcon';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { firestoreTimestampToDate } from '../../../Transactions/components/TransactionDetailsModal/utils/transactionUtils';
 
 interface RecentTransactionsProps {
-  transactions: TransactionSchemaType[];
+  transactions: TransactionType[];
   formatCurrency: (value: number) => string;
 }
 
