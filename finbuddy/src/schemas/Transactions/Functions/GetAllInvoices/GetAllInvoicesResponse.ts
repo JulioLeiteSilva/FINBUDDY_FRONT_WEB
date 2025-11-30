@@ -19,9 +19,7 @@ const DataSchema = TransactionSchema.pick({
 })
 
 export const GetAllInvoicesResponseSchema = FunctionsGenericResponseSchema.extend({
-    data: z.object({
-        invoices: z.array(DataSchema),
-    }),
+    data: z.array(DataSchema),
 });
 
 export type GetAllInvoicesResponseType = z.infer<typeof GetAllInvoicesResponseSchema>;

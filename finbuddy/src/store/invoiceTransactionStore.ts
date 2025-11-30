@@ -24,7 +24,7 @@ export const useInvoiceTransactionsStore = create<InvoiceTransactionsState>((set
             const getAllTransactionsResponse = response.data as unknown as GetAllInvoicesResponseType;
 
             set({
-                invoicesTransactions: getAllTransactionsResponse.data.invoices as TransactionType[],
+                invoicesTransactions: getAllTransactionsResponse.data as TransactionType[],
                 message: getAllTransactionsResponse.message,
             });
         } catch (error) {

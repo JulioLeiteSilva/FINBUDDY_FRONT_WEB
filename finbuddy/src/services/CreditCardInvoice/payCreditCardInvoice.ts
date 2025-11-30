@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase";
 import { useCreditCardInvoiceStore } from "../../store/creditCardInvoiceStore";

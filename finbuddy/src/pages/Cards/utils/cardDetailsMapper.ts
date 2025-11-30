@@ -1,11 +1,10 @@
-import { CreditCardSchemaType, CreditCardInvoiceSchemaType } from '../../../schemas/CreditCard';
 import { CreditCardFlag } from '../../../enums/CreditCardFlag';
 import { CardDetails } from './types';
-import { BankAccountSchemaType } from '../../../schemas/BankAccount';
 import { Bank } from '../../../hooks/useBanks';
-import dayjs from 'dayjs';
-import { TransactionSchemaType } from '../../../schemas/Transactions';
 import { firestoreTimestampToDate } from '../../Transactions/components/TransactionDetailsModal/utils/transactionUtils';
+import { BankAccountType } from '../../../schemas/BankAccount';
+import { CreditCardInvoiceType, CreditCardType } from '../../../schemas/CreditCard';
+import { TransactionType } from '../../../schemas/Transactions';
 
 const flagMap: Record<CreditCardFlag, CardDetails['brand']> = {
   [CreditCardFlag.VISA]: 'VISA',
@@ -16,16 +15,17 @@ const flagMap: Record<CreditCardFlag, CardDetails['brand']> = {
 };
 
 export const mapToCardDetails = (
-  card: CreditCardSchemaType,
-  invoices: CreditCardInvoiceSchemaType[],
-  bankAccounts: BankAccountSchemaType[],
+  card: CreditCardType,
+  invoices: CreditCardInvoiceType[],
+  bankAccounts: BankAccountType[],
   banks: Bank[],
-  transactions: TransactionSchemaType[]
+  transactions: TransactionType[]
 ): CardDetails => {
   const bankAccount = bankAccounts.find(acc => acc.id === card.bankAccountId);
   const bank = banks.find(b => b.code === bankAccount?.bank);
 
   // Get all transactions for this card
+  console.log('All transactions:', transactions);
   const cardTransactions = transactions.filter(t => t.creditCardId === card.id);
 
   // Map invoices with their transactions
@@ -35,7 +35,6 @@ export const mapToCardDetails = (
     
     // Calculate total from transactions
     const totalFromTransactions = invoiceTransactions.reduce((sum, t) => {
-      const transactionDate = firestoreTimestampToDate(t.date) || new Date();
       return sum + t.value;
     }, 0);
 

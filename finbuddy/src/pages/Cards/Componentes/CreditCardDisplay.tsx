@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 // src/components/CreditCardDisplay.tsx
 import React, { useMemo } from 'react';
 import {
@@ -7,12 +8,8 @@ import {
   Box,
   LinearProgress,
   Link,
-  styled,
   useTheme,
-  IconButton
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import dayjs from 'dayjs';
 import { useBanks } from '../../../hooks/useBanks';
 import { CardDetails } from '../utils/types';
 
@@ -24,19 +21,8 @@ interface CreditCardDisplayProps {
   onEditClick?: (card: CardDetails) => void;
 }
 
-
-const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
-  borderRadius: 5,
-}));
-
 const formatCurrency = (value: number): string => {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
-
-const formatCardBrand = (brand: string): string => {
-  if (!brand || brand.length === 0) return '';
-  return brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
 };
 
 // --- COMPONENTE PRINCIPAL ---
@@ -44,14 +30,13 @@ const formatCardBrand = (brand: string): string => {
 const CreditCardDisplay: React.FC<CreditCardDisplayProps> = ({
   card,
   onViewDetailsClick,
-  onEditClick
 }) => {
   const theme = useTheme();
   const { banks } = useBanks();
 
   if (!card) return null;
 
-  const { cardName, bankName, brand, closingDay, dueDate, limitTotal, amountSpent, invoices } = card;
+  const { cardName, bankName, brand, closingDay, dueDate, limitTotal, invoices } = card;
 
   const bank = banks.find(b => b.name === bankName);
 

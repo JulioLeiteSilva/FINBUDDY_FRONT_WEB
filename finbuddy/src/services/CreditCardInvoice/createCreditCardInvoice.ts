@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { CreditCardInvoiceRequestDTOSchemaType } from "../../schemas/CreditCard";
 import { functions } from "../firebase";
 import { useCreditCardInvoiceStore } from "../../store/creditCardInvoiceStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
+import { CreateInvoiceRequestType } from "../../schemas/Transactions";
 
-export const CreateCreditCardInvoice = async (data: CreditCardInvoiceRequestDTOSchemaType) => {
+export const CreateCreditCardInvoice = async (data: CreateInvoiceRequestType) => {
   const { showSnackbar } = useSnackbarStore.getState();
 
   try {
@@ -14,7 +15,7 @@ export const CreateCreditCardInvoice = async (data: CreditCardInvoiceRequestDTOS
     console.log('Fatura criada:', response.data);
 
     const { fetchCreditCardInvoices } = useCreditCardInvoiceStore.getState();
-    await fetchCreditCardInvoices(data.creditCardId);
+    await fetchCreditCardInvoices(data.creditCardId!);
 
     showSnackbar('Fatura criada com sucesso!', 'success');
   } catch (error) {

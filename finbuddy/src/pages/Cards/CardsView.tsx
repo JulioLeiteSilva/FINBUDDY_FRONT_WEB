@@ -27,7 +27,7 @@ const CardsView = () => {
         handleOpenTransactionModal,
         handleCloseTransactionModal,
         handleSaveTransaction,
-        creditCards
+        creditCards,
     } = useCardsViewModel();
 
     return (
@@ -37,7 +37,7 @@ const CardsView = () => {
                 <Typography variant="h4" component="h1">
                     Meus Cartões
                 </Typography>
-                <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenAddCardModal} sx={{ borderRadius: '20px', padding: '10px 20px', textTransform: 'none', fontSize: '1rem' }}>
+                <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={handleOpenAddCardModal} sx={{ borderRadius: '8px', padding: '10px 20px', textTransform: 'none', fontSize: '1rem' }}>
                     Novo Cartão
                 </Button>
             </Box>
@@ -51,7 +51,7 @@ const CardsView = () => {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', my: 3 }}>
-                <Button variant="contained" size="medium" startIcon={<AddIcon />} onClick={handleOpenTransactionModal} sx={{ textTransform: 'none', borderRadius: '20px', padding: '8px 20px', fontSize: '0.9rem', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .1)' }}>
+                <Button variant="contained" size="medium" startIcon={<AddIcon />} onClick={handleOpenTransactionModal} sx={{ textTransform: 'none', borderRadius: '8px', padding: '8px 20px', fontSize: '0.9rem', boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .1)' }}>
                     Adicionar Nova Transação
                 </Button>
             </Box>

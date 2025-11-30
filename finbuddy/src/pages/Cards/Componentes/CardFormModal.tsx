@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/CardFormModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -12,44 +13,49 @@ import {
   InputLabel,
   Select,
   Typography,
-  SelectChangeEvent,
   Box,
-  CircularProgress
-} from '@mui/material';
-import dayjs from 'dayjs';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CreditCardRequestDTOSchema } from '../../../schemas/CreditCard/Forms/CreditCardRequestDTOSchema';
-import { CreditCardFlag } from '../../../enums/CreditCardFlag';
-import { CreateCreditCard } from '../../../services/CreditCard/createCreditCard';
-import { useBankAccountStore } from '../../../store/bankAccountStore';
-import { z } from 'zod';
-
-type CreditCardRequestDTOSchemaType = z.infer<typeof CreditCardRequestDTOSchema>;
-
+  CircularProgress,
+  InputAdornment,
+} from "@mui/material";
+import dayjs from "dayjs";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreditCardFlag } from "../../../enums/CreditCardFlag";
+import { CreateCreditCard } from "../../../services/CreditCard/createCreditCard";
+import { useBankAccountStore } from "../../../store/bankAccountStore";
+import {
+  CreateCreditCardRequestType,
+  CreditCardFormSchema,
+  CreditCardFormType,
+} from "../../../schemas/CreditCard";
+import { CurrencyInput } from "../../../components/CurrencyInput/CurrencyInput";
 // Props que o componente espera
 interface CardFormModalProps {
   open: boolean;
   onClose: () => void;
-  onSave?: (cardData: CreditCardRequestDTOSchemaType) => void;
+  onSave?: (cardData: CreateCreditCardRequestType) => void;
   initialData?: any | null; // Dados do cartão para o modo de edição
 }
 
-const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, initialData }) => {
+const CardFormModal: React.FC<CardFormModalProps> = ({
+  open,
+  onClose,
+  initialData,
+}) => {
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CreditCardRequestDTOSchemaType>({
-    resolver: zodResolver(CreditCardRequestDTOSchema),
+  } = useForm<CreditCardFormType>({
+    resolver: zodResolver(CreditCardFormSchema),
     defaultValues: {
-      name: '',
+      name: "",
       flag: CreditCardFlag.VISA,
       closingDay: 1,
       dueDate: 1,
       limit: 0,
-      bankAccountId: '',
+      bankAccountId: "",
     },
   });
 
@@ -73,44 +79,50 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
       });
     } else if (!initialData && open) {
       reset({
-        name: '',
+        name: "",
         flag: CreditCardFlag.VISA,
         closingDay: 1,
         dueDate: 1,
         limit: 0,
-        bankAccountId: '',
+        bankAccountId: "",
       });
     }
   }, [initialData, open, reset]);
 
-  const onSubmit = async (data: CreditCardRequestDTOSchemaType) => {
+  const onSubmit = async (data: CreditCardFormType) => {
     try {
       setIsSubmitting(true);
       if (isEditMode) {
         // TODO: Implement edit functionality
-        console.log('Edit mode not implemented yet');
+        console.log("Edit mode not implemented yet");
       } else {
         await CreateCreditCard(data);
       }
       onClose();
       reset();
     } catch (error) {
-      console.error('Error saving credit card:', error);
+      console.error("Error saving credit card:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: '12px' } }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{ sx: { borderRadius: "12px" } }}
+    >
       <DialogTitle sx={{ pb: 1 }}>
-        {isEditMode ? 'Editar Cartão' : 'Adicionar Novo Cartão'}
+        {isEditMode ? "Editar Cartão" : "Adicionar Novo Cartão"}
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
             {/* Linha 1: Nome, Banco, Bandeira */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <Controller
                 name="name"
                 control={control}
@@ -131,7 +143,11 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
                 name="bankAccountId"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth margin="dense" error={!!errors.bankAccountId}>
+                  <FormControl
+                    fullWidth
+                    margin="dense"
+                    error={!!errors.bankAccountId}
+                  >
                     <InputLabel>Banco</InputLabel>
                     <Select {...field} label="Banco">
                       {bankAccounts.map((account) => (
@@ -141,7 +157,11 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
                       ))}
                     </Select>
                     {errors.bankAccountId && (
-                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                      <Typography
+                        color="error"
+                        variant="caption"
+                        sx={{ ml: 1.5, mt: 0.5 }}
+                      >
                         {errors.bankAccountId.message}
                       </Typography>
                     )}
@@ -162,7 +182,11 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
                       ))}
                     </Select>
                     {errors.flag && (
-                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                      <Typography
+                        color="error"
+                        variant="caption"
+                        sx={{ ml: 1.5, mt: 0.5 }}
+                      >
                         {errors.flag.message}
                       </Typography>
                     )}
@@ -172,22 +196,32 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
             </Box>
 
             {/* Linha 2: Dia de Fechamento, Dia de Vencimento */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <Controller
                 name="closingDay"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth margin="dense" error={!!errors.closingDay}>
+                  <FormControl
+                    fullWidth
+                    margin="dense"
+                    error={!!errors.closingDay}
+                  >
                     <InputLabel>Dia de Fechamento</InputLabel>
                     <Select {...field} label="Dia de Fechamento">
-                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                        <MenuItem key={day} value={day}>
-                          {day}
-                        </MenuItem>
-                      ))}
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                        (day) => (
+                          <MenuItem key={day} value={day}>
+                            {day}
+                          </MenuItem>
+                        )
+                      )}
                     </Select>
                     {errors.closingDay && (
-                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                      <Typography
+                        color="error"
+                        variant="caption"
+                        sx={{ ml: 1.5, mt: 0.5 }}
+                      >
                         {errors.closingDay.message}
                       </Typography>
                     )}
@@ -198,17 +232,27 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
                 name="dueDate"
                 control={control}
                 render={({ field }) => (
-                  <FormControl fullWidth margin="dense" error={!!errors.dueDate}>
+                  <FormControl
+                    fullWidth
+                    margin="dense"
+                    error={!!errors.dueDate}
+                  >
                     <InputLabel>Dia de Vencimento</InputLabel>
                     <Select {...field} label="Dia de Vencimento">
-                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                        <MenuItem key={day} value={day}>
-                          {day}
-                        </MenuItem>
-                      ))}
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                        (day) => (
+                          <MenuItem key={day} value={day}>
+                            {day}
+                          </MenuItem>
+                        )
+                      )}
                     </Select>
                     {errors.dueDate && (
-                      <Typography color="error" variant="caption" sx={{ml:1.5, mt:0.5}}>
+                      <Typography
+                        color="error"
+                        variant="caption"
+                        sx={{ ml: 1.5, mt: 0.5 }}
+                      >
                         {errors.dueDate.message}
                       </Typography>
                     )}
@@ -218,37 +262,41 @@ const CardFormModal: React.FC<CardFormModalProps> = ({ open, onClose, onSave, in
             </Box>
 
             {/* Linha 3: Limite */}
-            <Controller
-              name="limit"
+            <CurrencyInput
               control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  margin="dense"
-                  label="Limite do Cartão (R$)"
-                  type="number"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.limit}
-                  helperText={errors.limit?.message}
-                  inputProps={{ min: 0 }}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              )}
+              name="limit"
+              label="Limite do Cartão"
+              margin="dense"
+              fullWidth
+              error={!!errors.limit}
+              helperText={errors.limit?.message}
+              inputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">R$</InputAdornment>
+                ),
+              }}
             />
           </Box>
         </form>
       </DialogContent>
-      <DialogActions sx={{p: '16px 24px'}}>
-        <Button onClick={onClose} color="inherit" disabled={isSubmitting}>Cancelar</Button>
-        <Button 
-          onClick={handleSubmit(onSubmit)} 
-          variant="contained" 
+      <DialogActions sx={{ p: "16px 24px" }}>
+        <Button onClick={onClose} color="inherit" disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          variant="contained"
           color="primary"
           disabled={isSubmitting}
-          startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+          startIcon={
+            isSubmitting ? <CircularProgress size={20} color="inherit" /> : null
+          }
         >
-          {isSubmitting ? 'Processando...' : (isEditMode ? 'Salvar Alterações' : 'Registrar Cartão')}
+          {isSubmitting
+            ? "Processando..."
+            : isEditMode
+            ? "Salvar Alterações"
+            : "Registrar Cartão"}
         </Button>
       </DialogActions>
     </Dialog>

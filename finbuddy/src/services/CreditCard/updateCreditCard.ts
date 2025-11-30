@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpsCallable } from "firebase/functions";
-import { CreditCardRequestDTOSchemaType } from "../../schemas/CreditCard";
 import { functions } from "../firebase";
 import { useCreditCardStore } from "../../store/creditCardStore";
 import { useSnackbarStore } from "../../store/useSnackbarStore";
 import { getFirebaseAuthErrorMessage } from "../../utils/firebaseErrorMenssages";
+import { UpdateCardRequestType } from "../../schemas/CreditCard";
 
 export const UpdateCreditCard = async (
-  data: CreditCardRequestDTOSchemaType & { id: string }
+  data: UpdateCardRequestType & { id: string }
 ) => {
   const { showSnackbar } = useSnackbarStore.getState();
 

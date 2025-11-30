@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { CreditCardInvoiceSchemaType, CreditCardInvoiceResponseDTOSchemaType } from '../schemas/CreditCard';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../services/firebase';
+import { CreditCardInvoiceType, GetAllCardInvoicesResponseType } from '../schemas/CreditCard';
 
 interface CreditCardInvoiceState {
-  creditCardInvoices: Record<string, CreditCardInvoiceSchemaType[]>;
+  creditCardInvoices: Record<string, CreditCardInvoiceType[]>;
   message: string;
   isLoading: boolean;
   fetchCreditCardInvoices: (cardId: string) => Promise<void>;
@@ -20,12 +20,12 @@ export const useCreditCardInvoiceStore = create<CreditCardInvoiceState>((set) =>
     try {
       const getAllCreditCardInvoicesFn = httpsCallable(functions, 'creditCardInvoice-getAll');
       const response = await getAllCreditCardInvoicesFn({ cardId });
-      const getAllCreditCardInvoicesResponse = response.data as unknown as CreditCardInvoiceResponseDTOSchemaType;
+      const getAllCreditCardInvoicesResponse = response.data as unknown as GetAllCardInvoicesResponseType;
 
       set((state) => ({
         creditCardInvoices: {
           ...state.creditCardInvoices,
-          [cardId]: getAllCreditCardInvoicesResponse.invoices as CreditCardInvoiceSchemaType[]
+          [cardId]: getAllCreditCardInvoicesResponse.data.invoices as CreditCardInvoiceType[]
         },
         message: getAllCreditCardInvoicesResponse.message,
       }));

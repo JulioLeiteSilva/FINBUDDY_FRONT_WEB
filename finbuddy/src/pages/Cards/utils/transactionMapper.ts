@@ -1,11 +1,11 @@
 import { ProcessedTransaction } from './types';
-import { TransactionSchemaType } from '../../../schemas/Transactions';
 import { firestoreTimestampToDate } from '../../Transactions/components/TransactionDetailsModal/utils/transactionUtils';
-import { CreditCardInvoiceSchemaType } from '../../../schemas/CreditCard';
+import { CreditCardInvoiceType } from '../../../schemas/CreditCard';
+import { TransactionType } from '../../../schemas/Transactions';
 
 export const mapToProcessedTransactions = (
-  transactions: TransactionSchemaType[],
-  invoices: Record<string, CreditCardInvoiceSchemaType[]>
+  transactions: TransactionType[],
+  invoices: Record<string, CreditCardInvoiceType[]>
 ): ProcessedTransaction[] => {
   return transactions.map(transaction => {
     console.log('Transaction date object:', transaction.date);

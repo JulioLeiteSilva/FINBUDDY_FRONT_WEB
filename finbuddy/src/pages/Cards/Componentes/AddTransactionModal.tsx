@@ -14,21 +14,22 @@ import {
   Grid,
   Switch,
   FormControlLabel,
-  SelectChangeEvent,
   Box,
   Typography,
-  FormHelperText
+  FormHelperText,
+  InputAdornment
 } from '@mui/material';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import { useCategoriesStore } from '../../../store/categoriesStore';
 import { CreateInvoiceTransaction } from '../../../services/Transactions/createInvoiceTransaction';
-import { TransactionRequestDTOSchemaType, TransactionRequestDTOSchema } from '../../../schemas/Transactions';
 import GetMuiIcon from '../../../utils/getMuiIcon';
 import { TransactionFrequency } from '../../../enums';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreditCardSchemaType } from '../../../schemas/CreditCard';
+import { CreditCardType } from '../../../schemas/CreditCard';
+import { CreateIncomeOrExpenseRequestType, CreateInvoiceRequestType, CreateTransactionSchema, CreateTransactionType } from '../../../schemas/Transactions';
+import { CurrencyInput } from '../../../components/CurrencyInput/CurrencyInput';
 
 // É ideal que estes tipos venham de um arquivo compartilhado, ex: 'src/types.ts'
 // para que a CardPage e outros componentes possam usá-los consistentemente.
@@ -40,8 +41,8 @@ dayjs.locale('pt-br');
 interface AddTransactionModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (transactionData: TransactionRequestDTOSchemaType) => void;
-  cards: CreditCardSchemaType[];
+  onSave: (transactionData: CreateIncomeOrExpenseRequestType) => void;
+  cards: CreditCardType[];
   invoiceId?: string;
 }
 
@@ -57,7 +58,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
   const defaultCard = cards[0];
 
-  const { control, handleSubmit, reset, formState: { errors }, watch } = useForm<TransactionRequestDTOSchemaType>({
+  const { control, handleSubmit, reset, formState: { errors }, watch } = useForm<CreateTransactionType>({
     defaultValues: {
       name: '',
       value: 0,
@@ -73,7 +74,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       bankAccountId: defaultCard?.bankAccountId || '',
       creditCardId: defaultCard?.id || '',
     },
-    resolver: zodResolver(TransactionRequestDTOSchema)
+    resolver: zodResolver(CreateTransactionSchema)
   });
 
   const isRecurring = watch('isRecurring');
@@ -106,7 +107,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     }
   }, [open, fetchCategories, reset, defaultCard, invoiceId]);
 
-  const onSubmit = async (formData: TransactionRequestDTOSchemaType) => {
+  const onSubmit = async (formData: CreateTransactionType) => {
     try {
       // Se for parcelado, ajusta as datas e frequência
       if (formData.isRecurring) {
@@ -115,7 +116,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         formData.endDate = dayjs(formData.date).add(numberOfInstallments - 1, 'month').toDate();
       }
 
-      await CreateInvoiceTransaction(formData);
+      await CreateInvoiceTransaction(formData as CreateInvoiceRequestType);
       onSave(formData);
       onClose();
     } catch (error) {
@@ -156,43 +157,17 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Controller
+              <CurrencyInput
+                control={control}
                 name="value"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Valor"
-                    type="number"
-                    fullWidth
-                    margin="dense"
-                    error={!!errors.value}
-                    helperText={errors.value?.message}
-                    sx={numberInputStyles}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Controller
-                name="currency"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth margin="dense" error={!!errors.currency}>
-                    <InputLabel id="currency-select-label">Moeda</InputLabel>
-                    <Select
-                      {...field}
-                      labelId="currency-select-label"
-                      label="Moeda"
-                    >
-                      <MenuItem value="BRL">BRL - Real Brasileiro</MenuItem>
-                      <MenuItem value="USD">USD - Dólar Americano</MenuItem>
-                      <MenuItem value="EUR">EUR - Euro</MenuItem>
-                    </Select>
-                    {errors.currency && <FormHelperText>{errors.currency.message}</FormHelperText>}
-                  </FormControl>
-                )}
+                label="Valor"
+                margin="dense"
+                fullWidth
+                error={!!errors.value}
+                helperText={errors.value?.message}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                }}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
