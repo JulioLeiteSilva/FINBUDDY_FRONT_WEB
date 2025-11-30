@@ -11,13 +11,8 @@ import {
   LinearProgress,
   Chip,
   Box,
-  Typography,
-  IconButton,
-  Stack,
+  Typography
 } from "@mui/material";
-
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 import { CategoryAllocationType } from "../../../schemas/FinancialPlanning";
 
@@ -25,8 +20,6 @@ import { CategoryAllocationType } from "../../../schemas/FinancialPlanning";
 
 interface BudgetTableProps {
     data: CategoryAllocationType[];
-    onEdit: (row: CategoryAllocationType) => void;
-    onDelete: (row: CategoryAllocationType) => void;
 }
 
 const formatCurrency = (value: number): string => {
@@ -36,7 +29,7 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-const BudgetTable: React.FC<BudgetTableProps> = ({ data, onEdit, onDelete }) => {
+const BudgetTable: React.FC<BudgetTableProps> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
       <Typography variant="body1">
@@ -61,9 +54,6 @@ const BudgetTable: React.FC<BudgetTableProps> = ({ data, onEdit, onDelete }) => 
               <TableCell align="left" sx={{ fontWeight: "bold" }}>Progresso</TableCell>
               <TableCell align="left" sx={{ fontWeight: "bold" }}>
                 Status
-              </TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold", width: '100px' }}>
-                Ações
               </TableCell>
             </TableRow>
           </TableHead>
@@ -108,26 +98,6 @@ const BudgetTable: React.FC<BudgetTableProps> = ({ data, onEdit, onDelete }) => 
                       color={isOverBudget ? "error" : "success"}
                       size="small"
                     />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Stack direction="row" spacing={0.5} justifyContent="center">
-                      <IconButton 
-                          color="primary" 
-                          size="small" 
-                          onClick={() => onEdit(row)} 
-                          aria-label="editar"
-                      >
-                          <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton 
-                          color="error" 
-                          size="small" 
-                          onClick={() => onDelete(row)} 
-                          aria-label="deletar"
-                      >
-                          <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Stack>
                   </TableCell>
                 </TableRow>
               );

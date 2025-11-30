@@ -6,7 +6,7 @@ const DataSchema = z.object({
     adjustments: z.array(z.object({
         monthlyIncome: z.number(),
         budgetAmount: z.number(),
-    })),
+    })).optional(),
 })
 
 export const CopyFromMonthRequestSchema = DataSchema;
