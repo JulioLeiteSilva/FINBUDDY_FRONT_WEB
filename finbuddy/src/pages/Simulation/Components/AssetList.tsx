@@ -10,7 +10,8 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  IconButton
+  IconButton,
+  Chip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,6 +24,7 @@ interface AssetItem {
   id: string;
   name: string;
   value: number;
+  isMonthly?: boolean;
 }
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('pt-BR', {
@@ -57,7 +59,20 @@ export const AssetList: React.FC<AssetListProps> = ({ assets, totalValue, onAddC
       <List sx={{ height: 500, overflowY: 'auto' }}>
         {assets.map((item) => (
           <ListItem key={item.id} dense>
-            <ListItemText primary={item.name} secondary={formatCurrency(item.value)} />
+            <ListItemText
+             primary={
+              <Box sx={{ display : 'flex', alignItems: 'center', gap: 1}}>
+                {item.name}
+                <Chip
+                  label={item.isMonthly ? "Mensal" : "Patrimônio"}
+                  color={item.isMonthly ? "success" : "default"}
+                  variant={item.isMonthly ? "filled" : "outlined"}
+                  size="small"
+                />
+              </Box>
+             }
+               
+            secondary={formatCurrency(item.value)} />
             <ListItemSecondaryAction>
               <IconButton edge="end" aria-label="delete" onClick={() => onDeleteClick(item.id)}> {/* <-- Chama a prop */}
                 <DeleteIcon />
