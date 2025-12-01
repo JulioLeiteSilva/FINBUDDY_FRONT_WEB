@@ -1,189 +1,6 @@
-// // src/pages/ImpactSimulationPage.tsx
-// import React, { useState } from 'react';
-// import {
-//   Container,
-//   Typography,
-//   Paper,
-//   Stack,
-//   Button,
-//   Box,
-//   // Grid, // <-- REMOVIDO
-//   Divider,
-//   List,
-//   ListItem,
-//   ListItemText,
-//   ListItemSecondaryAction,
-//   IconButton
-// } from '@mui/material';
-// import CalculateIcon from '@mui/icons-material/Calculate';
-// import InfoIcon from '@mui/icons-material/Info';
-
-// // (Importando os novos componentes de lista)
-// import { AssetList } from './Components/AssetList';
-
-// // (Importando os modais)
-// import { AssetModal } from './Components/AssetModal';
-// import { ExpenseModal } from './Components/ModalExpenses';
-// import { ExpenseList } from './Components/ExpenseList';
-
-// import { useImpactCalculator } from './Components/useImpactCalculator';
-
-// // --- Tipos (Idealmente em 'types.ts') ---
-// interface AssetItem { id: string; name: string; value: number; isMonthly?: boolean; }
-// export type NewAssetData = Omit<AssetItem, 'id'>;
-// interface ExpenseItem { id: string; name: string; value: number; isFixed: boolean; }
-// export type NewExpenseData = Omit<ExpenseItem, 'id'>;
-// // --------------------------------------------------------
-
-// export const ImpactSimulationPage: React.FC = () => {
-//   // --- ESTADO (Permanece aqui) ---
-//   const [assets, setAssets] = useState<AssetItem[]>([
-//     { id: 'p1', name: 'Conta Corrente', value: 15000 },
-//     { id: 'p2', name: 'Investimentos', value: 85000 },
-//   ]);
-//   const [expenses, setExpenses] = useState<ExpenseItem[]>([
-//     { id: 'g1', name: 'Aluguel', value: 2500, isFixed: true },
-//     { id: 'g2', name: 'Alimentação', value: 1500, isFixed: true },
-//   ]);
-
-//   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
-//   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
-//   const [simulationResult, setSimulationResult] = useState<string | null>(null);
-
-//   // --- LÓGICA / HANDLERS (Permanecem aqui) ---
-//   const handleAddAsset = (data: NewAssetData) => {
-//     const newId = `a${Date.now()}`;
-//     setAssets(prev => [...prev, { ...data, id: newId }]);
-//     setIsAssetModalOpen(false);
-//   };
-
-//   const handleAddExpense = (data: NewExpenseData) => {
-//     const newId = `e${Date.now()}`;
-//     setExpenses(prev => [...prev, { ...data, id: newId }]);
-//     setIsExpenseModalOpen(false); 
-//   };
-
-//   const handleDeleteAsset = (id: string) => {
-//     setAssets(prev => prev.filter(item => item.id !== id));
-//   };
-
-//   const handleDeleteExpense = (id: string) => {
-//     setExpenses(prev => prev.filter(item => item.id !== id));
-//   };
-
-//   const handleCalculateImpact = () => {
-//     const totalAssets = assets.reduce((acc, item) => acc + item.value, 0);
-//     const monthlyExpenses = expenses
-//       .filter(item => item.isFixed)
-//       .reduce((acc, item) => acc + item.value, 0);
-
-//     // ... (lógica de cálculo para 'finalResult') ...
-//     if (monthlyExpenses <= 0) { setSimulationResult("Sem gastos fixos."); return; }
-//     if (totalAssets <= 0) { setSimulationResult("Sem patrimônio."); return; }
-//     const totalMonths = totalAssets / monthlyExpenses;
-//     const years = Math.floor(totalMonths / 12);
-//     const months = Math.floor(totalMonths % 12);
-//     const yearText = years > 0 ? `${years} ${years > 1 ? 'anos' : 'ano'}` : '';
-//     const monthText = months > 0 ? `${months} ${months > 1 ? 'meses' : 'mês'}` : '';
-//     let finalResult = yearText && monthText ? `${yearText} e ${monthText}` : (yearText || monthText || "Menos de um mês");
-//     setSimulationResult(finalResult);
-//   };
-  
-//   // --- CÁLCULOS PARA DISPLAY (Permanecem aqui) ---
-//   const totalAssetsValue = assets.reduce((acc, item) => acc + item.value, 0);
-//   const monthlyExpensesValue = expenses
-//     .filter(item => item.isFixed)
-//     .reduce((acc, item) => acc + item.value, 0);
-
-//   // --- RENDERIZAÇÃO ---
-//   return (
-//     <Container maxWidth="xl">
-//       <Typography variant="h4" gutterBottom sx={{ mt: 3, mb: 1 }}>
-//         Simulação de Impacto
-//       </Typography>
-//       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-//         Descubra quanto tempo seu patrimônio atual conseguiria cobrir seus gastos mensais.
-//       </Typography>
-
-//       {/* --- MUDANÇA AQUI: Trocando Grid por Box com Flexbox --- */}
-//       <Box
-//         sx={{
-//           display: 'flex',
-//           // Empilha em telas pequenas ('xs'), fica lado-a-lado em telas médias ('md') para cima
-//           flexDirection: { xs: 'column', md: 'row' },
-//           gap: 5, // O espaçamento de 5 que você gostou
-//         }}
-//       >
-        
-//         {/* --- Componente de Lista de Ativos --- */}
-//         <Box sx={{ flex: 1, minWidth: 0 }}> {/* Ocupa 50% do espaço disponível */}
-//           <AssetList
-//             assets={assets}
-//             totalValue={totalAssetsValue}
-//             onAddClick={() => setIsAssetModalOpen(true)}
-//             onDeleteClick={handleDeleteAsset}
-//           />
-//         </Box>
-
-//         {/* --- Componente de Lista de Despesas --- */}
-//         <Box sx={{ flex: 1, minWidth: 0 }}> {/* Ocupa 50% do espaço disponível */}
-//           <ExpenseList
-//             expenses={expenses}
-//             totalFixedValue={monthlyExpensesValue}
-//             onAddClick={() => setIsExpenseModalOpen(true)}
-//             onDeleteClick={handleDeleteExpense}
-//           />
-//         </Box>
-//       </Box>
-      
-//       {/* --- Seção de Cálculo e Resultado --- */}
-//       <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-//         <Button
-//           variant="contained"
-//           size="large"
-//           onClick={handleCalculateImpact}
-//           startIcon={<CalculateIcon />}
-//         >
-//           Calcular Simulação
-//         </Button>
-//       </Box>
-
-//       {simulationResult && (
-//         <Paper sx={{ p: 4, mt: 2, backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
-//           <Stack direction="row" spacing={2} alignItems="center">
-//             <InfoIcon sx={{ fontSize: 40 }} />
-//             <Box>
-//               <Typography variant="h6" component="h3">
-//                 Seu patrimônio cobriria seus gastos por:
-//               </Typography>
-//               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-//                 {simulationResult}
-//               </Typography>
-//             </Box>
-//           </Stack>
-//         </Paper>
-//       )}
-
-//       {/* --- Modais --- */}
-//       <AssetModal
-//         open={isAssetModalOpen}
-//         onClose={() => setIsAssetModalOpen(false)}
-//         onSubmit={handleAddAsset}
-//       />
-      
-//       <ExpenseModal
-//         open={isExpenseModalOpen}
-//         onClose={() => setIsExpenseModalOpen(false)}
-//         onSubmit={handleAddExpense}
-//       />
-
-//     </Container>
-//   );
-// };
-
 // src/pages/ImpactSimulationPage.tsx
-import React, { useState } from 'react';
-import { Container, Typography, Paper, Box, Stack } from '@mui/material'; // Grid e Button removidos ou usados menos
+import React, { useState, useEffect, useMemo } from 'react';
+import { Container, Typography, Paper, Box, Stack, CircularProgress } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 
 // Componentes
@@ -191,31 +8,63 @@ import { AssetList } from './Components/AssetList';
 import { ExpenseList } from './Components/ExpenseList';
 import { AssetModal } from './Components/AssetModal';
 import { ExpenseModal } from './Components/ModalExpenses';
-
-// O Novo Hook
 import { useImpactCalculator } from './Components/useImpactCalculator';
+import { useCategoriesStore } from '../../store/categoriesStore';
+import { useSimulationStore } from '../../store/simulation';
+import { mapSimulationToUI } from './utils/simulationMapper';
+
 
 // Tipos
-interface AssetItem { id: string; name: string; value: number; isMonthly?: boolean; }
+export interface AssetItem { id: string; name: string; value: number; isMonthly?: boolean; iconName?: string; }
 export type NewAssetData = Omit<AssetItem, 'id'>;
-interface ExpenseItem { id: string; name: string; value: number; isFixed: boolean; }
+export interface ExpenseItem { id: string; name: string; value: number; isFixed: boolean; iconName?: string; }
 export type NewExpenseData = Omit<ExpenseItem, 'id'>;
 
 export const ImpactSimulationPage: React.FC = () => {
-  const [assets, setAssets] = useState<AssetItem[]>([
-    { id: 'p1', name: 'Conta Corrente', value: 15000 },
-    { id: 'p2', name: 'Investimentos', value: 85000 },
-  ]);
-  const [expenses, setExpenses] = useState<ExpenseItem[]>([
-    { id: 'g1', name: 'Aluguel', value: 2500, isFixed: true },
-    { id: 'g2', name: 'Alimentação', value: 1500, isFixed: true },
-  ]);
+  // --- STORES ---
+  const { simulationData, fetchSimulationData, isLoading: isSimLoading } = useSimulationStore();
+  
+  // Extraindo dados do store de categorias
+  const { 
+    categories, 
+    defaultCategories, 
+    fetchCategories, 
+    isLoading: isCatLoading 
+  } = useCategoriesStore();
 
+  // --- ESTADOS LOCAIS ---
+  const [assets, setAssets] = useState<AssetItem[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
-  // --- MÁGICA AQUI: O Hook faz tudo ---
-  // Toda vez que assets ou expenses mudarem, essas variáveis atualizam sozinhas
+  // --- 1. FETCH INICIAL (Simulação + Categorias) ---
+  useEffect(() => {
+    fetchSimulationData();
+    fetchCategories(); 
+  }, [fetchSimulationData, fetchCategories]);
+
+  // --- 2. LISTA UNIFICADA DE CATEGORIAS ---
+  // Memoizamos para não recriar o array toda hora
+  const allCategories = useMemo(() => {
+    return [...defaultCategories, ...categories];
+  }, [defaultCategories, categories]);
+
+  // --- 3. SINCRONIZAÇÃO E MAP (Onde a mágica acontece) ---
+  useEffect(() => {
+    // Só roda se tiver dados da simulação E se as categorias já tiverem carregado (opcional, mas evita piscar ícone errado)
+    if (simulationData) {
+      const { assets: mappedAssets, expenses: mappedExpenses } = mapSimulationToUI(
+        simulationData, 
+        allCategories // <--- Passamos a lista completa para o mapper buscar
+      );
+      
+      setAssets(mappedAssets);
+      setExpenses(mappedExpenses);
+    }
+  }, [simulationData, allCategories]); // Recalcula se a simulação ou as categorias mudarem
+
+  // Hook de Cálculo
   const { 
     totalAccumulatedWealth, 
     totalMonthlyIncome, 
@@ -224,8 +73,8 @@ export const ImpactSimulationPage: React.FC = () => {
     status 
   } = useImpactCalculator(assets, expenses);
 
+  // ... (O restante dos handlers handleAddAsset, handleAddExpense, etc. continua igual) ...
 
-  // --- Handlers (Adicionar/Remover) ---
   const handleAddAsset = (data: NewAssetData) => {
     const newId = `a${Date.now()}`;
     setAssets(prev => [...prev, { ...data, id: newId }]);
@@ -246,26 +95,32 @@ export const ImpactSimulationPage: React.FC = () => {
     setExpenses(prev => prev.filter(item => item.id !== id));
   };
 
+  // Loading State (Se qualquer um dos dois estiver carregando)
+  if (isSimLoading || (isCatLoading && allCategories.length === 0)) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" gutterBottom sx={{ mt: 3, mb: 1 }}>
         Simulação de Impacto
       </Typography>
-      {/* ... subtítulo ... */}
 
-      {/* Box Flexbox (Substituindo Grid conforme pedido anterior) */}
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 5 }}>
         
         {/* LISTA DE ATIVOS */}
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <AssetList
             assets={assets}
-            totalValue={totalAccumulatedWealth} // Valor calculado pelo hook
+            totalValue={totalAccumulatedWealth}
             onAddClick={() => setIsAssetModalOpen(true)}
             onDeleteClick={handleDeleteAsset}
           />
-          {/* Mostra a renda extra calculada pelo hook */}
-          {totalMonthlyIncome > 0 && (
+           {totalMonthlyIncome > 0 && (
              <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 1, color: 'success.main' }}>
                 + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalMonthlyIncome)} renda mensal
              </Typography>
@@ -276,24 +131,20 @@ export const ImpactSimulationPage: React.FC = () => {
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <ExpenseList
             expenses={expenses}
-            totalFixedValue={totalMonthlyFixedExpenses} // Valor calculado pelo hook
+            totalFixedValue={totalMonthlyFixedExpenses}
             onAddClick={() => setIsExpenseModalOpen(true)}
             onDeleteClick={handleDeleteExpense}
           />
         </Box>
       </Box>
       
-      {/* --- RESULTADO AO VIVO --- */}
-      {/* Removemos o botão e deixamos o card fixo (ou condicional) */}
-      
       <Paper 
         sx={{ 
           p: 4, 
           mt: 4, 
-          // Cor dinâmica baseada no status retornado pelo hook
           bgcolor: status === 'success' ? 'success.light' : (status === 'error' ? 'error.light' : 'primary.main'), 
           color: status === 'success' || status === 'error' ? 'black' : 'primary.contrastText',
-          transition: 'background-color 0.3s' // Animação suave na troca de cor
+          transition: 'background-color 0.3s'
         }}
       >
         <Stack direction="row" spacing={2} alignItems="center">
