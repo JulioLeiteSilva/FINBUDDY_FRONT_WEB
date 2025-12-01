@@ -19,12 +19,15 @@ import {
     ThumbUp, ThumbDown, Comment, Chat, Forum, QuestionAnswer,
     PowerSettingsNew, ExitToApp, Login, Logout, VpnKey, Security,
     Report, Flag, Shield, VerifiedUser, PrivacyTip,
+    Devices, // <--- ADICIONADO (Para Eletrônicos)
 
     // Finanças & Comércio
     AccountBalance, AccountBalanceWallet, CreditCard, ShoppingCart, Store, Receipt,
     AttachMoney, MonetizationOn, EuroSymbol, Paid, Savings, Payment, PriceCheck,
     TrendingUp, TrendingDown, PointOfSale, ShoppingBag, Redeem, CardGiftcard, LocalOffer,
     RequestQuote, QueryStats, DonutSmall, Leaderboard,
+    MoneyOff,        // <--- ADICIONADO (Para Liability/Despesa)
+    CurrencyBitcoin, // <--- ADICIONADO (Para Criptomoedas)
 
     // Transporte & Viagem
     Train, DirectionsCar, LocalShipping, Flight, Hotel, LocalGasStation, Restaurant, LocalBar,
@@ -36,6 +39,7 @@ import {
     Countertops, Deck, Fence, Fireplace, Flatware, Hardware, Lightbulb, Outlet, Shower,
     Weekend, Umbrella, BeachAccess, Pool, FitnessCenter, Spa, ChildFriendly, Pets,
     House, Cottage, Villa, LocationCity, Business,
+    Domain, // <--- ADICIONADO (Para REITs/Prédios comerciais)
 
     // Saúde & Bem-Estar
     LocalHospital, MedicalServices, Healing, Medication, Bloodtype, Vaccines, MonitorHeart,
@@ -60,7 +64,7 @@ import {
     Category, Label, Palette, AutoAwesome, Style, Extension, Toys, SmartToy, SportsEsports,
     Casino, SportsSoccer, SportsBasketball, SportsTennis, EmojiEvents, EmojiObjects, EmojiPeople,
     EmojiNature, EmojiFoodBeverage, EmojiTransportation, EmojiFlags, EmojiSymbols,
-    // Adicione mais conforme necessário
+    Diamond, // <--- ADICIONADO (Para Joias)
 } from '@mui/icons-material';
 
 /**
@@ -83,12 +87,15 @@ export const iconComponentsMap: Record<string, SvgIconComponent> = {
     ThumbUpIcon: ThumbUp, ThumbDownIcon: ThumbDown, CommentIcon: Comment, ChatIcon: Chat, ForumIcon: Forum, QuestionAnswerIcon: QuestionAnswer,
     PowerSettingsNewIcon: PowerSettingsNew, ExitToAppIcon: ExitToApp, LoginIcon: Login, LogoutIcon: Logout, VpnKeyIcon: VpnKey, SecurityIcon: Security,
     ReportIcon: Report, FlagIcon: Flag, ShieldIcon: Shield, VerifiedUserIcon: VerifiedUser, PrivacyTipIcon: PrivacyTip,
+    DevicesIcon: Devices, // <--- ADICIONADO
 
     // Finanças & Comércio
     AccountBalanceIcon: AccountBalance, AccountBalanceWalletIcon: AccountBalanceWallet, CreditCardIcon: CreditCard, ShoppingCartIcon: ShoppingCart, StoreIcon: Store, ReceiptIcon: Receipt,
     AttachMoneyIcon: AttachMoney, MonetizationOnIcon: MonetizationOn, EuroSymbolIcon: EuroSymbol, PaidIcon: Paid, SavingsIcon: Savings, PaymentIcon: Payment, PriceCheckIcon: PriceCheck,
     TrendingUpIcon: TrendingUp, TrendingDownIcon: TrendingDown, PointOfSaleIcon: PointOfSale, ShoppingBagIcon: ShoppingBag, RedeemIcon: Redeem, CardGiftcardIcon: CardGiftcard, LocalOfferIcon: LocalOffer,
     RequestQuoteIcon: RequestQuote, QueryStatsIcon: QueryStats, DonutSmallIcon: DonutSmall, LeaderboardIcon: Leaderboard,
+    MoneyOffIcon: MoneyOff,        // <--- ADICIONADO
+    CurrencyBitcoinIcon: CurrencyBitcoin, // <--- ADICIONADO
 
     // Transporte & Viagem
     TrainIcon: Train, DirectionsCarIcon: DirectionsCar, LocalShippingIcon: LocalShipping, FlightIcon: Flight, HotelIcon: Hotel, LocalGasStationIcon: LocalGasStation, RestaurantIcon: Restaurant, LocalBarIcon: LocalBar,
@@ -100,6 +107,7 @@ export const iconComponentsMap: Record<string, SvgIconComponent> = {
     CountertopsIcon: Countertops, DeckIcon: Deck, FenceIcon: Fence, FireplaceIcon: Fireplace, FlatwareIcon: Flatware, HardwareIcon: Hardware, LightbulbIcon: Lightbulb, OutletIcon: Outlet, ShowerIcon: Shower,
     WeekendIcon: Weekend, UmbrellaIcon: Umbrella, BeachAccessIcon: BeachAccess, PoolIcon: Pool, FitnessCenterIcon: FitnessCenter, SpaIcon: Spa, ChildFriendlyIcon: ChildFriendly, PetsIcon: Pets,
     HouseIcon: House, CottageIcon: Cottage, VillaIcon: Villa, LocationCityIcon: LocationCity, BusinessIcon: Business,
+    DomainIcon: Domain, // <--- ADICIONADO
 
     // Saúde & Bem-Estar
     LocalHospitalIcon: LocalHospital, MedicalServicesIcon: MedicalServices, HealingIcon: Healing, MedicationIcon: Medication, BloodtypeIcon: Bloodtype, VaccinesIcon: Vaccines, MonitorHeartIcon: MonitorHeart,
@@ -124,7 +132,8 @@ export const iconComponentsMap: Record<string, SvgIconComponent> = {
     CategoryIcon: Category, LabelIcon: Label, PaletteIcon: Palette, AutoAwesomeIcon: AutoAwesome, StyleIcon: Style, ExtensionIcon: Extension, ToysIcon: Toys, SmartToyIcon: SmartToy, SportsEsportsIcon: SportsEsports,
     CasinoIcon: Casino, SportsSoccerIcon: SportsSoccer, SportsBasketballIcon: SportsBasketball, SportsTennisIcon: SportsTennis, EmojiEventsIcon: EmojiEvents, EmojiObjectsIcon: EmojiObjects, EmojiPeopleIcon: EmojiPeople,
     EmojiNatureIcon: EmojiNature, EmojiFoodBeverageIcon: EmojiFoodBeverage, EmojiTransportationIcon: EmojiTransportation, EmojiFlagsIcon: EmojiFlags, EmojiSymbolsIcon: EmojiSymbols,
-    AddCircleOutlineIcon: AddCircleOutline, // Adicionado para consistência com usos anteriores
+    DiamondIcon: Diamond, // <--- ADICIONADO
+    AddCircleOutlineIcon: AddCircleOutline, 
 };
 
 /**
@@ -135,7 +144,7 @@ export const muiIconsForPickerList: { name: string; component: React.ElementType
     Object.entries(iconComponentsMap).map(([name, component]) => ({
         name,
         component,
-    })).sort((a, b) => a.name.localeCompare(b.name)); // Opcional: ordenar alfabeticamente
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
 /**
  * Lista apenas dos nomes dos ícones disponíveis.

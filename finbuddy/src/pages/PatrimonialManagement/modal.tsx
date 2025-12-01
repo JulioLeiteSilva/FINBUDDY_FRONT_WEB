@@ -89,7 +89,7 @@ export const ModalPatrimonios = ({ open, onClose }: MeuModalProps) => {
         name: data.name!,
         onCreate: today as unknown as Date,
         category: data.patrimonyType,
-        updatedDebtsAmount: 0,
+        updatedDebtsAmount: data.totalDebtAmount,
         totalDebtAmount: data.totalDebtAmount,
         interestRate: data.interestRate,
         term: data.term,
